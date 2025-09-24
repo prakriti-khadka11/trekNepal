@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Trekking Adventures - TrekNepal{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="detail-header" style="background-image: url('/static/img/trekBackGround.jpg');">
+    <div class="container detail-content">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">Trekking Adventures</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+            <i class="fas fa-mountain me-2"></i>Explore the world's most breathtaking trails
+        </p>
+    </div>
+</div>
+
+<!-- Trekking List -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Filters -->
+            <div class="col-lg-3" data-aos="fade-up">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Filter Treks</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Country</label>
+                                <select class="form-select">
+                                    <option value="">All Countries</option>
+                                    <option>Nepal</option>
+                                    <option>Peru</option>
+                                    <option>New Zealand</option>
+                                    <option>Switzerland</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Difficulty</label>
+                                <select class="form-select">
+                                    <option value="">Any Difficulty</option>
+                                    <option>Easy</option>
+                                    <option>Moderate</option>
+                                    <option>Challenging</option>
+                                    <option>Difficult</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Duration</label>
+                                <select class="form-select">
+                                    <option value="">Any Duration</option>
+                                    <option>1-5 Days</option>
+                                    <option>6-10 Days</option>
+                                    <option>11-15 Days</option>
+                                    <option>16+ Days</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Price Range</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="number" class="form-control me-2" placeholder="Min">
+                                    <span>-</span>
+                                    <input type="number" class="form-control ms-2" placeholder="Max">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Trekking Tips -->
+                <div class="card shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Trekking Tips</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-shoe-prints"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Proper Footwear</h5>
+                                        <p class="text-muted small mb-0">Invest in quality hiking boots.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-tshirt"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Layer Clothing</h5>
+                                        <p class="text-muted small mb-0">Dress in layers for changing weather.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-water"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Stay Hydrated</h5>
+                                        <p class="text-muted small mb-0">Drink plenty of water during your trek.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-first-aid"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">First Aid Kit</h5>
+                                        <p class="text-muted small mb-0">Always carry a basic first aid kit.</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treks -->
+            <div class="col-lg-9">
+                <div class="row g-4">
+                    {% for trek in treks %}
+                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                        <div class="card h-100 shadow-sm">
+                            <img src="{{ trek.image.url }}" class="card-img-top" alt="{{ trek.title }}" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">${{ trek.price }}</span>
+                                    <span class="badge bg-secondary">{{ trek.difficulty }}</span>
+                                </div>
+                                <h4 class="card-title">{{ trek.title }}</h4>
+                                <div class="d-flex flex-wrap gap-3 text-muted small mb-3">
+                                    <span><i class="fas fa-map-marker-alt me-1"></i> {{ trek.country }}</span>
+                                    <span><i class="fas fa-calendar me-1"></i> {{ trek.duration }}</span>
+                                    {% if trek.max_altitude %}
+                                    <span><i class="fas fa-mountain me-1"></i> {{ trek.max_altitude }}</span>
+                                    {% endif %}
+                                </div>
+                                <p class="card-text text-muted">{{ trek.description|truncatechars:100 }}</p>
+                            </div>
+                            <div class="card-footer bg-white border-0">
+                                <a href="{% url 'trekking_detail' trek.slug %}" class="btn btn-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center">
+                        <p>No trekking adventures available at the moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trek Map{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- Hero Section -->
+<div class="container-fluid py-5 text-center text-white" 
+     style="background: linear-gradient(120deg, #0d6efd, #0d6efd); min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1 class="fw-bold display-4">Plan Your Trek</h1>
+    <p class="fs-5">Enter your start point, destination, and waypoints to see the trek route and elevation profile.</p>
+
+    <!-- Search / Waypoints -->
+    <div class="row justify-content-center mt-4 w-100">
+        <div class="col-lg-8 col-md-10">
+            <div class="d-flex gap-2 flex-wrap shadow-lg rounded p-3 bg-white">
+                <input type="text" class="form-control waypoint" placeholder="Your Location">
+                <input type="text" class="form-control waypoint" placeholder="Destination">
+                <button type="button" class="btn btn-primary" onclick="addWaypoint()">➕ Add Waypoint</button>
+                <button type="button" class="btn btn-success" onclick="getRoute()">Get Trek Route</button>
+            </div>
+            <div id="waypoints" class="mt-2"></div>
+            <div id="waypointList" class="mt-2 fw-bold"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Map & Elevation Section -->
+<div class="container my-5">
+    <div id="mapBox" 
+         class="mx-auto shadow-lg rounded-4 p-3"
+         style="max-width: 950px; background:rgba(255,255,255,0.2); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); min-height:400px; position:relative;">
+        <div id="map" style="width:100%; height:400px;"></div>
+    </div>
+
+    <!-- Elevation Chart (hidden until route is fetched) -->
+    <div id="elevationWrapper" class="mx-auto shadow-lg rounded-4 p-3 mt-4 d-none" 
+         style="max-width: 950px; background:rgba(255,255,255,0.2); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2);">
+        <h4 class="text-center mb-3">Elevation Profile</h4>
+        <canvas id="elevationChart" style="width:100%; height:200px;"></canvas>
+        <div class="text-center mt-3" id="stats">
+            ⛰️ <span id="ascent"></span> 
+            <span id="descent"></span>
+            📏 <span id="distance"></span>
+            ⌛ <span id="time"></span>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Buttons -->
+<div class="fab-container position-fixed" style="bottom:20px; right:20px; z-index:1000;">
+    <div class="fab-actions d-none" id="fabActions">
+        <button type="button" class="btn btn-light mb-2" onclick="shareTrek()">🔗 Share Trek</button>
+        <button type="button" class="btn btn-light mb-2" onclick="downloadGPX()">⬇️ GPX</button>
+        <button type="button" class="btn btn-light" onclick="downloadKML()">⬇️ KML</button>
+    </div>
+    <button class="btn btn-success rounded-circle fab-main" onclick="toggleFab()" style="width:56px; height:56px;">☰</button>
+</div>
+
+<!-- QR Modal -->
+<div id="qrModal" class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center">
+    <div class="bg-white p-4 rounded shadow text-center">
+        <h5>📱 Scan Trek Link</h5>
+        <div id="qrcode" class="my-2"></div>
+        <button type="button" class="btn btn-success me-2" onclick="downloadQR()">⬇️ Download QR</button>
+        <button type="button" class="btn btn-danger" onclick="closeQR()">Close</button>
+    </div>
+</div>
+
+{% else %}
+<div class="container py-5 text-center">
+    <h3>Please <a href="{% url 'login' %}">login</a> to view the Trek Map.</h3>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- MapLibre GL -->
+<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- QR Code -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<script>
+// Map Initialization
+const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://tiles.openfreemap.org/styles/liberty',
+    center: [84.124, 28.3949],
+    zoom: 6.5
+});
+map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+let routeLayerAdded = false, chartInstance = null, currentRoute = null;
+
+// FAB toggle
+function toggleFab() { document.getElementById("fabActions").classList.toggle("d-none"); }
+function addWaypoint(value="") {
+    const div = document.createElement("div");
+    div.innerHTML = `<input type="text" class="form-control waypoint mt-2" placeholder="Waypoint" value="${value}">`;
+    document.getElementById("waypoints").appendChild(div);
+}
+
+// --- Geocoding ---
+async function geocode(place){
+    const url=`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}+Nepal`;
+    const res = await fetch(url,{headers:{'Accept-Language':'en'}});
+    const data = await res.json();
+    if(data && data.length>0) return [parseFloat(data[0].lon),parseFloat(data[0].lat)];
+    return null;
+}
+
+// --- Get Route ---
+async function getRoute(){
+    const inputs = Array.from(document.querySelectorAll(".waypoint"));
+    const places = inputs.map(i=>i.value).filter(v=>v.trim()!=="");
+    if(places.length<2){ alert("Enter Start & Destination."); return; }
+
+    const coords=[], waypointListDiv=document.getElementById("waypointList");
+    waypointListDiv.innerHTML = "<b>Waypoints:</b> ";
+
+    // Clear previous markers
+    map.getSource && map.getSource('route') && map.removeSource('route');
+    if(routeLayerAdded){ map.removeLayer('route-line'); routeLayerAdded=false; }
+
+    places.forEach((p,i)=>waypointListDiv.innerHTML+=`<span>${i+1}. ${p}</span> ${i<places.length-1?'→':''} `);
+
+    // Add markers
+    for(const [i,place] of places.entries()){
+        const c = await geocode(place);
+        if(!c){ alert(`Could not find: ${place}`); return; }
+        coords.push(c);
+        let color = (i===0) ? "green" : (i===places.length-1) ? "red" : "blue";
+        new maplibregl.Marker({color}).setLngLat(c).setPopup(new maplibregl.Popup().setHTML(`<b>${place}</b>`)).addTo(map);
+    }
+
+    // Fetch route
+    const coordStr=coords.map(c=>c.join(",")).join(";");
+    const routeUrl=`https://router.project-osrm.org/route/v1/foot/${coordStr}?overview=full&geometries=geojson`;
+    const routeRes=await fetch(routeUrl);
+    const routeData=await routeRes.json();
+
+    if(routeData.routes && routeData.routes.length>0){
+        const route=routeData.routes[0].geometry;
+        const distance=routeData.routes[0].distance;
+        currentRoute=route;
+
+        map.addSource('route',{type:'geojson', data:{type:'Feature',geometry:route}});
+        map.addLayer({id:'route-line', type:'line', source:'route', paint:{'line-color':'#ff6600','line-width':4}});
+        routeLayerAdded=true;
+
+        const bounds = new maplibregl.LngLatBounds();
+        route.coordinates.forEach(c=>bounds.extend(c));
+        map.fitBounds(bounds,{padding:50});
+
+        getElevationProfile(route.coordinates, distance, places);
+    } else alert("No walking route found.");
+}
+
+// --- Elevation Profile ---
+async function getElevationProfile(coords,distance,places){
+    try{
+        const step = Math.ceil(coords.length/200);
+        const sampled = coords.filter((_,i)=>i%step===0);
+        const locations = sampled.map(c => `${c[1]},${c[0]}`).join("|");
+        const res = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${locations}`);
+        const data = await res.json();
+
+        if(data.results){
+            const elevations = data.results.map(r=>typeof r.elevation==='number'?r.elevation:0);
+            const labels = elevations.map((_,i)=>i);
+
+            let ascent=0, descent=0;
+            for(let i=1;i<elevations.length;i++){
+                const diff=elevations[i]-elevations[i-1];
+                if(diff>0) ascent+=diff; else descent+=Math.abs(diff);
+            }
+
+            const distKm = distance/1000;
+            const flatHours = distKm/5, climbHours = ascent/600, estHours = flatHours+climbHours;
+
+            // Show elevation wrapper only after route is fetched
+            document.getElementById('elevationWrapper').classList.remove('d-none');
+
+            document.getElementById('ascent').innerText = `Ascent: ${Math.round(ascent)} m`;
+            document.getElementById('descent').innerText = `Descent: ${Math.round(descent)} m`;
+            document.getElementById('distance').innerText = `Distance: ${distKm.toFixed(1)} km`;
+            document.getElementById('time').innerText = `Time: ${estHours.toFixed(1)} h`;
+
+            drawElevationChart(labels, elevations, places);
+        }
+    } catch(err){ console.error("Elevation fetch error:", err); }
+}
+
+function drawElevationChart(labels,elevations,places){
+    const ctx=document.getElementById('elevationChart').getContext('2d');
+    if(chartInstance) chartInstance.destroy();
+
+    const pointColors = elevations.map((_,i)=>{
+        if(i===0) return 'green';
+        if(i===elevations.length-1) return 'red';
+        return 'orange';
+    });
+
+    chartInstance=new Chart(ctx,{
+        type:'line',
+        data:{
+            labels,
+            datasets:[{
+                label:'Elevation (m)',
+                data:elevations,
+                borderColor:'#ff6600',
+                backgroundColor:'rgba(255,102,0,0.2)',
+                fill:true,
+                pointBackgroundColor: pointColors,
+                pointRadius: 5
+            }]
+        },
+        options:{
+            responsive:true,
+            plugins:{legend:{display:false}},
+            scales:{x:{display:false}}
+        }
+    });
+}
+
+// --- QR & Download ---
+function shareTrek(){ document.getElementById('qrModal').classList.remove('d-none'); QRCode.toCanvas(document.getElementById('qrcode'), window.location.href); }
+function closeQR(){ document.getElementById('qrModal').classList.add('d-none'); }
+function downloadQR(){ alert("Download QR functionality goes here."); }
+function downloadGPX(){ alert("Download GPX functionality goes here."); }
+function downloadKML(){ alert("Download KML functionality goes here."); }
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+#map{border-radius:8px;}
+.waypoint{flex:1 1 200px;}
+.fab-main{width:56px;height:56px;border-radius:50%;}
+.fab-actions button{display:block;width:100%;}
+#qrModal{display:none;align-items:center;justify-content:center;}
+#waypointList span{margin-right:5px;}
+</style>
+{% endblock %}
+
+
+
+

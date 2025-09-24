@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Register as Guide - TrekNepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+
+        <!-- Left Column: Image -->
+        <div class="col-md-6 col-lg-7 d-none d-md-block text-center">
+            <img src="/static/img/guide.png" 
+                 alt="Guide Illustration" 
+                 class="img-fluid" 
+                 style="max-height: 500px; max-width: 100%; width: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Right Column: Guide Registration Form -->
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-form" data-aos="fade-up">
+                <h2 class="text-center mb-4">Register as Guide</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <!-- Username -->
+                    <div class="mb-3">
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        {{ form.password1.label_tag }}
+                        {{ form.password1 }}
+                        {{ form.password1.errors }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.password2.label_tag }}
+                        {{ form.password2 }}
+                        {{ form.password2.errors }}
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="mb-3">
+                        {{ form.bio.label_tag }}
+                        {{ form.bio }}
+                        {{ form.bio.errors }}
+                    </div>
+
+                    <!-- Experience Years -->
+                    <div class="mb-3">
+                        {{ form.experience_years.label_tag }}
+                        {{ form.experience_years }}
+                        {{ form.experience_years.errors }}
+                    </div>
+
+                    <!-- Languages -->
+                    <div class="mb-3">
+                        {{ form.languages.label_tag }}
+                        {{ form.languages }}
+                        {{ form.languages.errors }}
+                    </div>
+
+                    <!-- Profile Picture -->
+                    <div class="mb-3">
+                        {{ form.profile_picture.label_tag }}
+                        {{ form.profile_picture }}
+                        {{ form.profile_picture.errors }}
+                    </div>
+
+                    <!-- License/Certificate Upload -->
+                    <div class="mb-3">
+                        {{ form.license_certificate.label_tag }}
+                        {{ form.license_certificate }}
+                        {{ form.license_certificate.errors }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <p>Already registered as a guide? <a href="{% url 'guide_login' %}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+

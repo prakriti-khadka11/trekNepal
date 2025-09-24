@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Details - TravelWorld{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-primary text-white py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">Booking Details</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">View your booking information</p>
+    </div>
+</div>
+
+<!-- Booking Details -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto" data-aos="fade-up">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="mb-0">Booking #{{ booking.id }}</h3>
+                            <span class="badge bg-success">Confirmed</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Booking Information</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Booking Date:</strong> {{ booking.booking_date|date:"F d, Y" }}</li>
+                                    <li class="mb-2"><strong>Travel Date:</strong> {{ booking.travel_date|date:"F d, Y" }}</li>
+                                    <li class="mb-2"><strong>Number of People:</strong> {{ booking.num_people }}</li>
+                                    <li class="mb-2"><strong>Total Price:</strong> ${{ booking.total_price }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Customer Information</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Name:</strong> {{ booking.user.get_full_name|default:booking.user.username }}</li>
+                                    <li class="mb-2"><strong>Email:</strong> {{ booking.user.email }}</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {% if booking.travel_package %}
+                        <div class="border-top pt-4 mt-4">
+                            <h5>Package Details</h5>
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    {% if booking.travel_package.featured_image %}
+                                    <img src="{{ booking.travel_package.featured_image.url }}" alt="{{ booking.travel_package.title }}" class="img-fluid rounded">
+                                    {% else %}
+                                    <img src="/static/img/placeholder.jpg" alt="{{ booking.travel_package.title }}" class="img-fluid rounded">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>{{ booking.travel_package.title }}</h4>
+                                    <p class="text-muted">{{ booking.travel_package.short_description|default:booking.travel_package.destination.name }}</p>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ booking.travel_package.destination.name }}</li>
+                                        <li class="mb-2"><i class="fas fa-calendar me-2 text-primary"></i> {{ booking.travel_package.duration }} Days</li>
+                                        <li class="mb-2"><i class="fas fa-dollar-sign me-2 text-primary"></i> ${{ booking.travel_package.price }} per person</li>
+                                    </ul>
+                                    <a href="{% url 'travel_package_detail' booking.travel_package.id %}" class="btn btn-outline-primary">View Package</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="border-top pt-4 mt-4">
+                            <h5>Payment Information</h5>
+                            <div class="alert alert-success">
+                                <p class="mb-0"><i class="fas fa-check-circle me-2"></i> Payment of ${{ booking.total_price }} has been successfully processed.</p>
+                            </div>
+                        </div>
+
+                        <div class="border-top pt-4 mt-4">
+                            <h5>Need Help?</h5>
+                            <p>If you have any questions or need to make changes to your booking, please contact our customer support team.</p>
+                            <div class="d-flex gap-3">
+                                <a href="tel:+9779746432142" class="btn btn-outline-primary"><i class="fas fa-phone-alt me-2"></i> Call Us</a>
+                                <a href="mailto:prakritikhadka027@gmail.com" class="btn btn-outline-primary"><i class="fas fa-envelope me-2"></i> Email Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+

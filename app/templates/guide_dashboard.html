@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Guide Dashboard - TrekNepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-center">Guide Dashboard</h2>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs justify-content-center mb-4" id="guideDashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+                <i class="fas fa-user me-2"></i>Profile
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="availability-tab" data-bs-toggle="tab" data-bs-target="#availability" type="button" role="tab">
+                <i class="fas fa-calendar-check me-2"></i>Availability
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="treks-tab" data-bs-toggle="tab" data-bs-target="#treks" type="button" role="tab">
+                <i class="fas fa-mountain me-2"></i>Treks
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">
+                <i class="fas fa-clipboard-list me-2"></i>Bookings
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tabs Content -->
+    <div class="tab-content" id="guideDashboardTabsContent">
+
+        <!-- Profile Tab -->
+        <div class="tab-pane fade show active" id="profile" role="tabpanel">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body">
+                    {% if guide %}
+                        <div class="text-center mb-4">
+                            <i class="fas fa-user-circle fa-5x text-secondary mb-3"></i>
+                            <h4>{{ guide.user.username }}</h4>
+                            <p class="text-muted mb-0">{{ guide.user.email }}</p>
+                        </div>
+                        <hr>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Username:</strong> {{ guide.user.username }}</li>
+                            <li class="list-group-item"><strong>Email:</strong> {{ guide.user.email }}</li>
+                            <li class="list-group-item">
+                                <strong>License Certificate:</strong>
+                                {% if guide.license_certificate %}
+                                    <a href="{{ guide.license_certificate.url }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                                {% else %}
+                                    <span class="text-danger">Not Uploaded</span>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Verification Status:</strong>
+                                {% if guide.verified %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% else %}
+                        <p class="text-center text-danger">No guide profile found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Availability Tab -->
+        <div class="tab-pane fade" id="availability" role="tabpanel">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Manage Availability</h5>
+                    <p class="text-muted">Here you can set your availability for guiding treks.</p>
+                    <!-- Later: Add form/calendar for availability -->
+                    <button class="btn btn-outline-primary">Add Availability</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treks Tab -->
+        <div class="tab-pane fade" id="treks" role="tabpanel">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Treks You Guide</h5>
+                    <p class="text-muted">List of treks you are assigned to guide will appear here.</p>
+                    <!-- Later: Pull treks dynamically -->
+                    <button class="btn btn-outline-primary">Add Trek</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Tab -->
+        <div class="tab-pane fade" id="bookings" role="tabpanel">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">My Bookings</h5>
+                    <p class="text-muted">View and manage bookings assigned to you.</p>
+                    <!-- Later: Dynamic bookings list -->
+                    <button class="btn btn-outline-primary">View Bookings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

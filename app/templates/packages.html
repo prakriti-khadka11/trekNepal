@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Tour Packages - TrekNepal{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-primary text-white py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">Tour Packages</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">Discover our handpicked selection of premium travel packages</p>
+    </div>
+</div>
+
+<!-- Packages List -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Filters -->
+            <div class="col-lg-3" data-aos="fade-up">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Filter Packages</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Destination</label>
+                                <select class="form-select">
+                                    <option value="">All Destinations</option>
+                                    <option>Bali, Indonesia</option>
+                                    <option>Santorini, Greece</option>
+                                    <option>Kyoto, Japan</option>
+                                    <option>Machu Picchu, Peru</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Duration</label>
+                                <select class="form-select">
+                                    <option value="">Any Duration</option>
+                                    <option>1-3 Days</option>
+                                    <option>4-7 Days</option>
+                                    <option>8-14 Days</option>
+                                    <option>15+ Days</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Price Range</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="number" class="form-control me-2" placeholder="Min">
+                                    <span>-</span>
+                                    <input type="number" class="form-control ms-2" placeholder="Max">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Packages -->
+            <div class="col-lg-9">
+                <div class="row g-4">
+                    {% for package in packages %}
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                        <div class="card h-100 shadow-sm">
+                            {% if package.featured_image %}
+                            <img src="{{ package.featured_image.url }}" class="card-img-top" alt="{{ package.title }}">
+                            {% else %}
+                            <img src="/static/img/placeholder.jpg" class="card-img-top" alt="{{ package.title }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">${{ package.price }}</span>
+                                    <span class="text-muted"><i class="far fa-clock me-1"></i>{{ package.duration }} Days</span>
+                                </div>
+                                <h5 class="card-title">{{ package.title }}</h5>
+                                <p class="card-text text-muted">{{ package.short_description|default:package.destination.name|truncatechars:80 }}</p>
+                            </div>
+                            <div class="card-footer bg-white border-0">
+                                <a href="{% url 'travel_package_detail' package.id %}" class="btn btn-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center">
+                        <p>No packages available at the moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

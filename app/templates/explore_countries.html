@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore District - TrekNepal{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-primary text-white py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">Explore District</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">Discover amazing destinations around the Nepal</p>
+    </div>
+</div>
+
+<!-- Countries Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            {% for country in countries %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <div class="card h-100 shadow-sm">
+                    {% if country.image %}
+                    <img src="{{ country.image.url }}" class="card-img-top" alt="{{ country.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="/static/img/placeholder.jpg" class="card-img-top" alt="{{ country.name }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ country.name }}</h4>
+                        <p class="card-text text-muted">{{ country.description|truncatechars:120 }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="{% url 'explore_country_detail' country.id %}" class="btn btn-primary w-100">Explore</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No countries available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+

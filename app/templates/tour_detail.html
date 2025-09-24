@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tour.title }} - TravelWorld{% endblock %}
+
+{% block content %}
+<!-- Tour Header -->
+<div class="bg-primary text-white py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">{{ tour.title }}</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">Explore the details of this amazing tour</p>
+    </div>
+</div>
+
+<!-- Tour Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Tour Overview -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Overview</h2>
+                        <p>{{ tour.overview|linebreaks }}</p>
+                    </div>
+                </div>
+
+                <!-- Tour Highlights -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Highlights</h2>
+                        <p>{{ tour.highlight|linebreaks }}</p>
+                    </div>
+                </div>
+                <!-- Itinerary -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Itinerary</h2>
+                        {% if tour.itinerary %}
+                        <div class="mb-4">
+                            {{ tour.itinerary|linebreaks }}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">Detailed itinerary will be provided upon booking.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                                
+
+                <!-- Cost Details -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Cost Details</h2>
+                        <p>{{ tour.cost_details|linebreaks }}</p>
+                    </div>
+                </div>
+
+                <!-- Gallery -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Gallery</h2>
+                        <div class="row g-3">
+                            {% for image in tour.images.all %}
+                            <div class="col-md-4">
+                                <img src="{{ image.image.url }}" alt="{{ tour.title }}" class="img-fluid rounded gallery-img">
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p class="text-muted">No gallery images available for this tour.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Tour Info Card -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Tour Information</h4>
+                        <ul class="list-unstyled">
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-calendar text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Duration</strong>
+                                    <p class="text-muted mb-0">7 Days</p>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-users text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Group Size</strong>
+                                    <p class="text-muted mb-0">2-12 People</p>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-star text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Tour Type</strong>
+                                    <p class="text-muted mb-0">Guided Tour</p>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-language text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Languages</strong>
+                                    <p class="text-muted mb-0">English, Spanish</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Related Packages -->
+                <div class="card shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Related Packages</h4>
+                        <div class="d-flex mb-3 border-bottom pb-3">
+                            <img src="/static/img/placeholder.jpg" alt="Related Tour" class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                            <div>
+                                <h5 class="h6 mb-1">Cultural Heritage Tour</h5>
+                                <div class="text-muted small mb-1">7 Days</div>
+                                <div class="fw-medium">$1,299</div>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3 border-bottom pb-3">
+                            <img src="/static/img/placeholder.jpg" alt="Related Tour" class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                            <div>
+                                <h5 class="h6 mb-1">Adventure Expedition</h5>
+                                <div class="text-muted small mb-1">10 Days</div>
+                                <div class="fw-medium">$1,899</div>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <img src="/static/img/placeholder.jpg" alt="Related Tour" class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                            <div>
+                                <h5 class="h6 mb-1">Wildlife Safari</h5>
+                                <div class="text-muted small mb-1">5 Days</div>
+                                <div class="fw-medium">$999</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

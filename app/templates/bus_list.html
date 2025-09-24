@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-center">Available Bus Trips</h2>
+        <div class="row mt-4">
+            {% for bus in buses %}
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="{{ bus.image.url }}" class="card-img-top" alt="{{ bus.name }}">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ bus.name }}</h5>
+                        <p class="card-text">{{ bus.description }}</p>
+                        <p><strong>Price:</strong> ${{ bus.price }}</p>
+                        <p><strong>Departure:</strong> {{ bus.departure_time }}</p>
+                        <p><strong>Arrival:</strong> {{ bus.arrival_time }}</p>
+                        <a href="{{ bus.get_absolute_url }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

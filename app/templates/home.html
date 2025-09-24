@@ -1,0 +1,514 @@
+{% extends 'base.html' %}
+
+{% block title %}TrekNepal - Your Gateway to Adventure{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section position-relative" >
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner" >
+            <div class="carousel-item active">
+                <img src="/static/img/rara.jpeg" class="d-block w-100" alt="Explore Amazing Destinations" style="height: 83vh; object-fit: cover;object-position: top;">
+            </div>
+            <div class="carousel-item">
+                <img src="static/img/imgGirl.jpeg" class="d-block w-100" alt="Discover New Adventures" style="height: 83vh; object-fit: cover;object-position: top;">
+            </div>
+            <div class="carousel-item">
+                <img src="/static/img/gumba.jpeg" class="d-block w-100" alt="Experience Different Cultures" style="height: 83vh; object-fit: cover;object-position: top;">
+            </div>
+        </div>
+    </div>
+    <div class="hero-content position-absolute top-50 start-50 translate-middle text-center text-white">
+    <h1 class="display-3 fw-bold mb-4" data-aos="fade-up">Explore the Nepal with TrekNepal</h1>
+    <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">Discover amazing destinations and create unforgettable memories</p>
+    <div data-aos="fade-up" data-aos-delay="200">
+        <a href="{% url 'package_list' %}" class="btn btn-primary btn-lg me-2">Explore Packages</a>
+         <a href="{% url 'contact_us' %}" class="btn btn-primary btn-lg me-2">Contact Us</a>
+       
+        
+        {% if user.is_authenticated %}
+
+
+          <!-- 💱 Currency Converter Button -->
+        <a href="{% url 'currency_converter' %}" 
+       class="btn btn-success  btn-lg">
+        <i class="fas fa-coins me-2"></i> Currency Converter
+    </a>
+        <!-- 🌤 Weather Button inside hero -->
+        <a href="{% url 'weather_view' %}" 
+           class="btn btn-warning btn-lg">
+            <i class="fas fa-cloud-sun"></i> Weather
+        </a>
+
+    <!-- 🗺 Trek Map Button -->
+<a href="{% url 'trek_map' %}"  class="btn btn-success btn-lg">
+    <i class="fas fa-map-marked-alt me-2"></i> Map
+</a>
+        {% endif %}
+    </div>
+</div>
+
+</div>
+
+<!-- Search Section -->
+<div class="search-section py-5 bg-light">
+    <div class="container">
+        <div class="card shadow" data-aos="fade-up">
+            <div class="card-body p-4">
+                <form action="{% url 'search_view' %}" method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="destination" name="destination">
+                                <option value="">Any Destination</option>
+                                {% for destination in destinations %}
+                                <option value="{{ destination.id }}">{{ destination.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="destination">Destination</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="activity" name="activity">
+                                <option value="">Any Activity</option>
+                                <option value="tour">Tours</option>
+                                <option value="trekking">Trekking</option>
+                                <option value="climbing">Peak Climbing</option>
+                                <option value="safari">Safari</option>
+                            </select>
+                            <label for="activity">Activity</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="duration" name="duration">
+                                <option value="">Any Duration</option>
+                                <option value="1-3">1-3 Days</option>
+                                <option value="4-7">4-7 Days</option>
+                                <option value="8-14">8-14 Days</option>
+                                <option value="15+">15+ Days</option>
+                            </select>
+                            <label for="duration">Duration</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary h-100 w-100">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Destinations -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold" data-aos="fade-up">Featured Destinations</h2>
+            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">Explore our handpicked destinations around the Nepal</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for destination in destinations|slice:":6" %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <div class="card destination-card h-100 shadow-sm">
+                    {% if destination.image %}
+                    <img src="{{ destination.image.url }}" class="card-img-top" alt="{{ destination.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="/static/img/placeholder.jpg" class="card-img-top" alt="{{ destination.name }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h3 class="card-title h4">{{ destination.name }}</h3>
+                        <p class="card-text text-muted">{{ destination.description|truncatechars:100 }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="{% url 'destination_detail' destination.id %}" class="btn btn-outline-primary w-100">Explore</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <p class="mb-0">No destinations available at the moment. Please check back later.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4" data-aos="fade-up">
+            <a href="{% url 'explore_countries' %}" class="btn btn-primary">View All Destinations</a>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Packages -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold" data-aos="fade-up">Popular Packages</h2>
+            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">Our most booked travel experiences</p>
+        </div>
+        
+        <div class="owl-carousel package-carousel">
+            {% for package in packages %}
+            <div class="item" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <div class="card h-100 shadow-sm">
+                    {% if package.featured_image %}
+                    <img src="{{ package.featured_image.url }}" class="card-img-top" alt="{{ package.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="/static/img/placeholder.jpg" class="card-img-top" alt="{{ package.title }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary">${{ package.price }}</span>
+                            <span class="text-muted"><i class="far fa-clock me-1"></i>{{ package.duration }} Days</span>
+                        </div>
+                        <h3 class="card-title h4">{{ package.title }}</h3>
+                        <p class="card-text text-muted">{{ package.short_description|default:package.destination.name|truncatechars:80 }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="{% url 'travel_package_detail' package.id %}" class="btn btn-outline-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <p class="mb-0">No packages available at the moment. Please check back later.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4" data-aos="fade-up">
+            <a href="{% url 'package_list' %}" class="btn btn-primary">View All Packages</a>
+        </div>
+    </div>
+</section>
+
+<!-- Adventure Categories -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold" data-aos="fade-up">Adventure Categories</h2>
+            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">Choose your preferred adventure style</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="card adventure-card text-white h-100">
+                    <img src="/static/img/tour.jpg" class="card-img" alt="Tours" style="height: 300px; object-fit: cover;">
+                    <div class="card-img-overlay d-flex flex-column justify-content-end" style="background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));">
+                        <h3 class="card-title h4">Tours</h3>
+                        <p class="card-text">Guided experiences to the world's most fascinating places</p>
+                        <a href="{% url 'tour_list' %}" class="btn btn-light mt-2">Explore Tours</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card adventure-card text-white h-100">
+                    <img src="/static/img/Trekking.webp" class="card-img" alt="Trekking" style="height: 300px; object-fit: cover;">
+                    <div class="card-img-overlay d-flex flex-column justify-content-end" style="background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));">
+                        <h3 class="card-title h4">Trekking</h3>
+                        <p class="card-text">Challenging hikes through breathtaking landscapes</p>
+                        <a href="{% url 'trekking_list' %}" class="btn btn-light mt-2">Explore Treks</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card adventure-card text-white h-100">
+                    <img src="/static/img/peakClimbing.webp" class="card-img" alt="Peak Climbing" style="height: 300px; object-fit: cover;">
+                    <div class="card-img-overlay d-flex flex-column justify-content-end" style="background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));">
+                        <h3 class="card-title h4">Peak Climbing</h3>
+                        <p class="card-text">Conquer the world's most majestic mountains</p>
+                        <a href="{% url 'peak_climbing_list' %}" class="btn btn-light mt-2">Explore Climbs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials /What Our Travelers Say-->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold" data-aos="fade-up">What Our Travelers Say</h2>
+            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">Hear from those who've experienced our journeys</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="owl-carousel testimonial-carousel">
+                    <div class="item" data-aos="fade-up">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-quote-left fa-2x text-primary opacity-50"></i>
+                                </div>
+                                <p class="lead mb-4">The Everest Base Camp trek was the adventure of a lifetime! Our guide was knowledgeable and the views were absolutely breathtaking. I can't wait to book my next trip with TrekNepal.</p>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <img src="/static/img/prakriti.jpg" alt="Prakriti Khadka" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <div class="text-start">
+                                        <h5 class="mb-0">Prakriti Khadka</h5>
+                                        <p class="text-muted mb-0">Nepal</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-quote-left fa-2x text-primary opacity-50"></i>
+                                </div>
+                                <p class="lead mb-4">The cultural tour of Nepal exceeded all my expectations. The accommodations were excellent, and our guide made sure we experienced the authentic local culture. Highly recommended!</p>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <img src="/static/img/Anita.jpg" alt="Anita Khadka" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <div class="text-start">
+                                        <h5 class="mb-0">Anita Khadka</h5>
+                                        <p class="text-muted mb-0">Canada</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-quote-left fa-2x text-primary opacity-50"></i>
+                                </div>
+                                <p class="lead mb-4">Our family safari in Chitwan was perfect from start to finish. The kids loved seeing the wildlife up close, and the accommodations were family-friendly. TrekNepal thought of everything!</p>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <img src="/static/img/Aaku.jpg" alt="Aakriti Khadka" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <div class="text-start">
+                                        <h5 class="mb-0">Aakriti Khadka</h5>
+                                        <p class="text-muted mb-0">Australia</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold" data-aos="fade-up">Why Choose TrekNepal</h2>
+            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">We're committed to making your travel experience exceptional</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3" data-aos="fade-up">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <i class="fas fa-globe-americas fa-2x"></i>
+                        </div>
+                        <h3 class="card-title h4">Expert Local Guides</h3>
+                        <p class="card-text text-muted">Our guides are certified professionals with deep local knowledge.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <i class="fas fa-hand-holding-usd fa-2x"></i>
+                        </div>
+                        <h3 class="card-title h4">Best Price Guarantee</h3>
+                        <p class="card-text text-muted">We offer competitive prices without compromising on quality.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <i class="fas fa-headset fa-2x"></i>
+                        </div>
+                        <h3 class="card-title h4">24/7 Support</h3>
+                        <p class="card-text text-muted">Our team is available around the clock to assist you during your journey.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <h3 class="card-title h4">Safe Travel</h3>
+                        <p class="card-text text-muted">Your safety is our priority with comprehensive insurance coverage.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      
+      <!-- Left side: Video -->
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="position-relative overflow-hidden rounded shadow">
+          <video autoplay muted loop playsinline 
+                 class="w-100 h-100" 
+                 style="object-fit: cover; max-height: 350px; border-radius: 10px;">
+            <source src="/static/img/video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white p-4">
+            <h5 class="mb-2">SUBSCRIBE</h5>
+            <form class="d-flex">
+              <input type="email" class="form-control me-2 text-black border-0 border-bottom" placeholder="Email address">
+              <button type="submit" class="btn btn-danger px-4 rounded-pill">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right side: Text -->
+    <div class="col-lg-6 ps-lg-5">
+  <h2 class="display-6 fw-bold mb-3">Get the Best Stories & Travel Tips from TrekNepal</h2>
+  <p class="fst-italic text-muted">Social media comes and goes, but our newsletter is the best way to stay connected with the trails of Nepal.</p>
+  <p class="text-muted">
+    Sign up to receive curated updates from TrekNepal — from hidden Himalayan trails to expert trekking tips, 
+    gear recommendations, cultural insights, and inspiring travel stories. 
+    Be the first to hear about new adventures, seasonal highlights, and practical guides to make your journey unforgettable. 
+    Let TrekNepal be your trusted companion on and off the trail!
+  </p>
+</div>   
+    </div>
+  </div>
+</section>
+
+<!-- Instagram Feed -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold" data-aos="fade-up">Follow Our Adventures</h2>
+            <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
+                <i class="fab fa-instagram me-2"></i>@trekNepal_official
+            </p>
+        </div>
+        
+        <div class="row g-2">
+            <div class="col-4 col-md-2" data-aos="fade-up">
+                <a href="#" class="instagram-item">
+                    <img src="/static/img/insta1.jpeg" alt="Instagram Post" class="img-fluid">
+                </a>
+            </div>
+            <div class="col-4 col-md-2" data-aos="fade-up" data-aos-delay="50">
+                <a href="#" class="instagram-item">
+                    <img src="/static/img/insta2.webp" alt="Instagram Post" class="img-fluid">
+                </a>
+            </div>
+            <div class="col-4 col-md-2" data-aos="fade-up" data-aos-delay="100">
+                <a href="#" class="instagram-item">
+                    <img src="/static/img/insta3.webp" alt="Instagram Post" class="img-fluid">
+                </a>
+            </div>
+            <div class="col-4 col-md-2" data-aos="fade-up" data-aos-delay="150">
+                <a href="#" class="instagram-item">
+                    <img src="/static/img/insta4.jpg" alt="Instagram Post" class="img-fluid">
+                </a>
+            </div>
+            <div class="col-4 col-md-2" data-aos="fade-up" data-aos-delay="200">
+                <a href="#" class="instagram-item">
+                    <img src="/static/img/insta5.jpg" alt="Instagram Post" class="img-fluid">
+                </a>
+            </div>
+            <div class="col-4 col-md-2" data-aos="fade-up" data-aos-delay="250">
+                <a href="#" class="instagram-item">
+                    <img src="/static/img/insta6.png" alt="Instagram Post" class="img-fluid">
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function(){
+        // Initialize package carousel
+        $(".package-carousel").owlCarousel({
+            loop: true,
+            margin: 20,
+            nav: true,
+            dots: true,
+            autoplay: true,
+            autoplayTimeout: 5000,
+            autoplayHoverPause: true,
+            navText: [
+                "<i class='fas fa-chevron-left'></i>",
+                "<i class='fas fa-chevron-right'></i>"
+            ],
+            responsive: {
+                0: {
+                    items: 1
+                },
+                768: {
+                    items: 2
+                },
+                992: {
+                    items: 3
+                }
+            }
+        });
+        
+        // Initialize testimonial carousel
+        $(".testimonial-carousel").owlCarousel({
+            loop: true,
+            margin: 20,
+            nav: true,
+            dots: true,
+            autoplay: true,
+            autoplayTimeout: 6000,
+            autoplayHoverPause: true,
+            items: 1,
+            navText: [
+                "<i class='fas fa-chevron-left'></i>",
+                "<i class='fas fa-chevron-right'></i>"
+            ]
+        });
+    });
+</script>
+{% endblock %}

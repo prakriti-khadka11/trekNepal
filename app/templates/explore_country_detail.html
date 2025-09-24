@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ country.name }} - TravelWorld{% endblock %}
+
+{% block content %}
+<!-- Country Header -->
+<div class="detail-header" style="background-image: url('{{ country.image.url }}');">
+    <div class="container detail-content">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">{{ country.name }}</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+            <i class="fas fa-globe me-2"></i>Explore the beauty of {{ country.name }}
+        </p>
+    </div>
+</div>
+
+<!-- Country Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h2 class="mb-4">About {{ country.name }}</h2>
+                <div class="mb-5">
+                    {{ country.description|linebreaks }}
+                </div>
+
+                <!-- Destinations in Country -->
+                <h3 class="mb-4">Popular Destinations in {{ country.name }}</h3>
+                <div class="row g-4">
+                    {% for destination in country.destinations.all %}
+                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                        <div class="card h-100 shadow-sm">
+                            {% if destination.image %}
+                            <img src="{{ destination.image.url }}" class="card-img-top" alt="{{ destination.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                            <img src="/static/img/placeholder.jpg" class="card-img-top" alt="{{ destination.name }}" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h4 class="card-title">{{ destination.name }}</h4>
+                                <p class="card-text text-muted">{{ destination.description|truncatechars:100 }}</p>
+                                <a href="{% url 'destination_detail' destination.id %}" class="btn btn-primary">Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <p>No destinations available for this country at the moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Country Info Card -->
+                <div class="card mb-4 shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Country Info</h4>
+                        <ul class="list-unstyled">
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-map-marker-alt text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Region</strong>
+                                    <p class="text-muted mb-0">Asia</p>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-language text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Languages</strong>
+                                    <p class="text-muted mb-0">English, Local Language</p>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-money-bill-wave text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Currency</strong>
+                                    <p class="text-muted mb-0">Local Currency, USD accepted</p>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-3">
+                                <i class="fas fa-clock text-primary me-3 mt-1"></i>
+                                <div>
+                                    <strong>Best Time to Visit</strong>
+                                    <p class="text-muted mb-0">March to October</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Travel Tips Card -->
+                <div class="card shadow-sm" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Travel Tips</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-passport"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Visa Requirements</h5>
+                                        <p class="text-muted small mb-0">Check visa requirements before traveling.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-plane-departure"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Getting There</h5>
+                                        <p class="text-muted small mb-0">Major airlines offer direct flights to main cities.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-bus"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Local Transportation</h5>
+                                        <p class="text-muted small mb-0">Public transport is reliable and affordable.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Local Cuisine</h5>
+                                        <p class="text-muted small mb-0">Try the local delicacies for an authentic experience.</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

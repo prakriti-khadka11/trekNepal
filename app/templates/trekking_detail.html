@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ trek.title }} - TravelWorld{% endblock %}
+
+{% block content %}
+<!-- Trek Header -->
+<div class="detail-header" style="background-image: url('{{ trek.image.url }}');">
+    <div class="container detail-content">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">{{ trek.title }}</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+            <i class="fas fa-map-marker-alt me-2"></i>{{ trek.country }}
+        </p>
+    </div>
+</div>
+
+<!-- Trek Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Trek Overview -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Overview</h2>
+                        <p>{{ trek.description|linebreaks }}</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Duration</h6>
+                                        <p class="text-muted mb-0">{{ trek.duration }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-hiking"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Difficulty</h6>
+                                        <p class="text-muted mb-0">{{ trek.difficulty }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Country</h6>
+                                        <p class="text-muted mb-0">{{ trek.country }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-mountain"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Max Altitude</h6>
+                                        <p class="text-muted mb-0">{{ trek.max_altitude|default:"Not specified" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerary -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Itinerary</h2>
+                        {% if trek.itinerary %}
+                        <div class="mb-4">
+                            {{ trek.itinerary|linebreaks }}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">Detailed itinerary will be provided upon booking.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Gallery -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Gallery</h2>
+                        <div class="row g-3">
+                            {% for image in trek.gallery_images.all %}
+                            <div class="col-md-4">
+                                <img src="{{ image.image.url }}" alt="{{ image.caption|default:trek.title }}" class="img-fluid rounded gallery-img">
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p class="text-muted">No gallery images available for this trek.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Booking Card -->
+                <div class="card shadow-sm mb-4 sticky-top" style="top: 100px;" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Book This Trek</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-primary mb-0">${{ trek.price }}</h4>
+                            <span class="text-muted">per person</span>
+                        </div>
+                        <form method="post" action="#">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Number of People</label>
+                                <input type="number" name="num_people" class="form-control" min="1" value="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Trek Date</label>
+                                <input type="date" name="trek_date" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Book Now</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- What to Bring -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">What to Bring</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Hiking boots
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Weather-appropriate clothing
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Backpack
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Water bottle
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Sunscreen and hat
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> First aid kit
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Camera
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Need Help -->
+                <div class="card bg-light border-0" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Need Help?</h4>
+                        <p class="text-muted">Have questions about this trek? Contact our trekking experts for assistance.</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Call Us</h6>
+                                <p class="text-muted mb-0">9746432142</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Email Us</h6>
+                                <p class="text-muted mb-0">prakritikhadka027@gmail.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

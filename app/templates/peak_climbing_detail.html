@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ peak.title }} - TravelWorld{% endblock %}
+
+{% block content %}
+<!-- Peak Header -->
+<div class="detail-header" style="background-image: url('{{ peak.image.url }}');">
+    <div class="container detail-content">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">{{ peak.title }}</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+            <i class="fas fa-map-marker-alt me-2"></i>{{ peak.country }} | <i class="fas fa-mountain me-2"></i>{{ peak.height }}
+        </p>
+    </div>
+</div>
+
+<!-- Peak Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Peak Overview -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Overview</h2>
+                        <p>{{ peak.description|linebreaks }}</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Duration</h6>
+                                        <p class="text-muted mb-0">{{ peak.duration }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-hiking"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Difficulty</h6>
+                                        <p class="text-muted mb-0">{{ peak.difficulty }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Country</h6>
+                                        <p class="text-muted mb-0">{{ peak.country }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-mountain"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Height</h6>
+                                        <p class="text-muted mb-0">{{ peak.height }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerary -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Itinerary</h2>
+                        {% if peak.itinerary %}
+                        <div class="mb-4">
+                            {{ peak.itinerary|linebreaks }}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">Detailed itinerary will be provided upon booking.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Gallery -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Gallery</h2>
+                        <div class="row g-3">
+                            {% for image in peak.gallery_images.all %}
+                            <div class="col-md-4">
+                                <img src="{{ image.image.url }}" alt="{{ image.caption|default:peak.title }}" class="img-fluid rounded gallery-img">
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p class="text-muted">No gallery images available for this peak.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Booking Card -->
+                <div class="card shadow-sm mb-4 sticky-top" style="top: 100px;" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Book This Expedition</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-primary mb-0">${{ peak.price }}</h4>
+                            <span class="text-muted">per person</span>
+                        </div>
+                        <form method="post" action="{% url 'book_peak_climbing' peak.slug %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Number of People</label>
+                                <input type="number" name="num_people" class="form-control" min="1" value="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Climbing Date</label>
+                                <input type="date" name="climbing_date" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Book Now</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Requirements -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Requirements</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Previous high-altitude experience
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Good physical fitness
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Basic climbing skills
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Medical clearance
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i> Travel insurance
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Need Help -->
+                <div class="card bg-light border-0" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Need Help?</h4>
+                        <p class="text-muted">Have questions about this expedition? Contact our climbing experts for assistance.</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Call Us</h6>
+                                <p class="text-muted mb-0">+1 (234) 567-8900</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Email Us</h6>
+                                <p class="text-muted mb-0">info@travelworld.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+{% comment %} {% extends 'base.html' %}
+
+{% block title %}{{ peak.title }} | Peak Climbing Details{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row g-4">
+        <!-- Peak Image -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <img src="{{ peak.image.url }}" alt="{{ peak.title }}" class="card-img-top rounded">
+            </div>
+        </div>
+
+        <!-- Peak Info -->
+        <div class="col-lg-6">
+            <div class="card p-4 shadow-sm border-0">
+                <h2 class="mb-3">{{ peak.title }}</h2>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item"><strong>📍 Country:</strong> {{ peak.country }}</li>
+                    <li class="list-group-item"><strong>🕒 Duration:</strong> {{ peak.duration }} days</li>
+                    <li class="list-group-item"><strong>⚡ Difficulty:</strong> <span class="badge bg-warning text-dark">{{ peak.difficulty }}</span></li>
+                    <li class="list-group-item"><strong>🏔️ Height:</strong> {{ peak.height }} m</li>
+                    <li class="list-group-item"><strong>🔺 Max Altitude:</strong> {{ peak.max_altitude }} m</li>
+                    <li class="list-group-item"><strong>💰 Price:</strong> <span class="text-success fw-bold">${{ peak.price }}</span></li>
+                </ul>
+                <p class="mt-3 text-muted">{{ peak.description }}</p>
+
+                {% if peak.itinerary %}
+                <div class="mt-4 bg-light p-3 rounded shadow-sm">
+                    <h5 class="mb-2">📅 Itinerary</h5>
+                    <p class="mb-0">{{ peak.itinerary }}</p>
+                </div>
+                {% endif %}
+
+                <div class="mt-4">
+                    <a href="{% url 'book_peak_climbing' peak.slug %}" class="btn btn-primary btn-lg shadow-sm">
+                        🚀 Book This Climb
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div class="mt-5">
+        <h3 class="mb-4 border-bottom pb-2">📸 Climbing Gallery</h3>
+        <div class="row g-4">
+            {% for image in peak.gallery_images.all %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card shadow-sm h-100 border-0">
+                    <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="card-img-top rounded">
+                    {% if image.caption %}
+                    <div class="card-body text-center">
+                        <p class="small text-muted">{{ image.caption }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-warning">No images available for this peak.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} {% endcomment %}

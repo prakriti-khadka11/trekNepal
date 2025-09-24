@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ travel_package.title }} - TravelWorld{% endblock %}
+
+{% block content %}
+<!-- Package Header -->
+<div class="detail-header" style="background-image: url('{% if travel_package.featured_image %}{{ travel_package.featured_image.url }}{% else %}/static/img/placeholder.jpg{% endif %}');">
+    <div class="container detail-content">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">{{ travel_package.title }}</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+            <i class="fas fa-map-marker-alt me-2"></i>{{ travel_package.destination.name }}
+        </p>
+    </div>
+</div>
+
+<!-- Package Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Package Overview -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Overview</h2>
+                        {% if tour_detail %}
+                        <p>{{ tour_detail.overview|linebreaks }}</p>
+                        {% else %}
+                        <p>{{ travel_package.short_description|default:"Experience the beauty of this destination with our carefully crafted package." }}</p>
+                        {% endif %}
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Duration</h6>
+                                        <p class="text-muted mb-0">{{ travel_package.duration }} Days</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Group Size</h6>
+                                        <p class="text-muted mb-0">{{ travel_package.available_seats }} seats available</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Destination</h6>
+                                        <p class="text-muted mb-0">{{ travel_package.destination.name }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Price</h6>
+                                        <p class="text-muted mb-0">${{ travel_package.price }} per person</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Highlights -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Highlights</h2>
+                        {% if tour_detail %}
+                        <div class="mb-4">
+                            {{ tour_detail.highlight|linebreaks }}
+                        </div>
+                        {% else %}
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Expertly crafted itinerary</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Comfortable accommodations</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Experienced local guides</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> All transportation included</li>
+                            <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i> Unforgettable experiences</li>
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Itinerary -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Itinerary</h2>
+                        {% if tour_detail.itinerary %}
+                        <div class="mb-4">
+                            {{ tour_detail.itinerary|linebreaks }}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">Detailed itinerary will be provided upon booking.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Cost Details -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Cost Details</h2>
+                        {% if tour_detail %}
+                        <div class="mb-4">
+                            {{ tour_detail.cost_details|linebreaks }}
+                        </div>
+                        {% else %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Price Includes</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i> Accommodation</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Transportation</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Guide services</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Meals as specified</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Entrance fees</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Price Excludes</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-times text-danger me-2"></i> International flights</li>
+                                    <li><i class="fas fa-times text-danger me-2"></i> Travel insurance</li>
+                                    <li><i class="fas fa-times text-danger me-2"></i> Personal expenses</li>
+                                    <li><i class="fas fa-times text-danger me-2"></i> Optional activities</li>
+                                    <li><i class="fas fa-times text-danger me-2"></i> Tips and gratuities</li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Gallery -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Gallery</h2>
+                        <div class="row g-3">
+                            {% for image in images %}
+                            <div class="col-md-4">
+                                <img src="{{ image.image.url }}" alt="{{ travel_package.title }}" class="img-fluid rounded gallery-img">
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p class="text-muted">No gallery images available for this package.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Reviews</h2>
+                        {% for review in travel_package.reviews.all %}
+                        <div class="mb-4 pb-4 {% if not forloop.last %}border-bottom{% endif %}">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">{{ review.user.username }}</h5>
+                                    <div class="text-warning">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                            {% else %}
+                                            <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at|date:"F d, Y" }}</small>
+                                </div>
+                            </div>
+                            <p class="mb-0">{{ review.comment }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No reviews yet. Be the first to review this package!</p>
+                        {% endfor %}
+
+                        <!-- Review Form -->
+                        {% if user.is_authenticated %}
+                        <h5 class="mt-4 mb-3">Write a Review</h5>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+                                <select name="rating" class="form-select">
+                                    <option value="5">5 - Excellent</option>
+                                    <option value="4">4 - Very Good</option>
+                                    <option value="3">3 - Good</option>
+                                    <option value="2">2 - Fair</option>
+                                    <option value="1">1 - Poor</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Comment</label>
+                                <textarea name="comment" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-info mt-4">
+                            <p class="mb-0">Please <a href="{% url 'login' %}">login</a> to write a review.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Booking Card -->
+                <div class="card shadow-sm mb-4 sticky-top" style="top: 100px;" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Book This Package</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-primary mb-0">${{ travel_package.price }}</h4>
+                            <span class="text-muted">per person</span>
+                        </div>
+                        <form method="post" action="{% url 'book_travel' travel_package.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Number of People</label>
+                                <input type="number" name="num_people" class="form-control" min="1" max="{{ travel_package.available_seats }}" value="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Travel Date</label>
+                                <input type="date" name="travel_date" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Book Now</button>
+                        </form>
+                        <div class="d-flex align-items-center mt-3">
+                            <i class="fas fa-info-circle text-primary me-2"></i>
+                            <small class="text-muted">{{ travel_package.available_seats }} seats left for this package</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Destination Info -->
+                <div class="card shadow-sm mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Destination Info</h4>
+                        <div class="d-flex align-items-center mb-3">
+                            {% if travel_package.destination.image %}
+                            <img src="{{ travel_package.destination.image.url }}" alt="{{ travel_package.destination.name }}" class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                            {% else %}
+                            <img src="/static/img/placeholder.jpg" alt="{{ travel_package.destination.name }}" class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0">{{ travel_package.destination.name }}</h5>
+                                <p class="text-muted mb-0">{{ travel_package.destination.location }}</p>
+                            </div>
+                        </div>
+                        <p class="text-muted">{{ travel_package.destination.description|truncatechars:150 }}</p>
+                        <a href="{% url 'destination_detail' travel_package.destination.id %}" class="btn btn-outline-primary btn-sm">Learn More</a>
+                    </div>
+                </div>
+
+                <!-- Need Help -->
+                <div class="card bg-light border-0" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Need Help?</h4>
+                        <p class="text-muted">Have questions about this package? Contact our travel experts for assistance.</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Call Us</h6>
+                                <p class="text-muted mb-0">+977 9746432142</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Email Us</h6>
+                                <p class="text-muted mb-0">info@trekNepal.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ peak.title }} - TrekNepal{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-primary text-white py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">Book Your Expedition</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">{{ peak.title }} - {{ peak.height }}</p>
+    </div>
+</div>
+
+<!-- Booking Form -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto" data-aos="fade-up">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="card-title mb-4">Booking Details</h2>
+                        
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="{{ peak.image.url }}" alt="{{ peak.title }}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                            <div>
+                                <h4 class="mb-1">{{ peak.title }}</h4>
+                                <div class="d-flex flex-wrap gap-3 text-muted small">
+                                    <span><i class="fas fa-map-marker-alt me-1"></i> {{ peak.country }}</span>
+                                    <span><i class="fas fa-calendar me-1"></i> {{ peak.duration }}</span>
+                                    <span><i class="fas fa-mountain me-1"></i> {{ peak.height }}</span>
+                                    <span><i class="fas fa-dollar-sign me-1"></i> ${{ peak.price }} per person</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Number of People</label>
+                                    <input type="number" name="num_people" class="form-control" min="1" value="1" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Climbing Date</label>
+                                    <input type="date" name="climbing_date" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Special Requirements</label>
+                                    <textarea class="form-control" rows="3"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            I agree to the <a href="#">terms and conditions</a> and acknowledge the risks involved in peak climbing.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

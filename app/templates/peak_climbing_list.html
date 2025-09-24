@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Peak Climbing - TrekNepal{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="detail-header" style="background-image: url('/static/img/PeakBack.jpg');">
+    <div class="container detail-content">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">Peak Climbing Adventures</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+            <i class="fas fa-mountain me-2"></i>Conquer the world's most majestic peaks
+        </p>
+    </div>
+</div>
+
+<!-- Peak Climbing List -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Filters -->
+            <div class="col-lg-3" data-aos="fade-up">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Filter Peaks</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Country</label>
+                                <select class="form-select">
+                                    <option value="">All Countries</option>
+                                    <option>Nepal</option>
+                                    <option>Pakistan</option>
+                                    <option>China</option>
+                                    <option>Argentina</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Difficulty</label>
+                                <select class="form-select">
+                                    <option value="">Any Difficulty</option>
+                                    <option>Moderate</option>
+                                    <option>Challenging</option>
+                                    <option>Difficult</option>
+                                    <option>Extreme</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Duration</label>
+                                <select class="form-select">
+                                    <option value="">Any Duration</option>
+                                    <option>1-2 Weeks</option>
+                                    <option>2-3 Weeks</option>
+                                    <option>3-4 Weeks</option>
+                                    <option>4+ Weeks</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Height</label>
+                                <select class="form-select">
+                                    <option value="">Any Height</option>
+                                    <option>Under 6000m</option>
+                                    <option>6000m - 7000m</option>
+                                    <option>7000m - 8000m</option>
+                                    <option>8000m+</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Climbing Tips -->
+                <div class="card shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Climbing Tips</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-dumbbell"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Physical Preparation</h5>
+                                        <p class="text-muted small mb-0">Train at least 3-6 months before climbing.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-lungs"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Altitude Acclimatization</h5>
+                                        <p class="text-muted small mb-0">Allow time to adjust to high altitudes.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-snowflake"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Weather Awareness</h5>
+                                        <p class="text-muted small mb-0">Be prepared for rapidly changing conditions.</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="bg-primary rounded-circle p-2 text-white me-3">
+                                        <i class="fas fa-hands-helping"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="h6 mb-1">Experienced Guides</h5>
+                                        <p class="text-muted small mb-0">Always climb with professional guides.</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peaks -->
+            <div class="col-lg-9">
+                <div class="row g-4">
+                    {% for peak in peaks %}
+                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                        <div class="card h-100 shadow-sm">
+                            <img src="{{ peak.image.url }}" class="card-img-top" alt="{{ peak.title }}" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">${{ peak.price }}</span>
+                                    <span class="badge bg-danger">{{ peak.difficulty }}</span>
+                                </div>
+                                <h4 class="card-title">{{ peak.title }}</h4>
+                                <div class="d-flex flex-wrap gap-3 text-muted small mb-3">
+                                    <span><i class="fas fa-map-marker-alt me-1"></i> {{ peak.country }}</span>
+                                    <span><i class="fas fa-calendar me-1"></i> {{ peak.duration }}</span>
+                                    <span><i class="fas fa-mountain me-1"></i> {{ peak.height }}</span>
+                                </div>
+                                <p class="card-text text-muted">{{ peak.description|truncatechars:100 }}</p>
+                            </div>
+                            <div class="card-footer bg-white border-0">
+                                <a href="{% url 'peak_climbing_detail' peak.slug %}" class="btn btn-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center">
+                        <p>No peak climbing adventures available at the moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

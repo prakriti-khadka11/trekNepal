@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Tours - TravelWorld{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<!-- <div class="bg-primary text-white py-5" style="background-image: url('/static/img/tourBack.jpg');">
+    <div class="container ">
+        <h1 class="display-4 fw-bold text-white" data-aos="fade-up">Tours</h1>
+        <p class="lead text-light" data-aos="fade-up" data-aos-delay="100">Discover our collection of guided tours</p>
+    </div>
+</div> -->
+
+<!-- Tours Header -->
+<!-- Tours Header -->
+<div class="detail-header" style="background-image: url('/static/img/tourBack.webp');">
+    <div class="container detail-content">
+        <h1 class="display-4 fw-bold" data-aos="fade-up">Tours</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">
+            Discover our collection of guided tours
+        </p>
+    </div>
+</div>
+
+
+
+<!-- Tours List -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            {% for tour in tours %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <div class="card h-100 shadow-sm">
+                    {% if tour.images.first %}
+                    <img src="{{ tour.images.first.image.url }}" class="card-img-top" alt="{{ tour.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="/static/img/placeholder.jpg" class="card-img-top" alt="{{ tour.title }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ tour.title }}</h4>
+                        <p class="card-text text-muted">{{ tour.overview|truncatechars:100 }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="{% url 'tour_detail' tour.id %}" class="btn btn-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No tours available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

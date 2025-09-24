@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Login as Guide - TrekNepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+        <!-- Left Column: Image -->
+        <div class="col-md-6 col-lg-7 d-none d-md-block text-center">
+            <img src="/static/img/guide.png" 
+                 alt="Guide Illustration" 
+                 class="img-fluid" 
+                 style="max-height: 500px; max-width: 100%; width: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Right Column: Guide Login Form -->
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-form" data-aos="fade-up">
+                <h2 class="text-center mb-4">Login as Guide</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Don't have a guide account? <a href="{% url 'guide_register' %}">Register as Guide</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

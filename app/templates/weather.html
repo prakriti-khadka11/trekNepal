@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Weather Forecast{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container-fluid py-5 text-center text-white" 
+     style="background: linear-gradient(120deg, #0d6efd, #0d6efd); min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1 class="fw-bold display-4">Weather Forecast</h1>
+    <p class="fs-5">Plan your adventures with real-time weather updates</p>
+
+    <!-- Search Bar -->
+    <div class="row justify-content-center mt-4 w-100">
+        <div class="col-lg-6 col-md-8">
+            <form id="weatherForm" class="input-group input-group-lg shadow-lg">
+                <input type="text" id="cityInput" class="form-control border-0 rounded-start-pill" placeholder="🔍 Enter your destination..." required>
+                <button type="submit" class="btn btn-dark px-4 rounded-end-pill">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Weather Section -->
+<div class="container my-5">
+    <div id="weatherBox" 
+         class="mx-auto shadow-lg rounded-4 p-5 text-center"
+         style="max-width: 950px; background:rgba(255,255,255,0.2); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2);">
+        
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Fetching weather details...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const API_KEY = "00d575c13cc87e97c398a87b83d54930";
+const weatherBox = document.getElementById("weatherBox");
+const form = document.getElementById("weatherForm");
+const cityInput = document.getElementById("cityInput");
+
+// Default city
+let currentCity = "Kathmandu";
+
+async function fetchWeather(city) {
+    weatherBox.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Fetching weather details...</p>
+    `;
+
+    try {
+        const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+        const response = await fetch(URL);
+        const data = await response.json();
+
+        if (data.cod !== 200) {
+            weatherBox.innerHTML = `
+                <div class="alert alert-danger">⚠️ ${data.message}</div>
+            `;
+            return;
+        }
+
+        const { name, main, weather, wind, sys } = data;
+        const icon = weather[0].icon;
+        const description = weather[0].description;
+
+        weatherBox.innerHTML = `
+            <div>
+                <h2 class="fw-bold mb-3">${name}</h2>
+                <img src="http://openweathermap.org/img/wn/${icon}@4x.png" alt="${description}" class="mb-3">
+                <h1 class="display-3 fw-bold mb-2">${main.temp}°C</h1>
+                <p class="fs-5 text-capitalize mb-4">${description}</p>
+
+                <div class="row mt-4 g-4 text-white">
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 rounded-3 shadow-sm" style="background: #1E90FF;">
+                            🌡️ <h6>Feels Like</h6>
+                            <p class="fw-bold">${main.feels_like}°C</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 rounded-3 shadow-sm" style="background: #1E90FF;">
+                            💧 <h6>Humidity</h6>
+                            <p class="fw-bold">${main.humidity}%</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 rounded-3 shadow-sm" style="background: #1E90FF;">
+                            🌬️ <h6>Wind</h6>
+                            <p class="fw-bold">${wind.speed} m/s</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 rounded-3 shadow-sm" style="background:#1E90FF;">
+                            📍 <h6>Pressure</h6>
+                            <p class="fw-bold">${main.pressure} hPa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        weatherBox.innerHTML = `
+            <div class="alert alert-danger">❌ Unable to fetch weather data</div>
+        `;
+    }
+}
+
+// Handle search
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const city = cityInput.value.trim();
+    if (city) {
+        fetchWeather(city);
+    }
+});
+
+// Load default
+fetchWeather(currentCity);
+</script>
+{% endblock %}
+
+

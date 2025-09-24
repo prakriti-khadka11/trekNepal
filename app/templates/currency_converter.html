@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Currency Converter{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container-fluid py-5 text-center text-white"
+     style="background: linear-gradient(120deg, #0d6efd, #6610f2); min-height: 35vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1 class="fw-bold display-4">Currency Converter</h1>
+    <p class="fs-5">Quickly convert between different currencies</p>
+</div>
+
+<!-- Converter Section -->
+<div class="container my-5">
+    <div id="converterBox" 
+         class="mx-auto shadow-lg rounded-4 p-5 text-center"
+         style="max-width: 700px; background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2);">
+
+        <form id="currencyForm" class="mb-4">
+            <!-- Amount Input -->
+            <div class="amount mb-4">
+                <input  type="text" class="form-control form-control-lg text-center rounded-pill border-0 shadow-sm" placeholder="Enter the amount..." />
+            </div>
+
+            <!-- Currency Dropdowns -->
+            <div class="dropdown d-flex align-items-center justify-content-between mb-4">
+                <!-- From -->
+                <div class="from flex-fill me-2">
+                    <div class="d-flex align-items-center p-2 rounded shadow-sm" style="background-color: rgba(255,255,255,0.25);">
+                        <img src="https://flagsapi.com/US/flat/64.png" class="me-2 rounded" />
+                        <select name="from" class="form-select border-0"></select>
+                    </div>
+                </div>
+
+                <!-- Arrow Icon -->
+                <div class="text-center mx-2" style="font-size: 1.8rem; color: #ffffffcc;">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </div>
+
+                <!-- To -->
+                <div class="to flex-fill ms-2">
+                    <div class="d-flex align-items-center p-2 rounded shadow-sm" style="background-color: rgba(255,255,255,0.25);">
+                        <img src="https://flagsapi.com/NP/flat/64.png" class="me-2 rounded" />
+                        <select name="to" class="form-select border-0"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exchange Rate Message -->
+            <div class="alert alert-info text-center fw-bold fs-5 msg rounded-pill shadow-sm">
+                1USD = 80INR
+            </div>
+
+            <!-- Convert Button -->
+            <div class="mt-4">
+                <button type="button" id="convertBtn" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+    Get Exchange Rate
+</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/codes.js' %}" defer></script>
+<script src="{% static 'js/app.js' %}" defer></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
