@@ -9,12 +9,20 @@ from django.contrib import messages
 from .models import TravelPackage, Booking,Review,ContactUs,SliderImage,Country,TourDetail,Trekking,PeakClimbing,PopularPlace,Destination,PeakClimbingBooking 
 from .forms import BookingForm,PeakClimbingBookingForm
 from django.db.models import Q
+from django import forms
 
+
+
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.template.loader import render_to_string
+from django.urls import reverse
+from .utils import account_activation_token
+import logging
 
 # Helper function to check if user is an admin
-
-
-
 def home(request):
     # Get featured destinations
     destinations = Destination.objects.all().order_by('-id')[:6]
@@ -89,15 +97,85 @@ def logout_view(request):
 
 
 # Travel Package List
+
+
+from django.shortcuts import render
+from .models import TravelPackage
+
 def package_list(request):
     packages = TravelPackage.objects.all()
-    return render(request, "packages.html", {"packages": packages})
 
+    # Unique destinations
+    destinations = TravelPackage.objects.values_list(
+        'destination__name', flat=True
+    ).distinct().order_by('destination__name')
+
+    # Filters
+    destination_filter = request.GET.get('destination')
+    duration_filter = request.GET.get('duration')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if destination_filter:
+        packages = packages.filter(destination__name=destination_filter)
+
+    if duration_filter:
+        if duration_filter == "1-3":
+            packages = packages.filter(duration__gte=1, duration__lte=3)
+        elif duration_filter == "4-7":
+            packages = packages.filter(duration__gte=4, duration__lte=7)
+        elif duration_filter == "8-14":
+            packages = packages.filter(duration__gte=8, duration__lte=14)
+        elif duration_filter == "15+":
+            packages = packages.filter(duration__gte=15)
+
+    if min_price:
+        packages = packages.filter(price__gte=min_price)
+
+    if max_price:
+        packages = packages.filter(price__lte=max_price)
+
+    return render(request, 'packages.html', {
+        'packages': packages,
+        'destinations': destinations,
+    })
 
 
 def booking_detail(request, id):
     booking = get_object_or_404(Booking, id=id)
     return render(request, 'booking_detail.html', {'booking': booking})
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+
+@login_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    if request.method == "POST":
+        booking.delete()  # or booking.status = "cancelled"; booking.save()
+        messages.success(request, "Your booking has been cancelled.")
+        return redirect("my_bookings")
+    return redirect("my_bookings")
+
+
+# Edit profile
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email"]
+
+@login_required
+def edit_profile(request):
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect("my_bookings")
+    else:
+        form = ProfileForm(instance=request.user)
+    return render(request, "edit_profile.html", {"form": form})
 
 @login_required
 def book_travel(request, travel_id):
@@ -154,25 +232,66 @@ def travel_package_detail(request, travel_id):
         'images': images,
     })
 
+# def contact_us(request):
+#     if request.method == "POST":
+#         name = request.POST.get('name')
+#         email = request.POST.get('email')
+#         message = request.POST.get('message')
 
+#         ContactUs.objects.create(
+#             name=name,
+#             email=email,
+#             message=message
+#         )
 
+#         messages.success(request, "Your message has been sent successfully!")
+#         return redirect('contact_us')
+
+#     return render(request, 'contact_us.html')
+
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .models import ContactUs
+from django.conf import settings
 
 def contact_us(request):
     if request.method == "POST":
         name = request.POST.get('name')
         email = request.POST.get('email')
+        subject = request.POST.get('subject', 'New Contact Message')
         message = request.POST.get('message')
 
+        # Save to database
         ContactUs.objects.create(
             name=name,
             email=email,
             message=message
         )
 
+        # Build email message
+        email_subject = f"{subject}"
+        email_message = (
+            # f"Name: {name}\n"
+            # f"Email: {email}\n\n"
+            # f"Message:\n{message}"
+            f"{message}"
+        )
+
+        # Send the email to yourself
+        send_mail(
+            subject=email_subject,
+            message=email_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=['prakritikhadka027@gmail.com'],
+            fail_silently=False,
+        )
+
         messages.success(request, "Your message has been sent successfully!")
         return redirect('contact_us')
 
     return render(request, 'contact_us.html')
+
 
 
 def explore_countries(request):
@@ -281,9 +400,6 @@ def user_bookings(request):
     })
 
 
-# def weather_view(request):
-#     return render(request, "weather.html")
-
 @login_required(login_url='login')  # redirect to login page if not logged in
 def weather_view(request):
     return render(request, "weather.html")
@@ -302,33 +418,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .models import Guide
 from .forms import GuideRegisterForm, GuideLoginForm
-
-# def guide_register(request):
-#     if request.method == "POST":
-#         form = GuideRegisterForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             guide = form.save(commit=False)
-#             guide.is_active = False  # Wait for admin verification
-#             guide.save()
-#             return redirect("login")  # redirect to user login or success page
-#     else:
-#         form = GuideRegisterForm()
-#     return render(request, "guide_register.html", {"form": form})
-
-
-# def guide_login(request):
-#     if request.method == "POST":
-#         form = GuideLoginForm(request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data["username"]
-#             password = form.cleaned_data["password"]
-#             user = authenticate(username=username, password=password)
-#             if user is not None and hasattr(user, "guide"):
-#                 login(request, user)
-#                 return redirect("home")  # or guide dashboard
-#     else:
-#         form = GuideLoginForm()
-#     return render(request, "guide_login.html", {"form": form})
 
 from django.contrib import messages
 
@@ -363,7 +452,6 @@ def guide_login(request):
     return render(request, "guide_login.html", {"form": form})
 
 
-
 from .models import Guide
 
 @login_required
@@ -375,4 +463,68 @@ def guide_dashboard(request):
 def guide_profile(request):
     guide = Guide.objects.filter(user=request.user).first()
     return render(request, "guide_profile.html", {"guide": guide})
+
+
+def request_password_reset(request):
+    """
+    Handles password reset request.
+    Sends an email with password reset link if user email is found.
+    """
+    if request.method == "POST":
+        email = request.POST.get("email")
+        user = User.objects.filter(email=email).first()
+        if user:
+            current_site = get_current_site(request)
+            email_body = {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            }
+            link = reverse('reset_password_confirm', kwargs={
+                'uidb64': email_body['uid'], 'token': email_body['token']})
+            reset_url = 'http://' + current_site.domain + link
+            email_subject = 'Reset Your Password'
+            email_message = EmailMessage(
+                email_subject,
+                'Hi ' + user.username + ', Click the link below to reset your password of your Expense Tracker Website: \n' + reset_url,
+                'noreply@yourdomain.com',
+                [email],
+            )
+            email_message.send(fail_silently=False)
+            messages.success(request, "A password reset link has been sent to your email.")
+            return redirect("login")
+        else:
+            messages.error(request, "No account found with this email.")
+    return render(request, "reset-password.html")
+
+def reset_password_confirm(request, uidb64, token):
+    """
+    Confirms password reset using UID and token.
+    Allows user to enter new password if token is valid.
+    """
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+        if account_activation_token.check_token(user, token):
+            if request.method == 'POST':
+                new_password = request.POST.get('password')
+                confirm_password = request.POST.get('confirm_password')
+                if new_password != confirm_password:
+                    messages.error(request, "The passwords do not match. Please try again.")
+                    return render(request, 'reset-password-confirm.html', {'validlink': True})
+                if len(new_password) < 8:
+                    messages.error(request, "Password must be at least 8 characters long.")
+                    return render(request, 'reset-password-confirm.html', {'validlink': True})
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, "Your password has been reset successfully. You can now log in.")
+                return redirect('login')
+            return render(request, 'reset-password-confirm.html', {'validlink': True})
+        else:
+            messages.error(request, "The password reset link is invalid.")
+            return redirect('login')
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist, DjangoUnicodeDecodeError):
+        messages.error(request, "The password reset link is invalid.")
+        return redirect('login')
 

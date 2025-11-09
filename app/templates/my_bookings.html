@@ -28,7 +28,9 @@
                     <div class="profile-body">
                         <div class="d-grid gap-2">
                             <a href="{% url 'my_bookings' %}" class="btn btn-primary">My Bookings</a>
-                            <a href="#" class="btn btn-outline-primary">Edit Profile</a>
+                            <!-- <a href="#" class="btn btn-outline-primary">Edit Profile</a> -->
+                             <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary">Edit Profile</a>
+
                             <a href="{% url 'logout' %}" class="btn btn-outline-danger">Logout</a>
                         </div>
                     </div>
@@ -64,7 +66,12 @@
                                 </ul>
                                 <div class="d-flex justify-content-between">
                                     <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
-                                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    <!-- <button class="btn btn-sm btn-outline-danger">Cancel</button> -->
+                                     <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+</form>
+
                                 </div>
                             </div>
                         </div>

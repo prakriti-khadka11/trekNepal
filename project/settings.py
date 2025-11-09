@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app.context_processors.countries_context',
             ],
         },
     },
@@ -131,3 +132,12 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'    # for collectstatic
 # Media files (user uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'           # make sure this folder exists
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'prakritikhadka027@gmail.com'  
+EMAIL_HOST_PASSWORD = 'ijjdgicudjchecre'  # please generate 16 character google app password after enabling 2FA
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Login - TravelWorld{% endblock %}
+{% block title %}Login - TrekNepal{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -22,6 +22,7 @@
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
@@ -31,8 +32,15 @@
                 <div class="text-center mt-3">
                     <p>Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
                 </div>
+
+                <div class="class=mb-3">
+                            <a href="{% url 'reset-password' %}">Forgot password? Reset it</a>
+                        </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
+
+

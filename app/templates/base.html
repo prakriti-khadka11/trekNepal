@@ -47,19 +47,22 @@
                             <a class="nav-link" href="{% url 'home' %}">Home</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="destinationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle scrollable-dropdown" href="#" id="destinationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Destinations
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="destinationsDropdown">
-                                <li><a class="dropdown-item" href="{% url 'explore_countries' %}">District</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Asia</a></li>
-                                <li><a class="dropdown-item" href="#">Europe</a></li>
-                                <li><a class="dropdown-item" href="#">North America</a></li>
-                                <li><a class="dropdown-item" href="#">South America</a></li>
-                                <li><a class="dropdown-item" href="#">Africa</a></li>
-                                <li><a class="dropdown-item" href="#">Australia</a></li>
-                            </ul>
+                        <ul class="dropdown-menu" aria-labelledby="destinationsDropdown">
+                        <li><a class="dropdown-item" href="{% url 'explore_countries' %}">All Districts</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% for country in countries %}
+                            <li>
+                                <a class="dropdown-item" href="{{ country.get_absolute_url }}">
+                                    {{ country.name }}
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li><span class="dropdown-item-text text-muted">No countries available</span></li>
+                        {% endfor %}
+                    </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="packagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -89,30 +92,50 @@
                             </ul>
                         </li>
                         {% else %}
+
                         <!-- Login Dropdown -->
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Login
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="loginDropdown">
-        <li><a class="dropdown-item" href="{% url 'login' %}">Login as User</a></li>
-        <li><a class="dropdown-item" href="{% url 'guide_login' %}">Login as Guide</a></li>
-    </ul>
-</li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Login
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="loginDropdown">
+                                <li><a class="dropdown-item" href="{% url 'login' %}">Login as User</a></li>
+                                <li><a class="dropdown-item" href="{% url 'guide_login' %}">Login as Guide</a></li>
+                            </ul>
+                        </li>
 
-<!-- Register Dropdown -->
-<li class="nav-item dropdown">
-    <a class="btn btn-primary ms-2 dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Register
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="registerDropdown">
-        <li><a class="dropdown-item" href="{% url 'signup' %}">Register as User</a></li>
-        <li><a class="dropdown-item" href="{% url 'guide_register' %}">Register as Guide</a></li>
-    </ul>
-</li>
-
-
+                        <!-- Register Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-primary ms-2 dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Register
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="registerDropdown">
+                                <li><a class="dropdown-item" href="{% url 'signup' %}">Register as User</a></li>
+                                <li><a class="dropdown-item" href="{% url 'guide_register' %}">Register as Guide</a></li>
+                            </ul>
+                        </li>
                         {% endif %}
+
+                    <!-- Dark and light mode -->
+                    <li class="nav-item">
+                        <button id="theme-toggle" class="btn btn-outline-secondary ms-2">
+                            <i id="theme-icon" class="fas fa-lightbulb"></i>
+                        </button>
+                    </li>
+
+                    <!-- Font size increase and decrease -->
+                    <li class="nav-item">
+                        <button id="increase-text" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-font"></i>+
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="decrease-text" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-font"></i>−
+                        </button>
+                    </li>
+
+
                     </ul>
                 </div>
             </div>
@@ -203,6 +226,59 @@
             easing: 'ease-in-out',
             once: true
         });
+
+         const toggleButton = document.getElementById("theme-toggle");
+    const themeIcon = document.getElementById("theme-icon");
+
+    // Load saved theme
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        themeIcon.classList.remove("fa-lightbulb");
+        themeIcon.classList.add("fa-moon");
+    }
+
+    toggleButton.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+
+        if (document.body.classList.contains("dark-mode")) {
+            themeIcon.classList.remove("fa-lightbulb");
+            themeIcon.classList.add("fa-moon");
+            localStorage.setItem("theme", "dark");
+        } else {
+            themeIcon.classList.remove("fa-moon");
+            themeIcon.classList.add("fa-lightbulb");
+            localStorage.setItem("theme", "light");
+        }
+    });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    let currentFontSize = localStorage.getItem("fontSize") 
+        ? parseFloat(localStorage.getItem("fontSize")) 
+        : 16; // default 16px
+
+    document.documentElement.style.fontSize = currentFontSize + "px";
+
+    document.getElementById("increase-text").addEventListener("click", function () {
+        if (currentFontSize < 24) { // max 24px
+            currentFontSize += 2;
+            applyFontSize();
+        }
+    });
+
+    document.getElementById("decrease-text").addEventListener("click", function () {
+        if (currentFontSize > 12) { // min 12px
+            currentFontSize -= 2;
+            applyFontSize();
+        }
+    });
+
+    function applyFontSize() {
+        document.documentElement.style.fontSize = currentFontSize + "px";
+        localStorage.setItem("fontSize", currentFontSize);
+    }
+});
+
+
     </script>
     
     {% block extra_js %}{% endblock %}

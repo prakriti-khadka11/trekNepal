@@ -4,27 +4,29 @@
 
 {% block content %}
 <div class="container py-5">
-    <h2 class="fw-bold mb-4 text-center">Guide Dashboard</h2>
+    <h2 class="fw-bold mb-4 text-center text-primary animate__animated animate__fadeInDown">
+        <i class="fas fa-compass me-2"></i>Guide Dashboard
+    </h2>
 
     <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs justify-content-center mb-4" id="guideDashboardTabs" role="tablist">
+    <ul class="nav nav-tabs justify-content-center border-0 mb-4 shadow-sm rounded-pill bg-light p-2" id="guideDashboardTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+            <button class="nav-link active rounded-pill px-4 py-2" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
                 <i class="fas fa-user me-2"></i>Profile
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="availability-tab" data-bs-toggle="tab" data-bs-target="#availability" type="button" role="tab">
+            <button class="nav-link rounded-pill px-4 py-2" id="availability-tab" data-bs-toggle="tab" data-bs-target="#availability" type="button" role="tab">
                 <i class="fas fa-calendar-check me-2"></i>Availability
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="treks-tab" data-bs-toggle="tab" data-bs-target="#treks" type="button" role="tab">
+            <button class="nav-link rounded-pill px-4 py-2" id="treks-tab" data-bs-toggle="tab" data-bs-target="#treks" type="button" role="tab">
                 <i class="fas fa-mountain me-2"></i>Treks
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">
+            <button class="nav-link rounded-pill px-4 py-2" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">
                 <i class="fas fa-clipboard-list me-2"></i>Bookings
             </button>
         </li>
@@ -35,35 +37,58 @@
 
         <!-- Profile Tab -->
         <div class="tab-pane fade show active" id="profile" role="tabpanel">
-            <div class="card shadow border-0 rounded-3">
-                <div class="card-body">
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeIn">
+                <div class="card-body p-4">
                     {% if guide %}
                         <div class="text-center mb-4">
-                            <i class="fas fa-user-circle fa-5x text-secondary mb-3"></i>
-                            <h4>{{ guide.user.username }}</h4>
-                            <p class="text-muted mb-0">{{ guide.user.email }}</p>
-                        </div>
-                        <hr>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Username:</strong> {{ guide.user.username }}</li>
-                            <li class="list-group-item"><strong>Email:</strong> {{ guide.user.email }}</li>
-                            <li class="list-group-item">
-                                <strong>License Certificate:</strong>
-                                {% if guide.license_certificate %}
-                                    <a href="{{ guide.license_certificate.url }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
-                                {% else %}
-                                    <span class="text-danger">Not Uploaded</span>
-                                {% endif %}
-                            </li>
-                            <li class="list-group-item">
-                                <strong>Verification Status:</strong>
+                            <div class="position-relative d-inline-block">
+                                <i class="fas fa-user-circle fa-7x text-secondary mb-3"></i>
                                 {% if guide.verified %}
-                                    <span class="badge bg-success">Approved</span>
-                                {% else %}
-                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success shadow-sm">
+                                        <i class="fas fa-check"></i>
+                                    </span>
                                 {% endif %}
-                            </li>
-                        </ul>
+                            </div>
+                            <h4 class="fw-bold mt-3">{{ guide.user.username }}</h4>
+                            <p class="text-muted">{{ guide.user.email }}</p>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-borderless align-middle">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-end text-muted">Username:</th>
+                                        <td>{{ guide.user.username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-end text-muted">Email:</th>
+                                        <td>{{ guide.user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-end text-muted">License Certificate:</th>
+                                        <td>
+                                            {% if guide.license_certificate %}
+                                                <a href="{{ guide.license_certificate.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-file-alt me-1"></i>View
+                                                </a>
+                                            {% else %}
+                                                <span class="text-danger">Not Uploaded</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-end text-muted">Verification Status:</th>
+                                        <td>
+                                            {% if guide.verified %}
+                                                <span class="badge bg-success px-3 py-2">Approved</span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     {% else %}
                         <p class="text-center text-danger">No guide profile found.</p>
                     {% endif %}
@@ -73,40 +98,72 @@
 
         <!-- Availability Tab -->
         <div class="tab-pane fade" id="availability" role="tabpanel">
-            <div class="card shadow border-0 rounded-3">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-3">Manage Availability</h5>
-                    <p class="text-muted">Here you can set your availability for guiding treks.</p>
-                    <!-- Later: Add form/calendar for availability -->
-                    <button class="btn btn-outline-primary">Add Availability</button>
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeIn">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-calendar-alt me-2"></i>Manage Availability</h5>
+                    <p class="text-muted">Set when you’re available for treks. Your schedule helps travelers plan better.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-plus me-2"></i>Add Availability
+                        </button>
+                        <span class="text-secondary small fst-italic">Coming soon: calendar view</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Treks Tab -->
         <div class="tab-pane fade" id="treks" role="tabpanel">
-            <div class="card shadow border-0 rounded-3">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-3">Treks You Guide</h5>
-                    <p class="text-muted">List of treks you are assigned to guide will appear here.</p>
-                    <!-- Later: Pull treks dynamically -->
-                    <button class="btn btn-outline-primary">Add Trek</button>
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeIn">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-hiking me-2"></i>Treks You Guide</h5>
+                    <p class="text-muted">View or manage treks you are assigned to guide.</p>
+                    <button class="btn btn-outline-success">
+                        <i class="fas fa-plus-circle me-2"></i>Add Trek
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Bookings Tab -->
         <div class="tab-pane fade" id="bookings" role="tabpanel">
-            <div class="card shadow border-0 rounded-3">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-3">My Bookings</h5>
-                    <p class="text-muted">View and manage bookings assigned to you.</p>
-                    <!-- Later: Dynamic bookings list -->
-                    <button class="btn btn-outline-primary">View Bookings</button>
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeIn">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-clipboard-list me-2"></i>My Bookings</h5>
+                    <p class="text-muted">View and manage traveler bookings assigned to you.</p>
+                    <button class="btn btn-outline-info">
+                        <i class="fas fa-eye me-2"></i>View Bookings
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Optional Animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+    .nav-tabs .nav-link {
+        color: #555;
+        transition: all 0.3s ease;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #0d6efd;
+        color: white !important;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+    }
+    .nav-tabs .nav-link:hover {
+        background-color: #e9f3ff;
+        transform: scale(1.05);
+    }
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+</style>
 {% endblock %}
+
 
