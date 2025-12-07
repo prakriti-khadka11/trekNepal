@@ -218,3 +218,15 @@ class Guide(models.Model):
     def __str__(self):
         return self.user.username
 
+
+from django.db import models
+
+# Create your models here.
+# models.py
+from django.contrib.auth.models import User
+from django.db import models
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email_verification_code = models.CharField(max_length=6, blank=True)
+    is_verified = models.BooleanField(default=False)

@@ -1,0 +1,1211 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Trek Nepal{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-primary text-white py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold text-white" data-aos="fade-up">Contact Us</h1>
+        <p class="lead text-light" data-aos="fade-up" data-aos-delay="100">
+            Get in touch with our team for any inquiries or assistance
+        </p>
+    </div>
+</div>
+
+
+<!-- Contact Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5" data-aos="fade-up">
+                <h2 class="mb-4">Get In Touch</h2>
+                <p class="mb-4">Have questions about our travel packages or need assistance planning your trip? Our travel experts are here to help you create unforgettable experiences.</p>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <h5>Our Location</h5>
+                        <p class="text-muted mb-0">Kathmandu,Nepal</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div>
+                        <h5>Call Us</h5>
+                        <p class="text-muted mb-0">+977 9746432142</p>
+                        <p class="text-muted mb-0">+977 9765457868</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <h5>Email Us</h5>
+                        <p class="text-muted mb-0">info@trekNepal.com</p>
+                        <p class="text-muted mb-0">support@trekNepal.com</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h5>Working Hours</h5>
+                        <p class="text-muted mb-0">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                        <p class="text-muted mb-0">Saturday: 10:00 AM - 4:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Follow Us</h5>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="mb-4">Send Us a Message</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                        <label for="name">Your Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                                        <label for="email">Your Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject">
+                                        <label for="subject">Subject</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <textarea class="form-control" id="message" name="message" placeholder="Your Message" style="height: 200px" required></textarea>
+                                        <label for="message">Your Message</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12" data-aos="fade-up">
+                <h2 class="text-center mb-5">Find Us On Map</h2>
+                <div class="ratio ratio-21x9">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2000!2d85.37735!3d27.70517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1659123456789!5m2!1sen!2s" allowfullscreen="" loading="lazy" class="rounded shadow-sm"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+
+<!-- register -->
+
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - TravelWorld{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+        
+        <!-- Left Column: Image -->
+        <div class="col-md-6 col-lg-7 d-none d-md-block text-center">
+            <img src="/static/img/imgGirl.jpeg" 
+                 alt="Travel Illustration" 
+                 class="img-fluid" 
+                 style="max-height: 500px; max-width: 100%; width: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Right Column: Sign Up Form -->
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-form" data-aos="fade-up">
+                <h2 class="text-center mb-4">Create an Account</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password1" name="password1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password2" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="password2" name="password2" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+<!-- css -->
+
+
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+}
+
+.hero-content {
+    width: 100%;
+    padding: 0 15px;
+    z-index: 2;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+/* Detail Header */
+.detail-header {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 50vh;
+    display: flex;
+    align-items: flex-end;
+}
+
+.detail-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    z-index: 1;
+}
+
+.detail-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    padding-bottom: 2rem;
+}
+
+/* Cards */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.destination-card img, 
+.adventure-card img {
+    transition: transform 0.5s ease;
+}
+
+.destination-card:hover img, 
+.adventure-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Contact Icons */
+.contact-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: var(--bs-primary);
+}
+
+/* Gallery */
+.gallery-img {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.gallery-img:hover {
+    transform: scale(1.05);
+}
+
+/* Instagram Feed */
+.instagram-item {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.instagram-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.instagram-item:hover::after {
+    opacity: 1;
+}
+
+/* Owl Carousel Customization */
+.owl-nav button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #333 !important;
+    width: 40px;
+    height: 40px;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.owl-nav button.owl-prev {
+    left: -20px;
+}
+
+.owl-nav button.owl-next {
+    right: -20px;
+}
+
+.owl-dots {
+    margin-top: 20px;
+}
+
+.owl-nav button span {
+    display: none;
+}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .owl-nav button {
+        display: none !important;
+    }
+}
+
+.instagram-item {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;   /* makes a perfect square */
+  overflow: hidden;
+  display: block;
+  border-radius: 8px;  /* optional */
+}
+
+.instagram-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* crop to fill */
+}
+
+
+
+.instagram-item img {
+  transition: transform 0.3s ease;
+}
+
+.instagram-item:hover img {
+  transform: scale(1.1);
+}
+
+
+/* ==========================
+   DARK MODE BASE
+========================== */
+body.dark-mode {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    transition: all 0.4s ease-in-out; /* smooth switch */
+}
+
+/* ==========================
+   NAVBAR
+========================== */
+body.dark-mode .navbar {
+    background-color: #1c1c1c !important;
+    transition: background-color 0.4s ease-in-out;
+}
+body.dark-mode .navbar .nav-link {
+    color: #ffffff !important;
+}
+body.dark-mode .navbar .nav-link:hover {
+    color: #1e90ff !important;
+}
+
+/* ==========================
+   FOOTER
+========================== */
+body.dark-mode footer {
+    background-color: #1c1c1c !important;
+    color: #ffffff !important;
+    transition: background-color 0.4s ease-in-out;
+}
+body.dark-mode footer a {
+    color: #cccccc !important;
+}
+body.dark-mode footer a:hover {
+    color: #ffffff !important;
+}
+
+/* ==========================
+   DROPDOWNS
+========================== */
+body.dark-mode .dropdown-menu {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+}
+body.dark-mode .dropdown-item {
+    color: #ffffff !important;
+}
+body.dark-mode .dropdown-item:hover {
+    background-color: #444 !important;
+}
+
+/* ==========================
+   FORMS & INPUTS
+========================== */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border: 1px solid #444 !important;
+}
+body.dark-mode input::placeholder {
+    color: #bbbbbb !important;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+body.dark-mode .btn {
+    background-color: #333 !important;
+    color: #fff !important;
+    border-color: #555 !important;
+}
+body.dark-mode .btn:hover {
+    background-color: #555 !important;
+}
+body.dark-mode .btn-outline-primary {
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+body.dark-mode .btn-outline-primary:hover {
+    background-color: #ffffff !important;
+    color: #121212 !important;
+}
+
+/* ==========================
+   BOOTSTRAP FIXES
+========================== */
+body.dark-mode .bg-light {
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+}
+body.dark-mode .text-muted {
+    color: #cccccc !important;
+}
+
+/* Cards */
+body.dark-mode .card {
+    background-color: #1f1f1f !important;
+    color: #ffffff !important;
+    border: 1px solid #333 !important;
+    transition: background-color 0.4s ease-in-out;
+}
+body.dark-mode .card .card-footer {
+    background-color: #2a2a2a !important;
+    border-top: 1px solid #444 !important;
+}
+
+/* Newsletter muted text */
+body.dark-mode .fst-italic,
+body.dark-mode p.text-muted {
+    color: #bbbbbb !important;
+}
+
+/* ==========================
+   IMAGES & CAROUSEL
+========================== */
+body.dark-mode .carousel-item img,
+body.dark-mode #instagram img,
+body.dark-mode section.bg-light img {
+    filter: brightness(70%) !important;
+    transition: filter 0.4s ease-in-out;
+}
+body.dark-mode #instagram img:hover {
+    filter: brightness(85%) !important;
+}
+
+
+.contact-video-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    overflow: hidden;
+}
+
+.contact-video-section .bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.contact-video-section .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(2px);
+    z-index: 2;
+}
+
+.contact-video-section .container {
+    position: relative;
+    z-index: 3;
+}
+
+.bg-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-control, .form-floating label {
+    color: #fff !important;
+}
+
+.form-control::placeholder {
+    color: #ddd !important;
+}
+
+.form-control {
+    background-color: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.form-control:focus {
+    background-color: rgba(255,255,255,0.25) !important;
+    color: #fff !important;
+    border-color: #fff;
+}
+
+.btn-light:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+
+<!-- signup -->
+
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - TravelWorld{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+        
+        <!-- Left Column: Image -->
+        <div class="col-md-6 col-lg-7 d-none d-md-block text-center">
+            <img src="/static/img/imgGirl.jpeg" 
+                 alt="Travel Illustration" 
+                 class="img-fluid" 
+                 style="max-height: 500px; max-width: 100%; width: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Right Column: Sign Up Form -->
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-form" data-aos="fade-up">
+                <h2 class="text-center mb-4">Create an Account</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password1" name="password1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password2" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="password2" name="password2" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+<!-- css -->
+
+
+/* ---------------------------------------
+   GENERAL STYLES
+---------------------------------------- */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+}
+
+.hero-content {
+    width: 100%;
+    padding: 0 15px;
+    z-index: 2;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+/* Detail Header */
+.detail-header {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 50vh;
+    display: flex;
+    align-items: flex-end;
+}
+
+.detail-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    z-index: 1;
+}
+
+.detail-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    padding-bottom: 2rem;
+}
+
+/* Cards */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.destination-card img, 
+.adventure-card img {
+    transition: transform 0.5s ease;
+}
+
+.destination-card:hover img, 
+.adventure-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Contact Icons */
+.contact-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: var(--bs-primary);
+}
+
+/* Gallery */
+.gallery-img {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.gallery-img:hover {
+    transform: scale(1.05);
+}
+
+/* Instagram */
+.instagram-item {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    overflow: hidden;
+    display: block;
+    border-radius: 8px;
+}
+
+.instagram-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.instagram-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Owl Carousel */
+.owl-nav button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #333 !important;
+    width: 40px;
+    height: 40px;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.owl-nav button.owl-prev { left: -20px; }
+.owl-nav button.owl-next { right: -20px; }
+
+.owl-dots { margin-top: 20px; }
+
+.owl-nav button span { display: none; }
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    .owl-nav button { display: none !important; }
+}
+
+/* ---------------------------------------
+   DARK MODE
+---------------------------------------- */
+body.dark-mode {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    transition: all 0.4s ease-in-out;
+}
+
+/* Navbar */
+body.dark-mode .navbar {
+    background-color: #1c1c1c !important;
+}
+body.dark-mode .navbar .nav-link {
+    color: #ffffff !important;
+}
+body.dark-mode .navbar .nav-link:hover {
+    color: #1e90ff !important;
+}
+
+/* Footer */
+body.dark-mode footer {
+    background-color: #1c1c1c !important;
+    color: #ffffff !important;
+}
+body.dark-mode footer a {
+    color: #cccccc !important;
+}
+body.dark-mode footer a:hover {
+    color: #ffffff !important;
+}
+
+/* Dropdowns */
+body.dark-mode .dropdown-menu {
+    background-color: #2a2a2a !important;
+}
+body.dark-mode .dropdown-item {
+    color: #ffffff !important;
+}
+body.dark-mode .dropdown-item:hover {
+    background-color: #444 !important;
+}
+
+/* Form Inputs */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border: 1px solid #444 !important;
+}
+body.dark-mode input::placeholder {
+    color: #bbbbbb !important;
+}
+
+/* Buttons */
+body.dark-mode .btn {
+    background-color: #333 !important;
+    color: #fff !important;
+    border-color: #555 !important;
+}
+body.dark-mode .btn:hover {
+    background-color: #555 !important;
+}
+
+/* Cards */
+body.dark-mode .card {
+    background-color: #1f1f1f !important;
+    color: #ffffff !important;
+    border: 1px solid #333 !important;
+}
+body.dark-mode .card .card-footer {
+    background-color: #2a2a2a !important;
+}
+
+/* Images */
+body.dark-mode .carousel-item img,
+body.dark-mode #instagram img,
+body.dark-mode section.bg-light img {
+    filter: brightness(70%) !important;
+}
+body.dark-mode #instagram img:hover {
+    filter: brightness(85%) !important;
+}
+
+/* ---------------------------------------
+   CONTACT PAGE — VIDEO SECTION (GLASS FORM)
+---------------------------------------- */
+
+.contact-video-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    overflow: hidden;
+}
+
+.contact-video-section .bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.contact-video-section .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(2px);
+    z-index: 2;
+}
+
+.contact-video-section .container {
+    position: relative;
+    z-index: 3;
+}
+
+.bg-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* ❗IMPORTANT: Glass inputs ONLY inside video section */
+.contact-video-section .form-control,
+.contact-video-section .form-floating label {
+    color: #fff !important;
+}
+
+.contact-video-section .form-control::placeholder {
+    color: #ddd !important;
+}
+
+.contact-video-section .form-control {
+    background-color: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    backdrop-filter: blur(10px);
+}
+
+.contact-video-section .form-control:focus {
+    background-color: rgba(255,255,255,0.25) !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+/* ---------------------------------------
+   CONTACT PAGE — CLEAN FORM (MAIN CONTACT PAGE)
+---------------------------------------- */
+
+#contact-section .card {
+    background-color: #fff !important;
+    color: #333 !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+#contact-section .form-control {
+    background-color: #ffffff !important;
+    border: 1px solid #ced4da !important;
+    color: #333 !important;
+    backdrop-filter: none !important;
+}
+
+#contact-section .form-floating label {
+    color: #666 !important;
+}
+
+#contact-section .form-control:focus {
+    background-color: #fff !important;
+    border-color: #0d6efd !important;
+    color: #333 !important;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+}
+
+#contact-section .form-control::placeholder {
+    color: #aaa !important;
+}
+
+#contact-section textarea.form-control {
+    resize: vertical;
+}
+
+#contact-section .btn-primary {
+    padding: 12px 28px;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+/* ---------------------------------------
+   GLOBAL FIX — STOP FORM OVERRIDES
+---------------------------------------- */
+
+/* Prevent glass styles from affecting Register/Login/Search */
+body:not(.contact-video-section) .form-control {
+    background-color: initial !important;
+    border-color: initial !important;
+    color: initial !important;
+    backdrop-filter: none !important;
+}
+
+
+
+
+<!-- contact -->
+
+
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Trek Nepal{% endblock %}
+
+{% block content %}
+
+<!-- ====== Background Video Hero ====== -->
+<section class="video-bg-section d-flex align-items-center justify-content-center text-center text-white">
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="/static/img/buddha video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="overlay"></div>
+    <div class="content" data-aos="fade-up">
+        <h1 class="display-4 fw-bold mb-3">Contact Us</h1>
+        <p class="lead mb-0">Get in touch with our team for any inquiries or assistance</p>
+    </div>
+</section>
+
+<!-- ====== Contact Section ====== -->
+<section class="py-5" id="contact-section">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5" data-aos="fade-up">
+                <h2 class="mb-4">Get In Touch</h2>
+                <p class="mb-4">Have questions about our travel packages or need assistance planning your trip? Our travel experts are here to help you create unforgettable experiences.</p>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <h5>Our Location</h5>
+                        <p class="text-muted mb-0">Kathmandu, Nepal</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div>
+                        <h5>Call Us</h5>
+                        <p class="text-muted mb-0">+977 9746432142</p>
+                        <p class="text-muted mb-0">+977 9765457868</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <h5>Email Us</h5>
+                        <p class="text-muted mb-0">info@trekNepal.com</p>
+                        <p class="text-muted mb-0">support@trekNepal.com</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="contact-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h5>Working Hours</h5>
+                        <p class="text-muted mb-0">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                        <p class="text-muted mb-0">Saturday: 10:00 AM - 4:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Follow Us</h5>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="btn btn-outline-primary rounded-circle"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="mb-4">Send Us a Message</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                        <!-- <label for="name">Your Name</label> -->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                                        <!-- <label for="email">Your Email</label> -->
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject">
+                                        <!-- <label for="subject">Subject</label> -->
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <textarea class="form-control" id="message" name="message" placeholder="Your Message" style="height: 200px" required></textarea>
+                                        <!-- <label for="message">Your Message</label> -->
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12" data-aos="fade-up">
+                <h2 class="text-center mb-5">Find Us On Map</h2>
+                <div class="ratio ratio-21x9">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2000!2d85.37735!3d27.70517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1659123456789!5m2!1sen!2s" allowfullscreen="" loading="lazy" class="rounded shadow-sm"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+
+<!-- today -->
+
+
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - TrekNepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+        
+        <!-- Left Column: Image -->
+        <div class="col-md-6 col-lg-7 d-none d-md-block text-center">
+            <img src="/static/img/imgGirl.jpeg" 
+                 alt="Travel Illustration" 
+                 class="img-fluid" 
+                 style="max-height: 500px; max-width: 100%; width: 100%; object-fit: cover;">
+        </div>
+
+          <!-- {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <strong>Message:</strong> {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %} -->
+        <!-- Right Column: Sign Up Form -->
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-form" data-aos="fade-up">
+                <h2 class="text-center mb-4">Create an Account</h2>
+                <form method="post" >
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password1" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password1" name="password1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password2" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="password2" name="password2" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

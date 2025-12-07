@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Sign Up - TravelWorld{% endblock %}
+{% block title %}Sign Up - TrekNepal{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -16,36 +16,67 @@
 
         <!-- Right Column: Sign Up Form -->
         <div class="col-md-6 col-lg-5">
-            <div class="auth-form" data-aos="fade-up">
+            <div class="auth-form p-4 shadow-sm rounded" data-aos="fade-up">
+
                 <h2 class="text-center mb-4">Create an Account</h2>
-                <form method="post">
+
+                <!-- 🎯 CLEAN, BEAUTIFUL MESSAGES INSIDE THE CARD -->
+                {% if messages %}
+            <div class="mb-3">
+            {% for message in messages %}
+            <div class="alert 
+                        {% if message.tags == 'error' %}alert-danger
+                        {% else %}alert-{{ message.tags }}
+                        {% endif %}
+                        alert-dismissible fade show"
+                    role="alert"
+                    style="font-size: 0.9rem; padding: 10px 15px;">
+                    
+                <strong>{{ message.tags|title }}:</strong> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            </div>
+            {% endif %}
+
+
+                <form method="post" autocomplete="off">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                        <input type="text" class="form-control" id="username" name="username" required autocomplete="new-username">
                     </div>
+
                     <div class="mb-3">
                         <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control" id="email" name="email" required autocomplete="off">
                     </div>
+
                     <div class="mb-3">
                         <label for="password1" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password1" name="password1" required>
+                        <input type="password" class="form-control" id="password1" name="password1" required autocomplete="new-password">
                     </div>
+
                     <div class="mb-3">
                         <label for="password2" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="password2" name="password2" required>
+                        <input type="password" class="form-control" id="password2" name="password2" required autocomplete="new-password">
                     </div>
+
                     <button type="submit" class="btn btn-primary w-100">Sign Up</button>
                 </form>
+
                 <div class="text-center mt-3">
                     <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
+
+
 
 
 

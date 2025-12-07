@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Code - TrekNepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+
+        <!-- Left Image -->
+        <div class="col-md-6 col-lg-7 d-none d-md-block text-center">
+            <img src="/static/img/imgGirl.jpeg" 
+                 alt="Verification Illustration" 
+                 class="img-fluid"
+                 style="max-height: 500px; width: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Right Form -->
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-form" data-aos="fade-up">
+                <h2 class="text-center mb-3">Email Verification</h2>
+                <p class="text-center text-muted mb-4">
+                    Enter the 6-digit verification code sent to your email.
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="code" class="form-label">Verification Code</label>
+                        <input type="text" maxlength="6" class="form-control text-center fs-4 py-2"
+                               id="code" name="code" required placeholder="● ● ● ● ● ●">
+                    </div>
+
+                    <!-- Timer -->
+                    <p class="text-center mb-2">
+                        <span class="text-muted">Code expires in:</span>
+                        <span id="timer" class="fw-bold text-danger">02:00</span>
+                    </p>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-2">
+                        Verify Code
+                    </button>
+                </form>
+
+                <!-- Resend Option -->
+                <div class="text-center mt-3">
+                    <p class="mb-0">Didn't receive the code?</p>
+                    <button id="resendBtn" class="btn btn-link p-0" disabled>Resend Code</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Timer Script -->
+<script>
+    let timeLeft = 120; // 2 minutes
+    const timer = document.getElementById('timer');
+    const resendBtn = document.getElementById('resendBtn');
+
+    const countdown = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+
+        timer.textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timer.textContent = "Expired";
+            timer.classList.remove("text-danger");
+            timer.classList.add("text-muted");
+
+            resendBtn.disabled = false;
+            resendBtn.classList.remove("text-muted");
+            resendBtn.style.cursor = "pointer";
+        }
+
+        timeLeft--;
+    }, 1000);
+</script>
+{% endblock %}

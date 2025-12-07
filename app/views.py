@@ -10,9 +10,6 @@ from .models import TravelPackage, Booking,Review,ContactUs,SliderImage,Country,
 from .forms import BookingForm,PeakClimbingBookingForm
 from django.db.models import Q
 from django import forms
-
-
-
 from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, DjangoUnicodeDecodeError
@@ -48,27 +45,32 @@ def home(request):
 def destination_detail(request, id):
     destination = get_object_or_404(Destination, id=id)
     return render(request, 'destination_detail.html', {'destination': destination})
+
+
 # Signup View
-def signup(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password1 = request.POST["password1"]
-        password2 = request.POST["password2"]
+# def signup(request):
+#     if request.method == "POST":
+#         username = request.POST["username"]
+#         email = request.POST["email"]
+#         password1 = request.POST["password1"]
+#         password2 = request.POST["password2"]
 
-        if password1 != password2:
-            messages.error(request, "Passwords do not match!")
-            return redirect("signup")
+#         if password1 != password2:
+#             messages.error(request, "Passwords do not match!")
+#             return redirect("signup")
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken!")
-            return redirect("signup")
+#         if User.objects.filter(username=username).exists():
+#             messages.error(request, "Username already taken!")
+#             return redirect("signup")
 
-        user = User.objects.create_user(username=username, email=email, password=password1)
-        messages.success(request, "Signup successful! You can now log in.")
-        return redirect("login")
+#         user = User.objects.create_user(username=username, email=email, password=password1)
+#         messages.success(request, "Signup successful! You can now log in.")
+#         return redirect("login")
 
-    return render(request, "signup.html")
+#     return render(request, "signup.html")
+
+
+
 
 # Login View
 def login_view(request):
@@ -232,22 +234,6 @@ def travel_package_detail(request, travel_id):
         'images': images,
     })
 
-# def contact_us(request):
-#     if request.method == "POST":
-#         name = request.POST.get('name')
-#         email = request.POST.get('email')
-#         message = request.POST.get('message')
-
-#         ContactUs.objects.create(
-#             name=name,
-#             email=email,
-#             message=message
-#         )
-
-#         messages.success(request, "Your message has been sent successfully!")
-#         return redirect('contact_us')
-
-#     return render(request, 'contact_us.html')
 
 from django.core.mail import send_mail
 from django.contrib import messages
@@ -527,4 +513,121 @@ def reset_password_confirm(request, uidb64, token):
     except (TypeError, ValueError, OverflowError, User.DoesNotExist, DjangoUnicodeDecodeError):
         messages.error(request, "The password reset link is invalid.")
         return redirect('login')
+    
 
+
+
+# Added
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from .tokens import generate_token
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.models import User
+from .models import Profile
+from django.utils.encoding import force_bytes, force_str
+
+def activate(request,uidb64,token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        myuser = User.objects.get(pk=uid)
+    except (TypeError,ValueError,OverflowError,User.DoesNotExist):
+        myuser = None
+
+    if myuser is not None and generate_token.check_token(myuser,token):
+        myuser.is_active = True
+        # user.profile.signup_confirmation = True
+        myuser.save()
+        login(request,myuser)
+        messages.success(request, "Your Account has been activated!!")
+        return redirect('login')
+    else:
+        return render(request,'activation_failed.html')
+    
+def verify_code(request):
+    if request.method == "POST":
+        code = request.POST.get('code')
+        user_id = request.session.get('user_id')
+        if not user_id:
+            messages.error(request, "Session expired. Please login again.")
+            return redirect('signup')
+        user = User.objects.get(id=user_id)
+        profile = user.profile
+        if profile.email_verification_code == code:
+            user.is_active = True
+            user.save()
+            profile.is_verified = True
+            profile.save()
+            messages.success(request, "Your account is verified! You can now sign in.")
+            return redirect('login')
+        else:
+            messages.error(request, "Invalid verification code. Try again.")
+    return render(request, 'verify_code.html')
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Profile
+import random
+
+# Function to generate code
+def generate_verification_code():
+    return str(random.randint(100000, 999999)) 
+
+
+def signup(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+        password1 = request.POST["password1"]
+        password2 = request.POST["password2"]
+
+        # Validation
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists!")
+            return redirect('signup')
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered!")
+            return redirect('signup')
+        if len(username) > 20:
+            messages.error(request, "Username must be under 20 characters!")
+            return redirect('signup')
+        if password1 != password2:
+            messages.error(request, "Passwords do not match!")
+            return redirect('signup')
+        if not username.isalnum():
+            messages.error(request, "Username must be alphanumeric!")
+            return redirect('signup')
+
+        # Create inactive user
+        myuser = User.objects.create_user(username=username, email=email, password=password1)
+        myuser.is_active = False
+        myuser.save()
+
+        # Generate verification code
+        code = generate_verification_code()
+
+        # Save code in Profile
+        profile = Profile.objects.create(user=myuser, email_verification_code=code)
+
+        # Send verification code email
+        subject = "Your TrekNepal Verification Code"
+        message = f"Hello {myuser.first_name},\n\nYour verification code is: {code}\n\nEnter this code on the verification page to activate your account."
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [myuser.email], fail_silently=False)
+
+        # Store user id in session for verification
+        request.session['user_id'] = myuser.id
+
+        messages.success(request, "Account created! Please check your email for the verification code.")
+        return redirect('verify_code')
+
+    return render(request, "signup.html")
