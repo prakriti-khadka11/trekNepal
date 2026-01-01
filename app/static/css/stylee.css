@@ -1,0 +1,49 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif; /* Clean, standard font */
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: none; /* No background color */
+}
+
+/* Container Styles */
+.container {
+    padding: 20px;
+    max-width: 600px;
+    text-align: left; /* Align text to the left for natural reading */
+    box-sizing: border-box;
+    overflow-wrap: break-word; /* Prevent text overflow */
+}
+
+/* Header Styles */
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px; /* Reduced spacing below the header */
+    font-weight: bold;
+}
+
+/* Paragraph Styles */
+p {
+    font-size: 16px;
+    line-height: 1.4; /* Slightly reduced line spacing for tighter paragraphs */
+    margin: 5px 0; /* Minimal space between paragraphs */
+}
+
+/* Preformatted Text */
+pre {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px; /* Match paragraph font size */
+    line-height: 1; /* Ensure consistency with paragraphs */
+    margin: 5px 0; /* Minimize space around preformatted text */
+    background: none; /* No background for preformatted text */
+    padding: 0; /* Remove extra padding */
+}
+
+
+

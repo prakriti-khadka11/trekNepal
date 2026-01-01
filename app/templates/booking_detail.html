@@ -32,7 +32,66 @@
                                     <li class="mb-2"><strong>Travel Date:</strong> {{ booking.travel_date|date:"F d, Y" }}</li>
                                     <li class="mb-2"><strong>Number of People:</strong> {{ booking.num_people }}</li>
                                     <li class="mb-2"><strong>Total Price:</strong> ${{ booking.total_price }}</li>
-                                </ul>
+                                      <li class="mb-2 d-flex align-items-center gap-2">
+    <strong>Guide:</strong>
+
+    {% if booking.guide %}
+        <span class="badge bg-success">Assigned</span>
+
+        <!-- View Guide Details button -->
+        <button class="btn btn-sm btn-outline-info ms-2"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#guideDetails">
+            <i class="fas fa-user me-1"></i> View Details
+        </button>
+    {% else %}
+        <span class="badge bg-danger">Unassigned</span>
+    {% endif %}
+</li>
+
+</ul>
+
+{% if booking.guide %}
+<div class="collapse mt-3" id="guideDetails">
+    <div class="card card-body">
+        <p><strong>Name:</strong> {{ booking.guide.user.username }}</p>
+
+        {% if booking.guide.bio %}
+        <p><strong>Bio:</strong> {{ booking.guide.bio }}</p>
+        {% endif %}
+
+        {% if booking.guide.experience_years %}
+        <p><strong>Experience:</strong> {{ booking.guide.experience_years }} years</p>
+        {% endif %}
+
+        {% if booking.guide.languages %}
+        <p><strong>Languages:</strong> {{ booking.guide.languages }}</p>
+        {% endif %}
+
+        {% if booking.guide.profile_picture %}
+        <img src="{{ booking.guide.profile_picture.url }}"
+             class="img-fluid rounded mt-2"
+             style="max-width:150px;">
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if booking.guide and booking.travel_date < today %}
+    {% if not booking.guidereview %}
+        <a href="{% url 'rate_guide' booking.id %}"
+           class="btn btn-sm btn-warning mt-3">
+            ⭐ Rate Your Guide
+        </a>
+    {% else %}
+        <p class="mt-3">
+            <strong>Your Rating:</strong>
+            {{ booking.guidereview.rating }} ⭐
+        </p>
+    {% endif %}
+{% endif %}
+
                             </div>
                             <div class="col-md-6">
                                 <h5>Customer Information</h5>
@@ -61,12 +120,15 @@
                                         <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ booking.travel_package.destination.name }}</li>
                                         <li class="mb-2"><i class="fas fa-calendar me-2 text-primary"></i> {{ booking.travel_package.duration }} Days</li>
                                         <li class="mb-2"><i class="fas fa-dollar-sign me-2 text-primary"></i> ${{ booking.travel_package.price }} per person</li>
+                                         <li class="mb-2">
                                     </ul>
                                     <a href="{% url 'travel_package_detail' booking.travel_package.id %}" class="btn btn-outline-primary">View Package</a>
                                 </div>
                             </div>
                         </div>
                         {% endif %}
+
+      
 
                         <div class="border-top pt-4 mt-4">
                             <h5>Payment Information</h5>

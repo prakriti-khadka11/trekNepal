@@ -18,6 +18,10 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from .utils import account_activation_token
 import logging
+from django.conf import settings
+
+settings.KHALTI_SECRET_KEY
+settings.KHALTI_PUBLIC_KEY
 
 # Helper function to check if user is an admin
 def home(request):
@@ -42,34 +46,11 @@ def home(request):
     
     return render(request, 'home.html', context)
 
+
+@login_required(login_url='login')
 def destination_detail(request, id):
     destination = get_object_or_404(Destination, id=id)
     return render(request, 'destination_detail.html', {'destination': destination})
-
-
-# Signup View
-# def signup(request):
-#     if request.method == "POST":
-#         username = request.POST["username"]
-#         email = request.POST["email"]
-#         password1 = request.POST["password1"]
-#         password2 = request.POST["password2"]
-
-#         if password1 != password2:
-#             messages.error(request, "Passwords do not match!")
-#             return redirect("signup")
-
-#         if User.objects.filter(username=username).exists():
-#             messages.error(request, "Username already taken!")
-#             return redirect("signup")
-
-#         user = User.objects.create_user(username=username, email=email, password=password1)
-#         messages.success(request, "Signup successful! You can now log in.")
-#         return redirect("login")
-
-#     return render(request, "signup.html")
-
-
 
 
 # Login View
@@ -99,11 +80,10 @@ def logout_view(request):
 
 
 # Travel Package List
-
-
 from django.shortcuts import render
 from .models import TravelPackage
 
+@login_required(login_url='login')
 def package_list(request):
     packages = TravelPackage.objects.all()
 
@@ -179,25 +159,73 @@ def edit_profile(request):
         form = ProfileForm(instance=request.user)
     return render(request, "edit_profile.html", {"form": form})
 
+# @login_required
+# def book_travel(request, travel_id):
+#     travel_package = TravelPackage.objects.get(id=travel_id)
+#     if request.method == "POST":
+#         num_people = int(request.POST["num_people"])
+#         total_price = travel_package.price * num_people
+
+#         Booking.objects.create(
+#             user=request.user,
+#             travel_package=travel_package,
+#             num_people=num_people,
+#             total_price=total_price,
+#             travel_date=request.POST["travel_date"],
+#         )
+
+#         messages.success(request, "Booking successful!")
+#         return redirect("my_bookings")
+
+#     return render(request, "tour_detail.html", {"package": travel_package})
+
+# @login_required
+# def book_travel(request, travel_id):
+#     travel_package = get_object_or_404(TravelPackage, id=travel_id)
+
+#     if request.method == "POST":
+#         num_people = int(request.POST["num_people"])
+#         travel_date = request.POST["travel_date"]
+#         total_price = travel_package.price * num_people
+
+#         # ✅ Create booking as PENDING
+#         booking = Booking.objects.create(
+#             user=request.user,
+#             travel_package=travel_package,
+#             num_people=num_people,
+#             travel_date=travel_date,
+#             total_price=total_price,
+#             status="PENDING"
+#         )
+
+#         # 🔁 Redirect to Khalti initiate
+#         return redirect("khalti_initiate", booking_id=booking.id)
+
+#     return render(request, "tour_detail.html", {"travel_package": travel_package})
+
 @login_required
 def book_travel(request, travel_id):
-    travel_package = TravelPackage.objects.get(id=travel_id)
+    travel_package = get_object_or_404(TravelPackage, id=travel_id)
+
     if request.method == "POST":
         num_people = int(request.POST["num_people"])
-        total_price = travel_package.price * num_people
+        travel_date = request.POST["travel_date"]
+        total_price = travel_package.price * num_people  # Decimal
 
-        Booking.objects.create(
-            user=request.user,
-            travel_package=travel_package,
-            num_people=num_people,
-            total_price=total_price,
-            travel_date=request.POST["travel_date"],
-        )
+        # Store booking data in session temporarily (convert Decimal to float)
+        request.session['pending_booking'] = {
+            "travel_id": travel_package.id,
+            "num_people": num_people,
+            "travel_date": travel_date,
+            "total_price": float(total_price),  # ✅ float for JSON
+        }
 
-        messages.success(request, "Booking successful!")
-        return redirect("my_bookings")
+        # Redirect to Khalti payment
+        return redirect("khalti_initiate_temp")
 
-    return render(request, "tour_detail.html", {"package": travel_package})
+    return render(request, "tour_detail.html", {"travel_package": travel_package})
+
+
 
 @login_required
 def my_bookings(request):
@@ -278,8 +306,6 @@ def contact_us(request):
 
     return render(request, 'contact_us.html')
 
-
-
 def explore_countries(request):
     countries = Country.objects.all()
     return render(request, 'explore_countries.html', {'countries': countries})
@@ -287,6 +313,7 @@ def explore_countries(request):
 from django.shortcuts import render, get_object_or_404
 from .models import Country
 
+# @login_required(login_url='login')
 def explore_country_detail(request, id):
     country = get_object_or_404(Country, id=id)
     return render(request, 'explore_country_detail.html', {'country': country})
@@ -315,7 +342,7 @@ def tour_list(request):
     return render(request, 'tour_list.html', {'tours': tours})
 
 
-
+@login_required(login_url='login')
 def tour_detail(request, pk):
     tour = get_object_or_404(TourDetail, pk=pk)
     return render(request, 'tour_detail.html', {'tour': tour})
@@ -324,6 +351,7 @@ def trekking_list(request):
     treks = Trekking.objects.filter(is_active=True)
     return render(request, 'trekking_list.html', {'treks': treks})
 
+@login_required(login_url='login')
 def trekking_detail(request, slug):
     trek = get_object_or_404(Trekking, slug=slug)
     images = trek.gallery_images.all()
@@ -337,6 +365,7 @@ def peak_climbing_list(request):
     return render(request, 'peak_climbing_list.html', {'peaks': peaks})
 
 # Detail view for each Peak Climbing
+@login_required(login_url='login')
 def peak_climbing_detail(request, slug):
     peak = get_object_or_404(PeakClimbing, slug=slug)
     return render(request, 'peak_climbing_detail.html', {'peak': peak})
@@ -515,8 +544,6 @@ def reset_password_confirm(request, uidb64, token):
         return redirect('login')
     
 
-
-
 # Added
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -631,3 +658,195 @@ def signup(request):
         return redirect('verify_code')
 
     return render(request, "signup.html")
+
+
+# Added
+
+# app/views.py
+import requests
+from django.shortcuts import redirect, get_object_or_404
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from .models import Booking
+
+# @login_required
+# def khalti_initiate(request, booking_id):
+#     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+
+#     headers = {
+#         "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+#         "Content-Type": "application/json",
+#     }
+
+#     payload = {
+#         "return_url": request.build_absolute_uri("/khalti/verify/"),
+#         "website_url": request.build_absolute_uri("/"),
+#         "amount": int(booking.total_price * 100),  # paisa
+#         "purchase_order_id": str(booking.id),
+#         "purchase_order_name": booking.travel_package.title,  # use title
+#     }
+
+#     response = requests.post(
+#         "https://a.khalti.com/api/v2/epayment/initiate/",
+#         json=payload,
+#         headers=headers
+#     )
+
+#     result = response.json()
+
+#     if "payment_url" in result:
+#         return redirect(result["payment_url"])
+#     else:
+#         # handle errors
+#         return redirect("my_bookings")
+
+# @login_required
+# def khalti_verify(request):
+#     pidx = request.GET.get("pidx")
+#     purchase_order_id = request.GET.get("purchase_order_id")  # get from GET params
+
+#     if not pidx or not purchase_order_id:
+#         return redirect("my_bookings")
+
+#     headers = {
+#         "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+#         "Content-Type": "application/json",
+#     }
+
+#     payload = {"pidx": pidx}
+
+#     response = requests.post(
+#         "https://a.khalti.com/api/v2/epayment/lookup/",
+#         json=payload,
+#         headers=headers
+#     )
+
+#     result = response.json()
+#     print("Khalti verify result:", result)  # Debug
+
+#     # If payment succeeded
+#     if result.get("status") == "Completed":
+#         try:
+#             booking = Booking.objects.get(id=purchase_order_id)  # use GET param
+#             booking.status = "PAID"
+#             booking.khalti_pidx = pidx
+#             booking.save()
+#         except Booking.DoesNotExist:
+#             pass
+
+#     return redirect("my_bookings")
+
+
+import requests
+from django.conf import settings
+from django.shortcuts import redirect, get_object_or_404
+from .models import TravelPackage, Booking
+from django.contrib.auth.decorators import login_required
+
+import requests
+from django.conf import settings
+from django.shortcuts import redirect, get_object_or_404
+from .models import TravelPackage, Booking
+
+@login_required
+def khalti_initiate_temp(request):
+    booking_data = request.session.get('pending_booking')
+    if not booking_data:
+        # If session expired or user visits directly
+        return redirect('package_list')
+
+    travel_package = get_object_or_404(TravelPackage, id=booking_data["travel_id"])
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {
+        "return_url": request.build_absolute_uri("/khalti/verify/"),
+        "website_url": request.build_absolute_uri("/"),
+        "amount": int(booking_data["total_price"] * 100),  # paisa
+        "purchase_order_id": "temp",
+        "purchase_order_name": travel_package.title,
+    }
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/initiate/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+
+    if "payment_url" in result:
+        return redirect(result["payment_url"])
+    else:
+        # If initiation failed
+        return redirect("package_list")
+
+
+
+@login_required
+def khalti_verify(request):
+    pidx = request.GET.get("pidx")
+    if not pidx:
+        return redirect("package_list")
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {"pidx": pidx}
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/lookup/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+    print("Khalti verify result:", result)
+
+    if result.get("status") == "Completed":
+        booking_data = request.session.get('pending_booking')
+        if booking_data:
+            travel_package = get_object_or_404(TravelPackage, id=booking_data["travel_id"])
+
+            booking = Booking.objects.create(
+                user=request.user,
+                travel_package=travel_package,
+                num_people=booking_data["num_people"],
+                travel_date=booking_data["travel_date"],
+                total_price=booking_data["total_price"],
+                status="PAID",
+                khalti_pidx=pidx
+            )
+
+            # Clear pending booking from session
+            del request.session['pending_booking']
+
+    return redirect("my_bookings")
+
+
+
+@login_required
+def rate_guide(request, booking_id):
+    booking = get_object_or_404(
+        Booking,
+        id=booking_id,
+        user=request.user,
+        guide__isnull=False
+    )
+
+    if request.method == "POST":
+        GuideReview.objects.create(
+            booking=booking,
+            guide=booking.guide,
+            user=request.user,
+            rating=request.POST["rating"],
+            comment=request.POST.get("comment", "")
+        )
+        return redirect("booking_detail", booking.id)
+
+    return render(request, "rate_guide.html", {"booking": booking})

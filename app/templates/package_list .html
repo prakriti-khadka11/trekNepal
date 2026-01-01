@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
-{% load static %}  {# Load the static tag #}
+{% load static %}
 
 {% block content %}
+
+{% if user.is_authenticated %}
+
     <div class="container mt-5">
         <h2 class="text-center">Travel Packages</h2>
         <div class="row mt-4">
@@ -19,4 +22,16 @@
             {% endfor %}
         </div>
     </div>
+
+{% else %}
+
+    <div class="container mt-5">
+        <div class="alert alert-warning text-center fs-5">
+            Please <a href="{% url 'login' %}" class="fw-bold">login</a> first to explore our travel packages.
+        </div>
+    </div>
+
+{% endif %}
+
 {% endblock %}
+

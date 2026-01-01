@@ -21,6 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-28w3)s3aox&nn+!wz!))cho235k8%jl6ha$axa8w%=p$)uz56b'
+KHALTI_PUBLIC_KEY = "e3ffe35014054966b9b772cbdcb2b614"
+KHALTI_SECRET_KEY = "dc6eb2481b4d4fa3b56373b5afe86234"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -76,10 +78,21 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'treknepal_db',      # the DB  created in MySQL
+        'USER': 'root',
+        'PASSWORD': '@Pakku11',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

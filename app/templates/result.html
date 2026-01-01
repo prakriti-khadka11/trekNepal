@@ -1,0 +1,35 @@
+<!-- result.html -->
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted Text Result</title>
+    <link rel="stylesheet" href="{% static 'stylee.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Extracted Text</h1>
+        <p>{{ extracted_text }}</p>
+        <p>Classification: {{ classification }}</p>
+        <p>Accuracy: {{ accuracy }}</p>
+    </div>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted Text Result</title>
+    <link rel="stylesheet" href="{% static 'stylee.css' %}">
+</head>
+<body>
+    <div class="container">
+        <pre>{{ extracted_text }}</pre>
+    </div>
+</body>
+</html>

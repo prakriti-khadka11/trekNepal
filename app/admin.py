@@ -144,4 +144,3 @@ class GuideAdmin(admin.ModelAdmin):
         self.message_user(request, f"{updated} guide(s) successfully approved.")
     approve_guides.short_description = "Approve selected guides"
 
-    

@@ -1,0 +1,1460 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$MEGchNbhpnw16Y80FFEw5D$Vx3Ip4J8B6PFnwwB1px+4Qk7WlWIdPIce12h4sT+Yms=",
+    "last_login": "2025-04-22T06:30:50.482Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-04-20T05:51:24.367Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$v1X77F4I2gdbAovfdppyU6$9WTOzGLUZOokbnZLju5F7QUq5Wjk0qJ60I/Pj0wBH4k=",
+    "last_login": "2025-04-20T12:57:47.548Z",
+    "is_superuser": false,
+    "username": "hari kumar",
+    "first_name": "",
+    "last_name": "",
+    "email": "hariku132@gamil.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-04-20T06:19:21.798Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XJRSUCK7OfzBLI2gJ7yD8M$oYmKTK3pi6ch5XLISfDx6/4yVF4TbIVqMerERukWKXo=",
+    "last_login": "2025-04-22T03:34:49.446Z",
+    "is_superuser": false,
+    "username": "niraj b.k",
+    "first_name": "",
+    "last_name": "",
+    "email": "niraj@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-04-22T00:49:02.830Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$RMEIvFKDVSbL09OJRdd68G$HLtBRy7AMO9XiMbYqSpyXGjGSQa2Yw8RGZsvUo4T/No=",
+    "last_login": "2025-04-22T03:35:42.135Z",
+    "is_superuser": false,
+    "username": "subham",
+    "first_name": "",
+    "last_name": "",
+    "email": "suvamlama4@gamil.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-04-22T03:35:32.647Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$60rObuXXi4gCUDJXB6U2jN$JCs2QFbpcpEnnpHa9ocZJ8edm0JdnMDj0oDy5t/95uo=",
+    "last_login": "2025-08-17T11:27:51.173Z",
+    "is_superuser": false,
+    "username": "groupC",
+    "first_name": "",
+    "last_name": "",
+    "email": "groupC12@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-08-03T15:48:25.097Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$3Q0ePHytrtS0wmrEC36EVV$9/t1F/D4FLqgOT9DIc1d3CBlrCKHLKR10nRi6UiuT+M=",
+    "last_login": "2025-12-07T16:42:14.916Z",
+    "is_superuser": true,
+    "username": "prakriti",
+    "first_name": "",
+    "last_name": "",
+    "email": "prakritikhadka027@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-08-17T03:59:25.651Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$CQVp5aIp3o7PgoZk1ptOCN$SNyRGoamdTdJ5wPQ95+rfJ9nTZVYhiiDu2SQXB2VCfw=",
+    "last_login": "2025-09-24T15:41:00.583Z",
+    "is_superuser": false,
+    "username": "laxmi",
+    "first_name": "",
+    "last_name": "",
+    "email": "laxmi@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-09-24T14:34:43.919Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 15,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$I5TVSvR1PNqgckuSv3u8jD$+bcclmIVuDonkUr26Rx1LlYW65hOQvWXOwHol26WoEE=",
+    "last_login": "2025-11-16T10:38:31.427Z",
+    "is_superuser": false,
+    "username": "priyanka",
+    "first_name": "",
+    "last_name": "",
+    "email": "aryalpriyanka18@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-16T10:38:05.702Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 16,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$SvmL19Gl8s9zplPuS8527S$29suyKQm0VsIUUi9qj0tGXExbspTinSVjMOGn1QM584=",
+    "last_login": "2025-12-09T06:14:58.764Z",
+    "is_superuser": false,
+    "username": "bibhuti",
+    "first_name": "",
+    "last_name": "",
+    "email": "bibhutistha63@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-16T10:44:58.619Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "13otkh8cs04hz3isb4qiculc8voh0aa1",
+  "fields": {
+    "session_data": ".eJxVjDEOwjAMRe-SGUV2EjUxIztniOw4pQXUSk07Ie4OlTrA-t97_2Uyb-uQt1aXPKo5m86cfjfh8qjTDvTO0222ZZ7WZRS7K_agzV5nrc_L4f4dDNyGb10FILhEoKVCjNL7XqLDkjAyd45SJPRBkgYkBAUUIvYOXafgg4vm_QHPyjam:1uzqWv:7aIPmYAw31T9ULmxqh_XQRgJT3Fg9zRgVL5f7k7LAfs",
+    "expire_date": "2025-10-04T05:53:05.415Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "3iimn42urc7rn8pvn4anhd6t1p42zoo7",
+  "fields": {
+    "session_data": ".eJxVjDEOwjAMRe-SGUVxQuqWkZ0zRHZsSAGlUtNOiLtDpQ6w_vfef5lE61LS2nROo5iTAXP43ZjyQ-sG5E71Ntk81WUe2W6K3Wmzl0n0ed7dv4NCrXxr9RLo6J2ELkYWlAjohitRzz4HzINq6BUZsAPJSOARcnDEEIVZg3l_AOoIOEg:1u779e:6w6K_LTBu0uE9_B5A3SBd0Tj2lkYz8qkm77AqOojaT0",
+    "expire_date": "2025-05-06T06:30:50.490Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "76i77at4n3cx14pvz9ag0oexyd98r4hw",
+  "fields": {
+    "session_data": ".eJxVjDEOwjAMRe-SGUVxQuqWkZ0zRHZsSAGlUtNOiLtDpQ6w_vfef5lE61LS2nROo5iTAXP43ZjyQ-sG5E71Ntk81WUe2W6K3Wmzl0n0ed7dv4NCrXxr9RLo6J2ELkYWlAjohitRzz4HzINq6BUZsAPJSOARcnDEEIVZg3l_AOoIOEg:1u6UFG:qUHiU-pxFhXQJ2kNCeroTH8LS42zkjLKHUU_-YRCvww",
+    "expire_date": "2025-05-04T12:58:02.812Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "cvbdx38op77dc24e0t96ybyorm03n8hc",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSFgebp0328gAzNI1UBS2pXx35WkC93ec859sQD7VsLeaQ0LsguTgp1-xwjpQXUQvEO9NZ5a3dYl8qHwg3Y-N6Tn9XD_Dgr0MuqJMKG1KLKWMidvgEhpkBPJnNH6rJR1oCAZbbSzjlzEs_BfHQZj7w8wZjiu:1v5SH2:7JveCkwsXcL6SQEYM4kFjVkFZ2DbjQt2h3ZGCqVoJck",
+    "expire_date": "2025-10-19T17:11:52.437Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dc0r1lbiqkogsmk7aogulxdden0qe184",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSHDawCX7v0GAgxI1dCktCvjv2uTLnR7zzn3xULc1ha2UZYwETszZKffLcX8KH0HdI_9NvM893WZEt8VftDBrzOV5-Vw_w5aHO1bWwlSCEItrctZFfDeOkLQpqpcACo6RxaELKKSVV4bxBizAaWNQ5PY-wOxZzaO:1uzHC6:mEHr35JTRzNJbCxZEEjdcB5kdxO17JLVCKm3hb9d8j8",
+    "expire_date": "2025-10-02T16:09:14.354Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "fa2x1hw630h8fq0rnzlas9zcos86zhzx",
+  "fields": {
+    "session_data": ".eJxVjMEOwiAQRP-FsyGyBbZ49O43kIXdStXQpLQn47_bJj3ocea9mbeKtC4lrk3mOLK6KK9Ov12i_JS6A35QvU86T3WZx6R3RR-06dvE8roe7t9BoVa2dTZA2TMZy5xxGKyVHpnZOmLovAhsEZwJyZ-TTwZdFzAQIoBJvRH1-QIIVDgK:1vSHpu:k3liAPCzGNRXFZimDPxInc-fcmbC32n_5yMx6M1BU04",
+    "expire_date": "2025-12-21T16:42:14.917Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "l1h2mg7clsj38mmkknpnvm4zhcjpp6z4",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSHDawCX7v0GAgxI1dCktCvjv2uTLnR7zzn3xULc1ha2UZYwETszZKffLcX8KH0HdI_9NvM893WZEt8VftDBrzOV5-Vw_w5aHO1bWwlSCEItrctZFfDeOkLQpqpcACo6RxaELKKSVV4bxBizAaWNQ5PY-wOxZzaO:1uzDo7:IynmamNQ2Oymm_VN0LWpJZd5lf-t9QZxPjyoHGy8Msg",
+    "expire_date": "2025-10-02T12:32:15.591Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "lzjzpht0h7lgzl801g1bktjiru3it9ss",
+  "fields": {
+    "session_data": ".eJxVjDEOwjAMRe-SGUV2EjUxIztniOw4pQXUSk07Ie4OlTrA-t97_2Uyb-uQt1aXPKo5m86cfjfh8qjTDvTO0222ZZ7WZRS7K_agzV5nrc_L4f4dDNyGb10FILhEoKVCjNL7XqLDkjAyd45SJPRBkgYkBAUUIvYOXafgg4vm_QHPyjam:1v2L21:yWW1c-09_0CukMwpC33j4t8c1m6phPHLEt4LDIYi340",
+    "expire_date": "2025-10-11T02:51:29.556Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "pviy99qmxea8c3co80jf2ikubda69ud6",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hBA6HRcuu8ZyAxMpWpoUtqV8e7apAvd_vfef6lI21ri1mSJU1YX1anT78aUHlJ3kO9Ub7NOc12XifWu6IM2PcxZntfD_Tso1Mq3NlYsoGcSGxic8eGMPhEKjGQ7MRKAwaBjpJF6B16MM8h9yN6SY6feH9MpN2c:1uytl7:ApoU8N86gn55FLwAGdJVxsBChOYeF-SCuiw10HfeoKA",
+    "expire_date": "2025-10-01T15:07:49.800Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "saj6wqlvf4311mt9r5n1ia7kpz0zg4hu",
+  "fields": {
+    "session_data": ".eJxVjDEOwjAMRe-SGUV2EjUxIztniOw4pQXUSk07Ie4OlTrA-t97_2Uyb-uQt1aXPKo5m86cfjfh8qjTDvTO0222ZZ7WZRS7K_agzV5nrc_L4f4dDNyGb10FILhEoKVCjNL7XqLDkjAyd45SJPRBkgYkBAUUIvYOXafgg4vm_QHPyjam:1v54m7:OpTpiE28TXHvxToY51YiRbg1FVrwiqbftViuuOLRz4Q",
+    "expire_date": "2025-10-18T16:06:23.989Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "vs7eo0e65uamz6ibpa98b2ivtbal6xcm",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hBawBlcuu8ZyACDVA0kpV0Z765NutDtf-_9l_C0rcVvnRc_J3ERVpx-t0DxwXUH6U711mRsdV3mIHdFHrTLqSV-Xg_376BQL9_6HFANOrkRBu1MxsxkXMisGBmDGW0gxxGQKWtQSADAJmuVwSAmsuL9AenbOCs:1ulKDJ:5igzUFkXcfBITWjy5eKBh_I-rMvriyOlDU9USTOkOlU",
+    "expire_date": "2025-08-25T04:32:49.838Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "wqexficy9mzvx50d221dy719i4esnr4u",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hBA6HRcuu8ZyAxMpWpoUtqV8e7apAvd_vfef6lI21ri1mSJU1YX1anT78aUHlJ3kO9Ub7NOc12XifWu6IM2PcxZntfD_Tso1Mq3NlYsoGcSGxic8eGMPhEKjGQ7MRKAwaBjpJF6B16MM8h9yN6SY6feH9MpN2c:1uywv8:x7V3TzGxx0tsKUUhxoJSWOLqlTENLsyOybMlZqLvVZY",
+    "expire_date": "2025-10-01T18:30:22.621Z"
+  }
+},
+{
+  "model": "app.country",
+  "pk": 1,
+  "fields": {
+    "name": "Bajang",
+    "image": "country_images/khaptad.webp",
+    "description": "A remote and peaceful national park in far-western Nepal, known for its rolling green meadows, rich biodiversity, and spiritual significance as the meditation site of Khaptad Baba."
+  }
+},
+{
+  "model": "app.country",
+  "pk": 2,
+  "fields": {
+    "name": "Ilam",
+    "image": "country_images/Ilam.jpg",
+    "description": "A beautiful hill town in eastern Nepal, famous for its lush tea gardens, rolling hills, sunrise views, and cultural blend of Limbu traditions."
+  }
+},
+{
+  "model": "app.country",
+  "pk": 3,
+  "fields": {
+    "name": "Janakpur",
+    "image": "country_images/janakpur.webp",
+    "description": "The cultural and religious capital of the Mithila region, revered as the birthplace of Goddess Sita. Known for the grand Janaki Temple and vibrant festivals like Bibaha Panchami."
+  }
+},
+{
+  "model": "app.country",
+  "pk": 4,
+  "fields": {
+    "name": "Dolakha",
+    "image": "country_images/Tansen.jpg",
+    "description": "A historic hill town offering panoramic views of the Himalayas, traditional Newari architecture, and the famous Rani Mahal (often called the Taj Mahal of Nepal)."
+  }
+},
+{
+  "model": "app.country",
+  "pk": 5,
+  "fields": {
+    "name": "Bardiya",
+    "image": "country_images/Bardiya_Safari.jpg",
+    "description": "One of Nepal’s largest and most pristine national parks, home to endangered species like Bengal tigers, one-horned rhinos, and wild elephants. Popular for jungle safaris."
+  }
+},
+{
+  "model": "app.country",
+  "pk": 6,
+  "fields": {
+    "name": "Sunsari",
+    "image": "country_images/Koshi_Tapu.jpg",
+    "description": "Located in southeastern Nepal, this protected wetland is a bird-watcher’s paradise, attracting migratory birds from Siberia and Tibet. Also known for rare water buffaloes (Arna)."
+  }
+},
+{
+  "model": "app.country",
+  "pk": 7,
+  "fields": {
+    "name": "Taplejung",
+    "image": "country_images/taplegung.webp",
+    "description": "A sacred pilgrimage site in eastern Nepal, perched high in the Himalayas, offering spiritual experiences along with breathtaking mountain views of Kanchenjunga."
+  }
+},
+{
+  "model": "app.country",
+  "pk": 8,
+  "fields": {
+    "name": "Kaski",
+    "image": "country_images/kaski.jpg",
+    "description": "Kaski District, located in Gandaki Province, is one of Nepal’s most popular tourist destinations, home to the scenic city of Pokhara. It is famous for its natural beauty, including Phewa Lake, Begnas Lake, Devi’s Fall, and the Seti River Gorge. The district offers breathtaking views of the Annapurna and Machhapuchhre (Fishtail) mountains"
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 4,
+  "fields": {
+    "name": "Ilam",
+    "location": "Koshi Province",
+    "description": "Tea Gardens & Hillside Town in Ilam, Nepal, are the district’s highlights—lush green tea estates spread across rolling hills, with serene hillside towns like Kanyam, Antu, and Fikkal. They are known for breathtaking views, cool climate, sunrise points, and a peaceful natural environment, making Ilam a popular eco-tourism destination.",
+    "image": "destinations/Tea-garden-in-Ilam.jpg",
+    "country": 2
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 5,
+  "fields": {
+    "name": "Dolakha",
+    "location": "Bagmati Province",
+    "description": "Dolakha is a historic hill town in Bagmati Province, renowned for the sacred Dolakha Bhimsen Temple, its Newar settlements and traditional architecture, cultural festivals, and scenic views of Gaurishankar Himal and the Rolwaling Valley.",
+    "image": "destinations/Evening_View_of_Tansen.jpg",
+    "country": 4
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 6,
+  "fields": {
+    "name": "Bajhang",
+    "location": "Sudurpashchim Province",
+    "description": "It is famous for its rolling grasslands, forests, and Khaptad Baba Ashram. The park is rich in biodiversity with medicinal herbs, wildlife, and over 200 bird species, offering peaceful natural beauty and cultural significance.",
+    "image": "destinations/Khaptad_National_Park.jpeg",
+    "country": 1
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 7,
+  "fields": {
+    "name": "Janakpur",
+    "location": "Madhesh Province",
+    "description": "Janakpur is a historic city in Madhesh Province, Nepal, known as the birthplace of Goddess Sita and the capital of the ancient Mithila Kingdom.It is a major Hindu pilgrimage site, famous for the Janaki Mandir, beautiful Mithila art, and vibrant festivals like Vivah Panchami.",
+    "image": "destinations/Ram_temple.webp",
+    "country": 3
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 8,
+  "fields": {
+    "name": "Taplejung",
+    "location": "Koshi Province",
+    "description": "Pathivara Devi Temple is a sacred Hindu shrine located in Taplejung District, Koshi Province, Nepal.It is one of the most important Shakti Peeths, where devotees worship Goddess Pathivara for blessings of wealth, health, and protection. Situated at about 3,794 meters, the temple offers spiritual significance along with stunning views of the Himalayas, attracting both pilgrims and trekkers.",
+    "image": "destinations/Pathibhara-Devi-Temple.jpeg",
+    "country": 7
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 9,
+  "fields": {
+    "name": "Sunsari",
+    "location": "Koshi Province",
+    "description": "Koshi Tappu Wildlife Reserve is located in Koshi Province, eastern Nepal, along the floodplains of the Koshi River.It is famous for being a Ramsar site and a haven for birdwatchers, with over 500 bird species. The reserve is also home to the rare wild water buffalo (Arna), as well as deer, dolphins, and diverse aquatic life.",
+    "image": "destinations/Koshi_Tapu.jpg",
+    "country": 6
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 10,
+  "fields": {
+    "name": "Bardiya",
+    "location": "Lumbini Province",
+    "description": "It is the largest national park in the Terai, famous for its Bengal tigers, one-horned rhinoceroses, elephants, gharials, and rich birdlife. With dense forests, grasslands, and the Karnali River, it offers a true wilderness experience and is one of Nepal’s best spots for tiger sightings and jungle safaris.",
+    "image": "destinations/Bardiya_Safari.jpg",
+    "country": 5
+  }
+},
+{
+  "model": "app.destination",
+  "pk": 11,
+  "fields": {
+    "name": "Kaski",
+    "location": "Gandaki Province",
+    "description": "Kaski District, located in Gandaki Province, is one of Nepal’s most popular tourist destinations, home to the scenic city of Pokhara. It is famous for its natural beauty, including Phewa Lake, Begnas Lake, Devi’s Fall, and the Seti River Gorge. The district offers breathtaking views of the Annapurna and Machhapuchhre (Fishtail) mountains, making it a hub for trekking routes such as Annapurna Base Camp, Mardi Himal, and Ghorepani Poon Hill. Rich in cultural diversity, Kaski also showcases Gurung, Magar, and Newar heritage, with villages like Ghandruk and Dhampus attracting visitors for their traditional architecture and warm hospitality.",
+    "image": "destinations/Ghandruk.webp",
+    "country": 8
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 1,
+  "fields": {
+    "title": "Pokhara: City of Lakes & HimalayasUntitled",
+    "overview": "Pokhara, Nepal’s most scenic city, is surrounded by serene lakes and the Annapurna Himalayas. Known for adventure sports and breathtaking views, it’s the perfect blend of relaxation and adrenaline.",
+    "highlight": "Phewa Lake & Tal Barahi Temple\r\n\r\nWorld Peace Pagoda\r\n\r\nDavis Falls & Gupteshwor Cave\r\n\r\nSarangkot Sunrise Viewpoint",
+    "itinerary": "Day 1: Arrival in Pokhara, evening boat ride on Phewa Lake\r\n\r\nDay 2: Sunrise at Sarangkot, visit World Peace Pagoda & caves\r\n\r\nDay 3: Adventure activities (paragliding/zip line/ultralight flight)\r\n\r\nDay 4: Shopping at Lakeside & departure",
+    "cost_details": "🚌 Transport (Kathmandu–Pokhara round trip): $20 – $50\r\n🏨 Accommodation: $25 per night × 3 nights = $75\r\n🍲 Food: $15 – $20/day × 4 days = $60 – $80\r\n🎟️ Entrance Fees & Activities: $50 – $120\r\n🛍️ Other Expenses: $30 – $50\r\nTotal: $235 – $375"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 2,
+  "fields": {
+    "title": "Chitwan National Park: Jungle Safari AdventureUntitled",
+    "overview": "Experience Nepal’s wildlife in Chitwan, home to one-horned rhinos, Bengal tigers, and elephants. A UNESCO World Heritage Site offering jungle safaris and Tharu cultural programs.",
+    "highlight": "Jeep Safari & Canoeing in Rapti River\r\n\r\nBird Watching & Elephant Breeding Center\r\n\r\nTharu Culture Dance Show",
+    "itinerary": "Day 1: Drive to Chitwan, evening cultural program\r\n\r\nDay 2: Jeep Safari, canoe ride & jungle walk\r\n\r\nDay 3: Bird watching, village tour, return to Kathmandu",
+    "cost_details": "🚌 Transport (Kathmandu–Chitwan round trip): $15 – $25\r\n🏨 Accommodation: $20 per night × 2 nights = $40\r\n🍲 Food: $15/day × 3 days = $45\r\n🎟️ Safari Permits & Park Fees: $50 – $100\r\n🛍️ Other Expenses: $20 – $30\r\nTotal: $170 – $240"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 3,
+  "fields": {
+    "title": "Lumbini: Birthplace of Lord BuddhaUntitled",
+    "overview": "Lumbini, a UNESCO World Heritage Site, is the birthplace of Lord Buddha. Explore peaceful monasteries built by nations worldwide and the sacred Maya Devi Temple.",
+    "highlight": "Maya Devi Temple\r\n\r\nAshokan Pillar\r\n\r\nWorld Peace Pagoda\r\n\r\nInternational Monasteries",
+    "itinerary": "Day 1: Drive/Flight to Lumbini, evening monastery walk\r\n\r\nDay 2: Visit Maya Devi Temple & Ashokan Pillar\r\n\r\nDay 3: Explore monasteries & World Peace Pagoda, departure",
+    "cost_details": "🚌 Transport (Kathmandu–Lumbini round trip): $20 – $40 (bus) / $150 – $200 (flight)\r\n🏨 Accommodation: $20 per night × 2 nights = $40\r\n🍲 Food: $15/day × 3 days = $45\r\n🎟️ Entrance Fees: $20 – $30\r\n🛍️ Other Expenses: $20 – $30\r\nTotal: $145 – $340"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 4,
+  "fields": {
+    "title": "Bandipur: Hilltop Heritage VillageUntitled",
+    "overview": "Bandipur is a charming hilltop town with preserved Newari culture, traditional houses, and stunning views of the Himalayas.",
+    "highlight": "Siddha Cave (largest cave in Nepal)\r\n\r\nTundikhel Viewpoint\r\n\r\nNewari architecture & culture\r\n\r\nHiking around Bandipur",
+    "itinerary": "Day 1: Drive to Bandipur, explore village & sunset view\r\n\r\nDay 2: Visit Siddha Cave & surrounding hills\r\n\r\nDay 3: Cultural walk, return to Kathmandu",
+    "cost_details": "🚌 Transport (Kathmandu–Bandipur round trip): $10 – $20\r\n🏨 Accommodation: $25 per night × 2 nights = $50\r\n🍲 Food: $15/day × 3 days = $45\r\n🎟️ Entrance & Activities: $10 – $20\r\n🛍️ Other Expenses: $20 – $30\r\nTotal: $135 – $165"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 5,
+  "fields": {
+    "title": "Nagarkot & Bhaktapur: Sunrise & HeritageUntitled",
+    "overview": "Nagarkot is famous for sunrise views over the Himalayas, while Bhaktapur offers ancient temples and cultural heritage.",
+    "highlight": "Nagarkot Sunrise Viewpoint\r\n\r\nBhaktapur Durbar Square (UNESCO site)\r\n\r\nNyatapola Temple\r\n\r\nPottery Square",
+    "itinerary": "Day 1: Drive to Bhaktapur, explore Durbar Square & temples\r\n\r\nDay 2: Overnight in Nagarkot, sunrise & mountain views\r\n\r\nDay 3: Return to Kathmandu",
+    "cost_details": "🚌 Transport (Kathmandu–Bhaktapur–Nagarkot): $10 – $15\r\n🏨 Accommodation: $20 per night × 2 nights = $40\r\n🍲 Food: $15/day × 3 days = $45\r\n🎟️ Entrance Fees: $15 – $20\r\n🛍️ Other Expenses: $20 – $30\r\nTotal: $130 – $150"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 6,
+  "fields": {
+    "title": "Ghandruk Village: Gateway to AnnapurnaUntitled",
+    "overview": "Ghandruk is a traditional Gurung village with panoramic views of Annapurna and Machhapuchhre. A cultural and scenic gem.",
+    "highlight": "Gurung Museum & Culture\r\n\r\nAnnapurna & Machhapuchhre Views\r\n\r\nLocal homestays & organic food",
+    "itinerary": "Day 1: Drive to Nayapul, trek to Ghandruk\r\n\r\nDay 2: Explore Ghandruk village, Gurung Museum\r\n\r\nDay 3: Sunrise view, trek back to Nayapul, return to Pokhara",
+    "cost_details": "🚌 Transport (Pokhara–Nayapul round trip): $15 – $20\r\n🏨 Accommodation: $15 per night × 2 nights = $30\r\n🍲 Food: $15/day × 3 days = $45\r\n🚶 Trekking Permits (ACAP, TIMS): $30 – $40\r\n🛍️ Other Expenses: $20 – $30\r\nTotal: $140 – $165"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 7,
+  "fields": {
+    "title": "Rara Lake: Hidden Jewel of the HimalayasUntitled",
+    "overview": "Rara Lake, Nepal’s largest lake, lies in the remote Karnali region. Surrounded by Rara National Park, it offers serene beauty, blue waters, and Himalayan wilderness.",
+    "highlight": "Rara Lake boating & hiking\r\n\r\nScenic mountain views\r\n\r\nRara National Park wildlife",
+    "itinerary": "Day 1: Flight to Nepalgunj, overnight stay\r\n\r\nDay 2: Flight to Talcha, trek to Rara Lake\r\n\r\nDay 3: Full day exploration of Rara Lake\r\n\r\nDay 4: Return trek to Talcha, flight back to Nepalgunj/Kathmandu",
+    "cost_details": "✈️ Flights (Kathmandu–Nepalgunj–Talcha): $200 – $250\r\n🏨 Accommodation: $20 per night × 3 nights = $60\r\n🍲 Food: $15/day × 4 days = $60\r\n🎟️ Park Fees: $20 – $30\r\n🛍️ Other Expenses: $30 – $50\r\nTotal: $370 – $450"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 8,
+  "fields": {
+    "title": "Dolakha Jiri: Gateway to Everest",
+    "overview": "Jiri, often called the “Switzerland of Nepal,” is a historic gateway to the Everest region. Surrounded by lush hills, terraced farms, and traditional Sherpa villages, it offers cultural charm, mountain views, and a taste of rural Himalayan life.",
+    "highlight": "Scenic drive through Dolakha & Jiri\r\nViews of Gaurishankar Himal\r\nLocal Sherpa culture & monasteries\r\nOrganic farms & traditional food",
+    "itinerary": "Day 1: Drive from Kathmandu to Dolakha, explore Dolakha Bhimsen Temple & overnight in Jiri\r\nDay 2: Hike to local villages & viewpoints, experience Sherpa culture, stay overnight\r\nDay 3: Explore surrounding hills, organic farms, return drive to Kathmandu",
+    "cost_details": "🚌 Transport (Kathmandu–Dolakha–Jiri round trip): $15 – $20\r\n🏠 Accommodation: $15 per night × 2 nights = $30\r\n🍲 Food: $15/day × 3 days = $45\r\n🎫 Entrance Fees/Monastery Donations: $10 – $15\r\n👜 Other Expenses: $20 – $30\r\nTotal: $120 – $140"
+  }
+},
+{
+  "model": "app.tourdetail",
+  "pk": 9,
+  "fields": {
+    "title": "Pathivara: Sacred Himalayan Pilgrimage",
+    "overview": "Pathivara Devi Temple, located in Taplejung District of Koshi Province, is one of Nepal’s most significant Hindu pilgrimage sites. Perched at 3,794 meters, it offers spiritual blessings along with breathtaking views of the Kanchenjunga range. The trek combines cultural devotion with natural beauty, passing through rhododendron forests, traditional Limbu villages, and rich biodiversity.",
+    "highlight": "Pilgrimage to Pathivara Devi Temple (Shakti Peeth)\r\nPanoramic views of Kanchenjunga & surrounding Himalayas\r\nTrek through rhododendron forests & alpine meadows\r\nExperience Limbu culture, traditions, and hospitality\r\nRich biodiversity with wildlife and birdlife en route",
+    "itinerary": "Day 1: Fly or drive to Taplejung, overnight stay in Phungling Bazaar\r\nDay 2: Trek from Phungling to Suketar/Deurali, stay overnight\r\nDay 3: Early morning trek to Pathivara Temple, enjoy mountain views, return to Suketar, overnight stay\r\nDay 4: Return trek to Taplejung, and fly/drive back",
+    "cost_details": "🚌 Transport (Kathmandu–Taplejung round trip): $120 – $150\r\n🏠 Accommodation: $20 per night × 3 nights = $60\r\n🍲 Food: $15/day × 4 days = $60\r\n🎫 Temple Donations/Entry Fees: $10 – $20\r\n👜 Other Expenses (guides, porter, local transport): $40 – $60\r\nTotal: $290 – $350"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 1,
+  "fields": {
+    "tour_detail": 1,
+    "image": "tour_images/pokhara.jpg"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 2,
+  "fields": {
+    "tour_detail": 2,
+    "image": "tour_images/chitwan.jpg"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 3,
+  "fields": {
+    "tour_detail": 3,
+    "image": "tour_images/lumbini.jpg"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 4,
+  "fields": {
+    "tour_detail": 4,
+    "image": "tour_images/Bandipur.jpg"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 5,
+  "fields": {
+    "tour_detail": 5,
+    "image": "tour_images/nagarkot.webp"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 6,
+  "fields": {
+    "tour_detail": 6,
+    "image": "tour_images/Ghandruk.webp"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 7,
+  "fields": {
+    "tour_detail": 7,
+    "image": "tour_images/raraLake.webp"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 8,
+  "fields": {
+    "tour_detail": 8,
+    "image": "tour_images/jiri.webp"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 9,
+  "fields": {
+    "tour_detail": 9,
+    "image": "tour_images/Pathivaraaaaa.jpg"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 10,
+  "fields": {
+    "tour_detail": 9,
+    "image": "tour_images/trekBaby.png"
+  }
+},
+{
+  "model": "app.tourimage",
+  "pk": 11,
+  "fields": {
+    "tour_detail": 9,
+    "image": "tour_images/Pathibhara-Devi-Temple.jpeg"
+  }
+},
+{
+  "model": "app.travelpackage",
+  "pk": 4,
+  "fields": {
+    "title": "Jiri",
+    "destination": 5,
+    "price": "20000.00",
+    "duration": 3,
+    "available_seats": 3,
+    "tour_detail": 8,
+    "featured_image": "featured_images/Bandipur.jpg",
+    "short_description": "Jiri is the switzerland of Nepal."
+  }
+},
+{
+  "model": "app.travelpackage",
+  "pk": 5,
+  "fields": {
+    "title": "Ghandruk Village",
+    "destination": 11,
+    "price": "30000.00",
+    "duration": 6,
+    "available_seats": 10,
+    "tour_detail": 6,
+    "featured_image": "featured_images/ghandruk-gurung-dress-2.webp",
+    "short_description": "Ghandruk is a picturesque Gurung village in the Annapurna region of Gandaki Province, Nepal. It is famous for its stunning views of Annapurna SouthMountain). Known for its traditional stone houses, rich Gurung culture, and hospitality, the village is also a gateway for popular treks."
+  }
+},
+{
+  "model": "app.travelpackage",
+  "pk": 6,
+  "fields": {
+    "title": "Pathivara Temple",
+    "destination": 8,
+    "price": "20000.00",
+    "duration": 7,
+    "available_seats": 10,
+    "tour_detail": 9,
+    "featured_image": "featured_images/Pathivaraaaaa.jpg",
+    "short_description": "Pathivara Devi Temple is one of the most important Hindu pilgrimage sites in Nepal, located at about 3,794 meters in Taplejung District, Koshi Province. Dedicated to Goddess Pathivara, it is a revered Shakti Peeth where devotees seek blessings of wealth, health, and protection."
+  }
+},
+{
+  "model": "app.packageimage",
+  "pk": 4,
+  "fields": {
+    "travel_package": 4,
+    "image": "package_images/Bandipur.jpg"
+  }
+},
+{
+  "model": "app.packageimage",
+  "pk": 5,
+  "fields": {
+    "travel_package": 4,
+    "image": "package_images/Bandipur_x6MSQhq.jpg"
+  }
+},
+{
+  "model": "app.packageimage",
+  "pk": 6,
+  "fields": {
+    "travel_package": 6,
+    "image": "package_images/Pathivara.webp"
+  }
+},
+{
+  "model": "app.packageimage",
+  "pk": 7,
+  "fields": {
+    "travel_package": 6,
+    "image": "package_images/images_pathivara.jpeg"
+  }
+},
+{
+  "model": "app.packageimage",
+  "pk": 8,
+  "fields": {
+    "travel_package": 6,
+    "image": "package_images/Pathivara_fzXIAxy.webp"
+  }
+},
+{
+  "model": "app.review",
+  "pk": 3,
+  "fields": {
+    "user": 6,
+    "travel_package": 4,
+    "rating": 2,
+    "comment": "nice",
+    "created_at": "2025-10-03T13:14:22.155Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 1,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "laxmi@gmail.com",
+    "message": "Hey",
+    "created_at": "2025-08-23T13:41:20.087Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 2,
+  "fields": {
+    "name": "Prakriti",
+    "email": "laxmi@gmail.com",
+    "message": "gsvgv",
+    "created_at": "2025-08-23T13:42:09.114Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 3,
+  "fields": {
+    "name": "Prakriti",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "Hello , Prakriti Khadka I am here to say you I love you to the moon and back .",
+    "created_at": "2025-11-01T16:01:04.465Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 4,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "Congratulations !!! Prakriti Khadka .",
+    "created_at": "2025-11-01T16:03:33.016Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 5,
+  "fields": {
+    "name": "Dolakha",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "nbvbn",
+    "created_at": "2025-11-01T16:05:22.570Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 6,
+  "fields": {
+    "name": "Dolakha",
+    "email": "laxmi@gmail.com",
+    "message": "b nbnm",
+    "created_at": "2025-11-01T16:05:40.683Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 7,
+  "fields": {
+    "name": "Dolakha",
+    "email": "laxmi@gmail.com",
+    "message": " bnb",
+    "created_at": "2025-11-01T16:06:24.249Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 8,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "bvgb",
+    "created_at": "2025-11-14T15:17:00.837Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 9,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "sds",
+    "created_at": "2025-11-14T15:28:07.222Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 10,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "sds",
+    "created_at": "2025-11-14T15:28:10.340Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 11,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "sds",
+    "created_at": "2025-11-14T15:28:11.457Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 12,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "sds",
+    "created_at": "2025-11-14T15:28:12.086Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 13,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "sds",
+    "created_at": "2025-11-14T15:28:12.269Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 14,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "sds",
+    "created_at": "2025-11-14T15:28:13.319Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 15,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "nbjh",
+    "created_at": "2025-11-14T15:39:36.801Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 16,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "nbjh",
+    "created_at": "2025-11-14T15:39:38.434Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 17,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "nbjh",
+    "created_at": "2025-11-14T15:39:39.355Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 18,
+  "fields": {
+    "name": "Dolakha",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "mnbh",
+    "created_at": "2025-11-15T12:00:52.793Z"
+  }
+},
+{
+  "model": "app.contactus",
+  "pk": 19,
+  "fields": {
+    "name": "Prakriti Khadka",
+    "email": "prakritikhadka027@gmail.com",
+    "message": "nsbdnsv",
+    "created_at": "2025-12-07T10:09:47.435Z"
+  }
+},
+{
+  "model": "app.sliderimage",
+  "pk": 1,
+  "fields": {
+    "image": "slider_images/image.png",
+    "caption": "TrekNepal"
+  }
+},
+{
+  "model": "app.trekking",
+  "pk": 1,
+  "fields": {
+    "title": "Everest Base Camp Trek",
+    "slug": "everest-base-camp-trek",
+    "country": "Nepal",
+    "duration": "14 Days",
+    "difficulty": "Moderate",
+    "max_altitude": "5,545 m (Kala Patthar)",
+    "price": "15000.00",
+    "description": "The Everest Base Camp Trek is Nepal’s most iconic trekking adventure, taking you to the foot of the world’s highest mountain, Mt. Everest (8,848 m). The journey passes through Sherpa villages, suspension bridges, rhododendron forests, and high-altitude landscapes. Highlights include Namche Bazaar, Tengboche Monastery, and breathtaking views of Everest, Lhotse, Ama Dablam, and other Himalayan giants. Kala Patthar (5,545 m) offers the best panoramic sunrise views of Everest. This trek blends adventure with cultural immersion in the Khumbu region.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\\nDay 02: Flight to Lukla (2,800 m), trek to Phakding (2,610 m)\\nDay 03: Trek to Namche Bazaar (3,440 m)\\nDay 04: Acclimatization day at Namche Bazaar (hike to Everest View Hotel / Khumjung)\\nDay 05: Trek to Tengboche (3,870 m) – visit Tengboche Monastery\\nDay 06: Trek to Dingboche (4,410 m)\\nDay 07: Acclimatization day at Dingboche (hike to Nagarjun Hill / Chhukung)\\nDay 08: Trek to Lobuche (4,940 m)\\nDay 09: Trek to Gorakshep (5,164 m) & hike to Everest Base Camp (5,364 m), overnight at Gorakshep\\nDay 10: Hike to Kala Patthar (5,545 m) for sunrise, trek back to Pheriche (4,280 m)\\nDay 11: Trek to Namche Bazaar (3,440 m)\\nDay 12: Trek to Lukla (2,800 m)\\nDay 13: Flight to Kathmandu, free day for rest or sightseeing\\nDay 14: Departure from Kathmandu",
+    "image": "trekking/Everest-Base-Camp.jpg",
+    "is_active": true,
+    "created_at": "2025-09-18T10:27:44.467Z"
+  }
+},
+{
+  "model": "app.trekking",
+  "pk": 2,
+  "fields": {
+    "title": "Annapurna Circuit Trek",
+    "slug": "annapurna-circuit-trek",
+    "country": "Nepal",
+    "duration": "15-16 Days",
+    "difficulty": "Moderate",
+    "max_altitude": "5,416 m (Thorong La Pass)",
+    "price": "14000.00",
+    "description": "The Annapurna Circuit Trek is one of the most famous treks in the world, \r\nrenowned for its incredible diversity of landscapes and cultures. The trek encircles the \r\nAnnapurna Massif, taking you from lush subtropical valleys and terraced farms to high alpine \r\npasses and arid landscapes resembling Tibet. The highlight is crossing Thorong La Pass (5,416 m), \r\nthe highest point of the trek, with breathtaking views of Annapurna, Dhaulagiri, Machhapuchhre, \r\nand Manaslu. Along the route, trekkers experience Gurung, Manangi, and Thakali cultures, as well \r\nas visit sacred sites such as Muktinath Temple. This trek perfectly blends natural beauty with \r\ncultural richness.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\r\nDay 02: Drive to Besisahar (760 m), trek to Bhulbhule\r\nDay 03: Trek to Jagat (1,300 m)\r\nDay 04: Trek to Dharapani (1,960 m)\r\nDay 05: Trek to Chame (2,670 m)\r\nDay 06: Trek to Pisang (3,200 m)\r\nDay 07: Trek to Manang (3,540 m)\r\nDay 08: Acclimatization day in Manang (hike to Gangapurna Lake or Ice Lake)\r\nDay 09: Trek to Yak Kharka (4,050 m)\r\nDay 10: Trek to Thorong Phedi (4,450 m)\r\nDay 11: Cross Thorong La Pass (5,416 m), trek to Muktinath (3,760 m)\r\nDay 12: Trek to Marpha (2,670 m) via Kagbeni and Jomsom\r\nDay 13: Trek to Tatopani (1,200 m) – natural hot springs\r\nDay 14: Trek to Ghorepani (2,850 m)\r\nDay 15: Early morning hike to Poon Hill (3,210 m) for sunrise, trek to Nayapul, drive to Pokhara\r\nDay 16: Drive or fly back to Kathmandu\r\nDay 17: Free day in Kathmandu for sightseeing or rest\r\nDay 18: Departure from Kathmandu",
+    "image": "trekking/annapurnaTrek.jpg",
+    "is_active": true,
+    "created_at": "2025-09-18T10:32:39.627Z"
+  }
+},
+{
+  "model": "app.trekking",
+  "pk": 3,
+  "fields": {
+    "title": "Langtang Valley Trek",
+    "slug": "langtang-valley-trek",
+    "country": "Nepal",
+    "duration": "7–10 Days",
+    "difficulty": "Moderate",
+    "max_altitude": "4,984 m (Tserko Ri)",
+    "price": "10000.00",
+    "description": "The Langtang Valley Trek is a beautiful short trek located close to Kathmandu, \r\nmaking it one of the most accessible trekking routes in Nepal. Known as the 'Valley of Glaciers,' \r\nthe trek offers breathtaking views of Langtang Lirung, Ganesh Himal, Dorje Lakpa, and Shishapangma \r\nin Tibet. Along the trail, trekkers pass through lush forests, rhododendron valleys, traditional \r\nTamang and Sherpa villages, and Buddhist monasteries. The highlight of the trek is the climb to \r\nTserko Ri (4,984 m), which provides panoramic sunrise views of the entire Langtang range. This trek \r\nis perfect for those seeking a Himalayan adventure without venturing too far into remote regions.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\r\nDay 02: Drive to Syabrubesi (1,550 m)\r\nDay 03: Trek to Lama Hotel (2,380 m)\r\nDay 04: Trek to Langtang Village (3,430 m)\r\nDay 05: Trek to Kyanjin Gompa (3,870 m)\r\nDay 06: Acclimatization day at Kyanjin Gompa – hike to Tserko Ri (4,984 m)\r\nDay 07: Trek back to Lama Hotel (2,380 m)\r\nDay 08: Trek to Syabrubesi (1,550 m)\r\nDay 09: Drive back to Kathmandu\r\nDay 10: Departure from Kathmandu",
+    "image": "trekking/Langtang-Valley-Trek.jpg",
+    "is_active": true,
+    "created_at": "2025-09-18T10:35:29.042Z"
+  }
+},
+{
+  "model": "app.trekking",
+  "pk": 4,
+  "fields": {
+    "title": "Manaslu Circuit Trek",
+    "slug": "manaslu-circuit-trek",
+    "country": "Nepal",
+    "duration": "14–18 Days",
+    "difficulty": "Challenging",
+    "max_altitude": "5,106 m (Larke La Pass)",
+    "price": "160000.00",
+    "description": "The Manaslu Circuit Trek is a remote and less-crowded alternative to the \r\nAnnapurna Circuit, offering an authentic Himalayan experience. This trek circles Mount Manaslu \r\n(8,163 m), the eighth-highest mountain in the world, and passes through diverse landscapes, \r\nranging from subtropical forests and terraced fields to alpine meadows and glacial valleys. \r\nThe cultural experience is equally rich, with Tibetan-influenced villages, ancient monasteries, \r\nand a unique blend of Buddhist and Hindu traditions. The highlight of the trek is crossing \r\nLarke La Pass (5,106 m), which offers spectacular panoramic views of Manaslu, Himlung Himal, \r\nCheo Himal, and Annapurna II. Due to its remoteness, a special trekking permit is required.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\r\nDay 02: Drive to Soti Khola (710 m)\r\nDay 03: Trek to Machha Khola (900 m)\r\nDay 04: Trek to Jagat (1,410 m)\r\nDay 05: Trek to Deng (1,800 m)\r\nDay 06: Trek to Namrung (2,630 m)\r\nDay 07: Trek to Lho Village (3,180 m)\r\nDay 08: Trek to Samagaon (3,530 m) – explore Ribung Monastery\r\nDay 09: Acclimatization day in Samagaon (hike to Manaslu Base Camp or Birendra Lake)\r\nDay 10: Trek to Samdo (3,860 m)\r\nDay 11: Trek to Dharamsala / Larke Phedi (4,460 m)\r\nDay 12: Cross Larke La Pass (5,106 m), trek down to Bimthang (3,720 m)\r\nDay 13: Trek to Tilije (2,300 m)\r\nDay 14: Trek to Dharapani (1,960 m), drive to Besisahar\r\nDay 15: Drive back to Kathmandu\r\nDay 16: Free day in Kathmandu\r\nDay 17: Departure from Kathmandu",
+    "image": "trekking/manaslu-trek.webp",
+    "is_active": true,
+    "created_at": "2025-09-18T10:38:04.992Z"
+  }
+},
+{
+  "model": "app.trekking",
+  "pk": 5,
+  "fields": {
+    "title": "Upper Dolpo Trek",
+    "slug": "upper-dolpo-trek",
+    "country": "Nepal",
+    "duration": "24–28 Days",
+    "difficulty": "Challenging",
+    "max_altitude": "5,151 m (Kang La Pass)",
+    "price": "17000.00",
+    "description": "The Upper Dolpo Trek is one of Nepal’s most remote and culturally fascinating \r\ntreks, taking you into the isolated highlands of Dolpa. This region is strongly influenced by \r\nTibetan Buddhism and Bon traditions, with centuries-old monasteries like Shey Gompa. The trek \r\npasses through arid landscapes, deep gorges, and crystal-clear alpine lakes, including the stunning \r\nPhoksundo Lake. Trekkers cross multiple high passes over 5,000 m, offering breathtaking views of \r\nDhaulagiri and other snowcapped peaks. Due to its remoteness, special permits are required, and \r\nthe trek demands strong physical fitness and endurance.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\r\nDay 02: Fly to Nepalgunj (150 m)\r\nDay 03: Fly to Juphal (2,475 m), trek to Dunai\r\nDay 04: Trek to Ankhe\r\nDay 05: Trek to Sulighat\r\nDay 06: Trek to Phoksundo Lake (3,611 m)\r\nDay 07: Acclimatization day at Phoksundo Lake\r\nDay 08: Trek to Phoksundo Khola\r\nDay 09: Trek to Phoksundo Bhanjyang\r\nDay 10: Cross Kang La Pass (5,151 m), trek to Shey Gompa (4,120 m)\r\nDay 11: Exploration day at Shey Gompa\r\nDay 12: Cross Saldang La (4,785 m), trek to Namgung\r\nDay 13: Trek to Saldang (3,620 m)\r\nDay 14: Trek to Yangze Gompa\r\nDay 15: Trek to Sibu\r\nDay 16: Trek to Jeng La Phedi\r\nDay 17: Cross Jeng La Pass (5,030 m), trek to Tokyu Gaon\r\nDay 18: Trek to Dho Tarap (4,090 m)\r\nDay 19: Exploration day at Dho Tarap\r\nDay 20: Trek to Tarap Khola\r\nDay 21: Trek to Khanigaon\r\nDay 22: Trek to Tarakot\r\nDay 23: Trek to Dunai\r\nDay 24: Trek to Juphal\r\nDay 25: Fly to Nepalgunj, then to Kathmandu\r\nDay 26: Free day in Kathmandu\r\nDay 27: Departure from Kathmandu",
+    "image": "trekking/upper_dolpo_trek.jpg",
+    "is_active": true,
+    "created_at": "2025-09-18T10:42:03.690Z"
+  }
+},
+{
+  "model": "app.trekking",
+  "pk": 6,
+  "fields": {
+    "title": "Kanchenjunga Circuit Trek",
+    "slug": "kanchenjunga-circuit-trek",
+    "country": "Nepal",
+    "duration": "20–26 Days",
+    "difficulty": "Challenging",
+    "max_altitude": "5,143 m (Pangpema North Base Camp)",
+    "price": "32000.00",
+    "description": "The Kanchenjunga Circuit Trek is a remote and adventurous trek to the base \r\nof the world’s third-highest peak, Mt. Kanchenjunga (8,586 m). This trek explores both the north \r\nand south base camps, offering wild, untouched landscapes and rich biodiversity within Kanchenjunga \r\nConservation Area. The journey passes through lush rhododendron forests, alpine meadows, glacial \r\nvalleys, and Tibetan-influenced villages. Trekkers encounter spectacular views of Kanchenjunga, \r\nJannu (Kumbhakarna), and several Himalayan giants. Due to its remoteness, this trek requires a \r\nspecial permit and is best suited for experienced trekkers looking for solitude and raw adventure.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\r\nDay 02: Fly to Bhadrapur, drive to Taplejung\r\nDay 03: Trek to Mitlung (921 m)\r\nDay 04: Trek to Chirwa (1,270 m)\r\nDay 05: Trek to Sekathum (1,660 m)\r\nDay 06: Trek to Amjilosa (2,510 m)\r\nDay 07: Trek to Gyabla (2,730 m)\r\nDay 08: Trek to Ghunsa (3,595 m)\r\nDay 09: Acclimatization day at Ghunsa (hike to Lpasan La viewpoint)\r\nDay 10: Trek to Kambachen (4,050 m)\r\nDay 11: Trek to Lhonak (4,780 m)\r\nDay 12: Trek to Pangpema / Kanchenjunga North Base Camp (5,143 m), return to Lhonak\r\nDay 13: Return trek to Ghunsa\r\nDay 14: Trek to Sele Le\r\nDay 15: Cross Sele La Pass (4,480 m), trek to Cheram\r\nDay 16: Trek to Ramche (4,580 m), excursion to Kanchenjunga South Base Camp (4,600 m)\r\nDay 17: Return to Cheram\r\nDay 18: Trek to Tortong\r\nDay 19: Trek to Yamphudin\r\nDay 20: Trek to Mamankhe\r\nDay 21: Trek to Khebang\r\nDay 22: Drive to Taplejung, then to Bhadrapur\r\nDay 23: Fly to Kathmandu\r\nDay 24: Free day in Kathmandu\r\nDay 25: Departure from Kathmandu",
+    "image": "trekking/Kanchenjunga-Circuit-Trek.webp",
+    "is_active": true,
+    "created_at": "2025-09-18T10:43:49.533Z"
+  }
+},
+{
+  "model": "app.trekking",
+  "pk": 7,
+  "fields": {
+    "title": "Makalu Base Camp Trek",
+    "slug": "makalu-base-camp-trek",
+    "country": "Nepal",
+    "duration": "18–22 Days",
+    "difficulty": "Challenging",
+    "max_altitude": "5,250 m (Makalu Base Camp)",
+    "price": "28000.00",
+    "description": "The Makalu Base Camp Trek is a wild and less-traveled trek into the heart of \r\nMakalu-Barun National Park. It leads to the base camp of Mt. Makalu (8,485 m), the world’s \r\nfifth-highest mountain. The trek is known for its rugged trails, dramatic landscapes, \r\nand incredible biodiversity. Trekkers pass through tropical forests, high alpine meadows, \r\nand remote Sherpa villages before reaching the stark glacial base camp. Unlike other popular routes, \r\nMakalu offers a true sense of wilderness and solitude. This trek is best for experienced trekkers \r\nseeking a remote Himalayan adventure.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\r\nDay 02: Fly to Tumlingtar, drive to Chichila (1,980 m)\r\nDay 03: Trek to Num (1,560 m)\r\nDay 04: Trek to Seduwa (1,500 m) – entry to Makalu-Barun National Park\r\nDay 05: Trek to Tashigaon (2,100 m)\r\nDay 06: Trek to Khongma Danda (3,560 m)\r\nDay 07: Cross Shipton La Pass (4,170 m), trek to Dobato\r\nDay 08: Trek to Yangle Kharka (3,600 m)\r\nDay 09: Trek to Langmale Kharka (4,410 m)\r\nDay 10: Trek to Makalu Base Camp (5,250 m)\r\nDay 11: Exploration day at Makalu Base Camp\r\nDay 12: Return trek to Yangle Kharka\r\nDay 13: Trek to Khongma Danda\r\nDay 14: Trek to Tashigaon\r\nDay 15: Trek to Num\r\nDay 16: Trek to Chichila, drive to Tumlingtar\r\nDay 17: Fly back to Kathmandu\r\nDay 18: Free day in Kathmandu\r\nDay 19: Departure from Kathmandu",
+    "image": "trekking/makalu_trek.webp",
+    "is_active": true,
+    "created_at": "2025-09-18T10:45:18.929Z"
+  }
+},
+{
+  "model": "app.peakclimbing",
+  "pk": 1,
+  "fields": {
+    "title": "Mount Everest",
+    "slug": "mount-everest",
+    "country": "Nepal",
+    "duration": "60-70 Days",
+    "difficulty": "Extremely Challenging",
+    "height": "8,848 m",
+    "price": "70000.00",
+    "description": "Mount Everest is the world’s highest peak at 8,848 m. Climbing Everest is a \r\nhigh-altitude expedition that requires excellent fitness, technical skills, and experience \r\nwith prolonged extreme conditions. The standard route is via the South Col from Nepal, passing \r\nthrough the Khumbu Icefall, Western Cwm, and South Col before the summit push.",
+    "itinerary": "Day 01: Arrival in Kathmandu (1,400 m)\r\nDay 02: Trek preparation and permit collection\r\nDay 03: Fly to Lukla (2,800 m), trek to Phakding (2,610 m)\r\nDay 04–10: Trek to Everest Base Camp (5,364 m) via Namche Bazaar, Tengboche, Dingboche, Lobuche\r\nDay 11–50: Acclimatization rotations at Base Camp and higher camps\r\nDay 51–60: Summit push via South Col and return to Base Camp\r\nDay 61–63: Trek back to Lukla, fly to Kathmandu\r\nDay 64: Rest and sightseeing in Kathmandu\r\nDay 65–70: Departure from Kathmandu",
+    "image": "peak_climbing/mtEverest.jpg",
+    "is_active": true,
+    "created_at": "2025-09-18T12:11:55.173Z"
+  }
+},
+{
+  "model": "app.peakclimbing",
+  "pk": 2,
+  "fields": {
+    "title": "Lhotse",
+    "slug": "lhotse",
+    "country": "Nepal",
+    "duration": "55–65 Days",
+    "difficulty": "Extremely Challenging",
+    "height": "8,516 m",
+    "price": "50000.00",
+    "description": "Lhotse is the world’s fourth-highest peak (8,516 m) and shares much of the \r\nroute with Everest until the Lhotse Face. Climbers face steep snow and ice, requiring advanced \r\nmountaineering experience.",
+    "itinerary": "Day 01: Arrival in Kathmandu\r\nDay 02: Fly to Lukla, trek to Namche Bazaar\r\nDay 03–10: Trek to Everest Base Camp\r\nDay 11–50: Acclimatization rotations on Lhotse Face and South Col\r\nDay 51–60: Summit attempt and return to Base Camp\r\nDay 61–63: Trek to Lukla, fly back to Kathmandu\r\nDay 64–65: Rest in Kathmandu\r\nDay 66–70: Departure",
+    "image": "peak_climbing/lhotse.webp",
+    "is_active": true,
+    "created_at": "2025-09-18T12:13:58.135Z"
+  }
+},
+{
+  "model": "app.peakclimbing",
+  "pk": 3,
+  "fields": {
+    "title": "Nuptse",
+    "slug": "nuptse",
+    "country": "Nepal",
+    "duration": "50–60 Days",
+    "difficulty": "Extremely Challenging",
+    "height": "7,861 m",
+    "price": "60000.00",
+    "description": "Nuptse (7,861 m) is a sharp, rocky peak immediately southwest of Everest. \r\nClimbers face technical rock and ice sections. It is usually climbed by highly experienced mountaineers \r\noften as part of acclimatization or combined expeditions with Everest.",
+    "itinerary": "Day 01: Arrival in Kathmandu\r\nDay 02: Fly to Lukla, trek to Namche Bazaar\r\nDay 03–08: Trek to Base Camp area near Nuptse\r\nDay 09–45: Acclimatization and rotation climbs\r\nDay 46–55: Summit push and return\r\nDay 56–58: Trek to Lukla, fly back to Kathmandu\r\nDay 59–60: Departure",
+    "image": "peak_climbing/nuptse.jpg",
+    "is_active": true,
+    "created_at": "2025-09-18T12:16:33.222Z"
+  }
+},
+{
+  "model": "app.peakclimbing",
+  "pk": 4,
+  "fields": {
+    "title": "Ama Dablam",
+    "slug": "ama-dablam",
+    "country": "Nepal",
+    "duration": "28–35 Days",
+    "difficulty": "Challenging",
+    "height": "6,812 m",
+    "price": "30000.00",
+    "description": "Ama Dablam is one of Nepal’s most iconic peaks, known for its beautiful \r\npyramidal shape. The climb involves steep rock, ice, and mixed terrain. Technical climbing skills \r\nand high-altitude experience are required.",
+    "itinerary": "Day 01: Arrival in Kathmandu\r\nDay 02: Fly to Lukla, trek to Phakding\r\nDay 03–06: Trek to Base Camp (4,600 m) via Namche Bazaar and Tengboche\r\nDay 07–25: Acclimatization rotations and climb via South Ridge\r\nDay 26–30: Summit push and descent\r\nDay 31–33: Trek back to Lukla, fly to Kathmandu\r\nDay 34–35: Rest and departure",
+    "image": "peak_climbing/amaDamla.jpg",
+    "is_active": true,
+    "created_at": "2025-09-18T12:18:40.904Z"
+  }
+},
+{
+  "model": "app.trekkinggalleryimage",
+  "pk": 1,
+  "fields": {
+    "trekking": 1,
+    "image": "trekking/gallery/sheep.jpeg",
+    "caption": "Sheep is welcoming you?"
+  }
+},
+{
+  "model": "app.trekkinggalleryimage",
+  "pk": 2,
+  "fields": {
+    "trekking": 2,
+    "image": "trekking/gallery/trekBaby.png",
+    "caption": "Baby is welcoming you?"
+  }
+},
+{
+  "model": "app.trekkinggalleryimage",
+  "pk": 3,
+  "fields": {
+    "trekking": 3,
+    "image": "trekking/gallery/sheep2.jpeg",
+    "caption": "Sheep is welcoming you?"
+  }
+},
+{
+  "model": "app.trekkinggalleryimage",
+  "pk": 4,
+  "fields": {
+    "trekking": 4,
+    "image": "trekking/gallery/Nepal.webp",
+    "caption": "Hey Manaslu"
+  }
+},
+{
+  "model": "app.trekkinggalleryimage",
+  "pk": 5,
+  "fields": {
+    "trekking": 5,
+    "image": "trekking/gallery/imgGirl.jpeg",
+    "caption": "Hey Dolpo"
+  }
+},
+{
+  "model": "app.trekkinggalleryimage",
+  "pk": 6,
+  "fields": {
+    "trekking": 6,
+    "image": "trekking/gallery/image_man.jpeg",
+    "caption": "Hey Kanchenjunga"
+  }
+},
+{
+  "model": "app.trekkinggalleryimage",
+  "pk": 7,
+  "fields": {
+    "trekking": 7,
+    "image": "trekking/gallery/image1.jpeg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.peakclimbinggalleryimage",
+  "pk": 1,
+  "fields": {
+    "peak": 1,
+    "image": "peak_climbing/gallery/trekking.png",
+    "caption": "Hey Mountain"
+  }
+},
+{
+  "model": "app.peakclimbinggalleryimage",
+  "pk": 2,
+  "fields": {
+    "peak": 2,
+    "image": "peak_climbing/gallery/lhotse.webp",
+    "caption": "Hey Lotse"
+  }
+},
+{
+  "model": "app.peakclimbinggalleryimage",
+  "pk": 3,
+  "fields": {
+    "peak": 3,
+    "image": "peak_climbing/gallery/mt_nuptse.jpg",
+    "caption": "Mt nuptse"
+  }
+},
+{
+  "model": "app.peakclimbinggalleryimage",
+  "pk": 4,
+  "fields": {
+    "peak": 4,
+    "image": "peak_climbing/gallery/amaDamla1.webp",
+    "caption": "Hey Ama Dablam"
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 3,
+  "fields": {
+    "destination": 4,
+    "image": "destinations/gallery/Tea-garden-in-Ilam.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 4,
+  "fields": {
+    "destination": 4,
+    "image": "destinations/gallery/Ilam.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 5,
+  "fields": {
+    "destination": 5,
+    "image": "destinations/gallery/Evening_View_of_Tansen.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 7,
+  "fields": {
+    "destination": 5,
+    "image": "destinations/gallery/jiri.webp",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 8,
+  "fields": {
+    "destination": 6,
+    "image": "destinations/gallery/Khaptad-national-park-1-1.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 9,
+  "fields": {
+    "destination": 6,
+    "image": "destinations/gallery/Khaptad_National_Park.jpeg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 10,
+  "fields": {
+    "destination": 6,
+    "image": "destinations/gallery/khaptad.webp",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 11,
+  "fields": {
+    "destination": 7,
+    "image": "destinations/gallery/janakpurdham-temple.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 12,
+  "fields": {
+    "destination": 7,
+    "image": "destinations/gallery/Ram_temple.webp",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 13,
+  "fields": {
+    "destination": 7,
+    "image": "destinations/gallery/janakpur.webp",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 14,
+  "fields": {
+    "destination": 7,
+    "image": "destinations/gallery/janak.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 15,
+  "fields": {
+    "destination": 8,
+    "image": "destinations/gallery/images_pathivara.jpeg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 16,
+  "fields": {
+    "destination": 8,
+    "image": "destinations/gallery/Pathibhara-Devi-Temple.jpeg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 17,
+  "fields": {
+    "destination": 8,
+    "image": "destinations/gallery/Pathivara.webp",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 18,
+  "fields": {
+    "destination": 9,
+    "image": "destinations/gallery/koshi-tappu-wildlife.webp",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 19,
+  "fields": {
+    "destination": 9,
+    "image": "destinations/gallery/kosi.jpeg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 20,
+  "fields": {
+    "destination": 9,
+    "image": "destinations/gallery/kosi_img.jpeg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 21,
+  "fields": {
+    "destination": 10,
+    "image": "destinations/gallery/bardiya-national-park-2.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 22,
+  "fields": {
+    "destination": 10,
+    "image": "destinations/gallery/bar.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 23,
+  "fields": {
+    "destination": 10,
+    "image": "destinations/gallery/bardiya-national-park-wildlife-safari.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 24,
+  "fields": {
+    "destination": 10,
+    "image": "destinations/gallery/bardia-national-park-4.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 25,
+  "fields": {
+    "destination": 10,
+    "image": "destinations/gallery/bardiyaaaa.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 26,
+  "fields": {
+    "destination": 8,
+    "image": "destinations/gallery/Pathivaraaaaa.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 27,
+  "fields": {
+    "destination": 6,
+    "image": "destinations/gallery/khaptadddd.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 28,
+  "fields": {
+    "destination": 5,
+    "image": "destinations/gallery/dolakha.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.destinationgalleryimage",
+  "pk": 29,
+  "fields": {
+    "destination": 5,
+    "image": "destinations/gallery/sailung-dolakha.jpg",
+    "caption": ""
+  }
+},
+{
+  "model": "app.guide",
+  "pk": 1,
+  "fields": {
+    "user": 8,
+    "license_certificate": "guides/certificates/cover1_1.docx",
+    "verified": true,
+    "bio": null,
+    "experience_years": 0,
+    "languages": "",
+    "profile_picture": ""
+  }
+},
+{
+  "model": "app.profile",
+  "pk": 4,
+  "fields": {
+    "user": 15,
+    "email_verification_code": "171942",
+    "is_verified": true
+  }
+},
+{
+  "model": "app.profile",
+  "pk": 5,
+  "fields": {
+    "user": 16,
+    "email_verification_code": "663127",
+    "is_verified": true
+  }
+}
+]

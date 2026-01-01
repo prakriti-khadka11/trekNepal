@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image for Text Extraction</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}"> 
+</head>
+<body>
+    <div class="container">
+        <h1>Upload an Image</h1>
+        <form id="uploadForm" action="{% url 'image_upload' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="imageInput">Choose Image</label>
+            <input type="file" id="imageInput" name="image" accept="image/*" required>
+            <p class="file-name" id="fileName">No file chosen</p>
+            <button type="submit">Upload and Process</button>
+            <p class="error-message" id="errorMsg"></p>
+        </form>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const fileNameDisplay = document.getElementById('fileName');
+        const errorMsg = document.getElementById('errorMsg');
+        const uploadForm = document.getElementById('uploadForm');
+
+        // Display the selected file name
+        imageInput.addEventListener('change', () => {
+            const file = imageInput.files[0];
+            fileNameDisplay.textContent = file ? file.name : 'No file chosen';
+            errorMsg.textContent = ''; // Clear error message
+        });
+
+        // Prevent form submission if no file is chosen
+        uploadForm.addEventListener('submit', (event) => {
+            if (!imageInput.files.length) {
+                event.preventDefault();
+                errorMsg.textContent = 'Please upload an image before submitting.';
+            }
+        });
+    </script>
+</body>
+</html>
