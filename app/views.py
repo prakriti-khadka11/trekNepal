@@ -159,50 +159,6 @@ def edit_profile(request):
         form = ProfileForm(instance=request.user)
     return render(request, "edit_profile.html", {"form": form})
 
-# @login_required
-# def book_travel(request, travel_id):
-#     travel_package = TravelPackage.objects.get(id=travel_id)
-#     if request.method == "POST":
-#         num_people = int(request.POST["num_people"])
-#         total_price = travel_package.price * num_people
-
-#         Booking.objects.create(
-#             user=request.user,
-#             travel_package=travel_package,
-#             num_people=num_people,
-#             total_price=total_price,
-#             travel_date=request.POST["travel_date"],
-#         )
-
-#         messages.success(request, "Booking successful!")
-#         return redirect("my_bookings")
-
-#     return render(request, "tour_detail.html", {"package": travel_package})
-
-# @login_required
-# def book_travel(request, travel_id):
-#     travel_package = get_object_or_404(TravelPackage, id=travel_id)
-
-#     if request.method == "POST":
-#         num_people = int(request.POST["num_people"])
-#         travel_date = request.POST["travel_date"]
-#         total_price = travel_package.price * num_people
-
-#         # ✅ Create booking as PENDING
-#         booking = Booking.objects.create(
-#             user=request.user,
-#             travel_package=travel_package,
-#             num_people=num_people,
-#             travel_date=travel_date,
-#             total_price=total_price,
-#             status="PENDING"
-#         )
-
-#         # 🔁 Redirect to Khalti initiate
-#         return redirect("khalti_initiate", booking_id=booking.id)
-
-#     return render(request, "tour_detail.html", {"travel_package": travel_package})
-
 @login_required
 def book_travel(request, travel_id):
     travel_package = get_object_or_404(TravelPackage, id=travel_id)
@@ -224,7 +180,6 @@ def book_travel(request, travel_id):
         return redirect("khalti_initiate_temp")
 
     return render(request, "tour_detail.html", {"travel_package": travel_package})
-
 
 
 @login_required
@@ -669,73 +624,6 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from .models import Booking
 
-# @login_required
-# def khalti_initiate(request, booking_id):
-#     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-
-#     headers = {
-#         "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
-#         "Content-Type": "application/json",
-#     }
-
-#     payload = {
-#         "return_url": request.build_absolute_uri("/khalti/verify/"),
-#         "website_url": request.build_absolute_uri("/"),
-#         "amount": int(booking.total_price * 100),  # paisa
-#         "purchase_order_id": str(booking.id),
-#         "purchase_order_name": booking.travel_package.title,  # use title
-#     }
-
-#     response = requests.post(
-#         "https://a.khalti.com/api/v2/epayment/initiate/",
-#         json=payload,
-#         headers=headers
-#     )
-
-#     result = response.json()
-
-#     if "payment_url" in result:
-#         return redirect(result["payment_url"])
-#     else:
-#         # handle errors
-#         return redirect("my_bookings")
-
-# @login_required
-# def khalti_verify(request):
-#     pidx = request.GET.get("pidx")
-#     purchase_order_id = request.GET.get("purchase_order_id")  # get from GET params
-
-#     if not pidx or not purchase_order_id:
-#         return redirect("my_bookings")
-
-#     headers = {
-#         "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
-#         "Content-Type": "application/json",
-#     }
-
-#     payload = {"pidx": pidx}
-
-#     response = requests.post(
-#         "https://a.khalti.com/api/v2/epayment/lookup/",
-#         json=payload,
-#         headers=headers
-#     )
-
-#     result = response.json()
-#     print("Khalti verify result:", result)  # Debug
-
-#     # If payment succeeded
-#     if result.get("status") == "Completed":
-#         try:
-#             booking = Booking.objects.get(id=purchase_order_id)  # use GET param
-#             booking.status = "PAID"
-#             booking.khalti_pidx = pidx
-#             booking.save()
-#         except Booking.DoesNotExist:
-#             pass
-
-#     return redirect("my_bookings")
-
 
 import requests
 from django.conf import settings
@@ -784,7 +672,76 @@ def khalti_initiate_temp(request):
         # If initiation failed
         return redirect("package_list")
 
+# @login_required
+# def khalti_verify(request):
+#     pidx = request.GET.get("pidx")
+#     if not pidx:
+#         return redirect("package_list")
 
+#     headers = {
+#         "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+#         "Content-Type": "application/json",
+#     }
+
+#     payload = {"pidx": pidx}
+
+#     response = requests.post(
+#         "https://a.khalti.com/api/v2/epayment/lookup/",
+#         json=payload,
+#         headers=headers
+#     )
+
+#     result = response.json()
+#     print("Khalti verify result:", result)
+
+#     if result.get("status") == "Completed":
+#         booking_data = request.session.get('pending_booking')
+#         if booking_data:
+#             travel_package = get_object_or_404(TravelPackage, id=booking_data["travel_id"])
+
+#             booking = Booking.objects.create(
+#                 user=request.user,
+#                 travel_package=travel_package,
+#                 num_people=booking_data["num_people"],
+#                 travel_date=booking_data["travel_date"],
+#                 total_price=booking_data["total_price"],
+#                 status="PAID",
+#                 khalti_pidx=pidx
+#             )
+
+#             # Clear pending booking from session
+#             del request.session['pending_booking']
+
+#     return redirect("my_bookings")
+
+# @login_required
+# def rate_guide(request, booking_id):
+#     booking = get_object_or_404(
+#         Booking,
+#         id=booking_id,
+#         user=request.user,
+#         guide__isnull=False
+#     )
+
+#     if request.method == "POST":
+#         GuideReview.objects.create(
+#             booking=booking,
+#             guide=booking.guide,
+#             user=request.user,
+#             rating=request.POST["rating"],
+#             comment=request.POST.get("comment", "")
+#         )
+#         return redirect("booking_detail", booking.id)
+
+#     return render(request, "rate_guide.html", {"booking": booking})
+
+
+
+
+# Added today 
+
+
+from .utils import send_booking_email
 
 @login_required
 def khalti_verify(request):
@@ -811,7 +768,9 @@ def khalti_verify(request):
     if result.get("status") == "Completed":
         booking_data = request.session.get('pending_booking')
         if booking_data:
-            travel_package = get_object_or_404(TravelPackage, id=booking_data["travel_id"])
+            travel_package = get_object_or_404(
+                TravelPackage, id=booking_data["travel_id"]
+            )
 
             booking = Booking.objects.create(
                 user=request.user,
@@ -823,30 +782,10 @@ def khalti_verify(request):
                 khalti_pidx=pidx
             )
 
-            # Clear pending booking from session
+            # SEND PDF EMAIL
+            send_booking_email(booking)
+
             del request.session['pending_booking']
 
     return redirect("my_bookings")
 
-
-
-@login_required
-def rate_guide(request, booking_id):
-    booking = get_object_or_404(
-        Booking,
-        id=booking_id,
-        user=request.user,
-        guide__isnull=False
-    )
-
-    if request.method == "POST":
-        GuideReview.objects.create(
-            booking=booking,
-            guide=booking.guide,
-            user=request.user,
-            rating=request.POST["rating"],
-            comment=request.POST.get("comment", "")
-        )
-        return redirect("booking_detail", booking.id)
-
-    return render(request, "rate_guide.html", {"booking": booking})

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Booking Receipt</title>
+    <style>
+        body { font-family: Arial; }
+        .box { border:1px solid #222; padding:20px; }
+        h1 { color:#2c3e50; }
+    </style>
+</head>
+
+<body>
+<div class="box">
+    <h1>Nepal Trek Booking Receipt</h1>
+
+    <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+    <p><strong>User:</strong> {{ booking.user.username }}</p>
+    <p><strong>Email:</strong> {{ booking.user.email }}</p>
+
+    <h3>Package</h3>
+    <p>{{ booking.travel_package.title }}</p>
+
+    <h3>Travel Details</h3>
+    <p><strong>Date:</strong> {{ booking.travel_date }}</p>
+    <p><strong>People:</strong> {{ booking.num_people }}</p>
+
+    <h3>Payment</h3>
+    <p><strong>Total Price:</strong> Rs {{ booking.total_price }}</p>
+    <p><strong>Status:</strong> {{ booking.status }}</p>
+    <p><strong>Khalti Transaction:</strong> {{ booking.khalti_pidx }}</p>
+
+    <hr>
+    <p>This is a demo academic project receipt.</p>
+</div>
+</body>
+</html>

@@ -74,19 +74,9 @@ urlpatterns = [
     path('activate/<uidb64>/<token>', views.activate, name='activate'),
     path('verify_code/', views.verify_code, name='verify_code'),
 
-
-    # Added
-
-#    path('khalti/initiate/<int:booking_id>/', views.khalti_initiate, name='khalti_initiate'),
-#     path('khalti/verify/', views.khalti_verify, name='khalti_verify'),
-
-# urls.py
-
    path('book/<int:travel_id>/', views.book_travel, name='book_travel'),
     path('khalti/initiate/', views.khalti_initiate_temp, name='khalti_initiate_temp'),
     path('khalti/verify/', views.khalti_verify, name='khalti_verify')
-
-
     ]
 
  
