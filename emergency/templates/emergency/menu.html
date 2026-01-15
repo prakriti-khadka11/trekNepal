@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Menu{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 text-danger"><i class="fas fa-ambulance me-2"></i>Emergency Menu</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <a href="{% url 'sos_alert' %}" class="btn btn-danger w-100 py-3">🚨 SOS Alert</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'emergency_history' %}" class="btn btn-secondary w-100 py-3">📜 Emergency History</a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="btn btn-warning w-100 py-3">🩹 First Aid Guide</a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="btn btn-info w-100 py-3">📍 Nearby Help</a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="btn btn-success w-100 py-3">⚠️ Share Location</a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="btn btn-primary w-100 py-3">📝 Select Emergency Type</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

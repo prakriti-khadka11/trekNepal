@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Emergency Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Emergency Dashboard</h1>
+    <div class="list-group">
+        <a href="{% url 'sos_alert' %}" class="list-group-item list-group-item-action">🚨 SOS Alert</a>
+        <a href="#" class="list-group-item list-group-item-action">🩹 First Aid Guide</a>
+        <a href="#" class="list-group-item list-group-item-action">📊 Emergency Status</a>
+        <a href="{% url 'emergency_history' %}" class="list-group-item list-group-item-action">📜 Emergency History</a>
+        <a href="#" class="list-group-item list-group-item-action">📞 Emergency Contacts</a>
+    </div>
+</div>
+{% endblock %}

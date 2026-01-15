@@ -8,18 +8,6 @@
 <!-- Hero Section -->
 <div class="hero-section position-relative" >
     <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
-        <!-- <div class="carousel-inner" >
-            <div class="carousel-item active">
-                <img src="/static/img/rara.jpeg" class="d-block w-100" alt="Explore Amazing Destinations" style="height: 83vh; object-fit: cover;object-position: top;">
-            </div>
-            <div class="carousel-item">
-                <img src="static/img/imgGirl.jpeg" class="d-block w-100" alt="Discover New Adventures" style="height: 83vh; object-fit: cover;object-position: top;">
-            </div>
-            <div class="carousel-item">
-                <img src="/static/img/gumba.jpeg" class="d-block w-100" alt="Experience Different Cultures" style="height: 83vh; object-fit: cover;object-position: top;">
-            </div>
-        </div> -->
-
         <div class="video-container">
     <video autoplay muted loop playsinline class="d-block w-100" style="height: 83vh; object-fit: cover; object-position: center;">
         <source src="/static/img/trek video.mp4" type="video/mp4">
@@ -33,7 +21,7 @@
     <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">Discover amazing destinations and create unforgettable memories</p>
     <div data-aos="fade-up" data-aos-delay="200">
         <a href="{% url 'package_list' %}" class="btn btn-primary btn-lg me-2">Explore Packages</a>
-         <a href="{% url 'contact_us' %}" class="btn btn-primary btn-lg me-2">Contact Us</a>
+    
        
         {% if user.is_authenticated %}
 
@@ -53,11 +41,41 @@
 <a href="{% url 'trek_map' %}"  class="btn btn-success btn-lg">
     <i class="fas fa-map-marked-alt me-2"></i> Map
 </a>
+
         {% endif %}
     </div>
 </div>
-
 </div>
+
+
+<!-- Floating Emergency Button (Fixed on right) -->
+<a href="{% url 'emergency_dashboard' %}" 
+   style="
+       position: fixed;      /* FIXED on screen, does not scroll */
+       top: 150px;            /* distance from top of viewport */
+       right: 20px;          /* distance from right of viewport */
+       width: 50px;          /* circle width */
+       height: 50px;         /* circle height */
+       background-color: #dc3545; /* red circle */
+       border-radius: 50%;   /* circular */
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       z-index: 9999;        /* always on top */
+       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+       transition: transform 0.2s, box-shadow 0.2s;
+       cursor: pointer;
+   "
+   onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.4)';"
+   onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)';"
+>
+    <img src="/static/img/emergencyBulb.png" 
+         alt="Emergency" 
+         style="width: 70px; height: 70px;">
+</a>
+
+
+
 
 <!-- Search Section -->
 <div class="search-section py-5 bg-light">
@@ -469,7 +487,6 @@
     </div>
 </section>
 
-
 {% endblock %}
 
 {% block extra_js %}
@@ -517,5 +534,26 @@
             ]
         });
     });
+
+
+    // Added today
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('emergency-btn');
+    const menu = document.getElementById('emergency-menu');
+
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    document.addEventListener('click', function() {
+        menu.style.display = 'none';
+    });
+});
+
+
 </script>
+
+
 {% endblock %}

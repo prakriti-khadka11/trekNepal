@@ -365,5 +365,67 @@ body:not(.contact-video-section) .form-control {
 }
 
 
+/* Added today */
 
+/* Small emergency image like icon */
+.emergency-icon-img {
+    width: 40px;       /* adjust size */
+    height: 40px;
+    cursor: pointer;
+    display: block;
+}
 
+/* Emergency menu hidden by default */
+#emergency-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50px;            /* below the icon */
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+/* Menu options styling */
+/* Hover menu hidden by default */
+#emergency-menu {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateX(20px); /* start slightly right */
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* Show menu when hovering the wrapper */
+#emergency-wrapper:hover #emergency-menu {
+    opacity: 1;
+    transform: translateX(-10px); /* slide slightly left */
+    pointer-events: auto;
+}
+
+.emergency-option {
+    background-color: #dc3545; /* red */
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.emergency-option:hover {
+    background-color: #b02a37; /* darker red on hover */
+    transform: translateX(-5px);
+}
