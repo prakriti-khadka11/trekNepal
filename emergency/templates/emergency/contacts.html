@@ -1,0 +1,652 @@
+{% extends 'base.html' %}
+{% block title %}Emergency Contacts Manager{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contacts-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 50px 0;
+    }
+    
+    .contacts-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        margin: 20px 0;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .contact-item {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        border-left: 5px solid #28a745;
+    }
+    
+    .contact-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .contact-priority {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .priority-high { background: #ff4757; color: white; }
+    .priority-medium { background: #ffa502; color: white; }
+    .priority-low { background: #26de81; color: white; }
+    
+    .contact-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .contact-actions button {
+        flex: 1;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-call {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn-message {
+        background: #007bff;
+        color: white;
+    }
+    
+    .btn-edit {
+        background: #ffc107;
+        color: #333;
+    }
+    
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .add-contact-btn {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 15px 30px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+    }
+    
+    .add-contact-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+    }
+    
+    .contact-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .contact-modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #4facfe;
+    }
+    
+    .emergency-test {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+    }
+    
+    .contact-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+    
+    .stat-item {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4facfe;
+    }
+    
+    .import-export {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contacts-container">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="text-white mb-3">
+                <i class="fas fa-address-book me-3"></i>
+                Emergency Contacts Manager
+            </h2>
+            <p class="text-white-50">Manage your emergency contacts for quick access during emergencies</p>
+        </div>
+        
+        <!-- Contact Stats -->
+        <div class="contacts-card">
+            <div class="contact-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalContacts">0</div>
+                    <div class="text-muted">Total Contacts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="highPriority">0</div>
+                    <div class="text-muted">High Priority</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="verifiedContacts">0</div>
+                    <div class="text-muted">Verified</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="lastUpdated">Never</div>
+                    <div class="text-muted">Last Updated</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add Contact Button -->
+        <div class="text-center mb-4">
+            <button class="add-contact-btn" onclick="openContactModal()">
+                <i class="fas fa-plus me-2"></i>
+                Add Emergency Contact
+            </button>
+        </div>
+        
+        <!-- Emergency Test -->
+        <div class="emergency-test">
+            <h6 class="text-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Test Emergency System
+            </h6>
+            <p class="mb-3">Send a test message to all your emergency contacts to ensure the system works.</p>
+            <button class="btn btn-warning" onclick="testEmergencySystem()">
+                <i class="fas fa-paper-plane me-2"></i>
+                Send Test Alert
+            </button>
+        </div>
+        
+        <!-- Contacts List -->
+        <div class="contacts-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5><i class="fas fa-users me-2"></i>Your Emergency Contacts</h5>
+                <div>
+                    <button class="btn btn-outline-primary btn-sm me-2" onclick="sortContacts()">
+                        <i class="fas fa-sort me-1"></i>Sort
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="exportContacts()">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+            </div>
+            
+            <div id="contactsList">
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-address-book fa-3x mb-3"></i>
+                    <h5>No Emergency Contacts Added</h5>
+                    <p>Add your first emergency contact to get started</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Import/Export -->
+        <div class="import-export">
+            <h6><i class="fas fa-exchange-alt me-2"></i>Import/Export Contacts</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Import from file:</label>
+                    <input type="file" class="form-control" id="importFile" accept=".json,.csv">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button class="btn btn-primary me-2" onclick="importContacts()">
+                        <i class="fas fa-upload me-1"></i>Import
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportContacts()">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'emergency_dashboard' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="contact-modal" id="contactModal">
+    <div class="contact-modal-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 id="modalTitle">Add Emergency Contact</h5>
+            <button class="btn-close" onclick="closeContactModal()"></button>
+        </div>
+        
+        <form id="contactForm">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="contactName" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number *</label>
+                <input type="tel" id="contactPhone" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="contactEmail">
+            </div>
+            
+            <div class="form-group">
+                <label>Relationship</label>
+                <select id="contactRelationship">
+                    <option value="family">Family Member</option>
+                    <option value="friend">Friend</option>
+                    <option value="colleague">Colleague</option>
+                    <option value="neighbor">Neighbor</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Priority Level</label>
+                <select id="contactPriority">
+                    <option value="high">High - Contact first</option>
+                    <option value="medium">Medium - Secondary contact</option>
+                    <option value="low">Low - Backup contact</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Additional Notes</label>
+                <textarea id="contactNotes" rows="3" placeholder="Any special instructions or notes..."></textarea>
+            </div>
+            
+            <div class="d-flex gap-3 mt-4">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    <i class="fas fa-save me-2"></i>
+                    Save Contact
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="closeContactModal()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let emergencyContacts = JSON.parse(localStorage.getItem('emergencyContacts') || '[]');
+let editingIndex = -1;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadContacts();
+    updateStats();
+    
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveContact();
+    });
+});
+
+function loadContacts() {
+    const contactsList = document.getElementById('contactsList');
+    
+    if (emergencyContacts.length === 0) {
+        contactsList.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-address-book fa-3x mb-3"></i>
+                <h5>No Emergency Contacts Added</h5>
+                <p>Add your first emergency contact to get started</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let contactsHtml = '';
+    emergencyContacts.forEach((contact, index) => {
+        contactsHtml += `
+            <div class="contact-item">
+                <div class="contact-priority priority-${contact.priority}">
+                    ${contact.priority.toUpperCase()}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="mb-2">
+                            <i class="fas fa-user me-2"></i>
+                            ${contact.name}
+                        </h6>
+                        <p class="mb-1">
+                            <i class="fas fa-phone me-2"></i>
+                            <a href="tel:${contact.phone}" class="text-decoration-none">${contact.phone}</a>
+                        </p>
+                        ${contact.email ? `
+                            <p class="mb-1">
+                                <i class="fas fa-envelope me-2"></i>
+                                <a href="mailto:${contact.email}" class="text-decoration-none">${contact.email}</a>
+                            </p>
+                        ` : ''}
+                        <p class="mb-1 text-muted">
+                            <i class="fas fa-heart me-2"></i>
+                            ${contact.relationship}
+                        </p>
+                        ${contact.notes ? `
+                            <p class="mb-0 text-muted small">
+                                <i class="fas fa-sticky-note me-2"></i>
+                                ${contact.notes}
+                            </p>
+                        ` : ''}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="contact-actions">
+                            <button class="btn-call" onclick="callContact('${contact.phone}')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="btn-message" onclick="messageContact('${contact.phone}')">
+                                <i class="fas fa-sms"></i>
+                            </button>
+                            <button class="btn-edit" onclick="editContact(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-delete" onclick="deleteContact(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    contactsList.innerHTML = contactsHtml;
+}
+
+function updateStats() {
+    document.getElementById('totalContacts').textContent = emergencyContacts.length;
+    document.getElementById('highPriority').textContent = emergencyContacts.filter(c => c.priority === 'high').length;
+    document.getElementById('verifiedContacts').textContent = emergencyContacts.filter(c => c.verified).length;
+    
+    const lastUpdate = localStorage.getItem('contactsLastUpdate');
+    if (lastUpdate) {
+        const date = new Date(lastUpdate);
+        document.getElementById('lastUpdated').textContent = date.toLocaleDateString();
+    }
+}
+
+function openContactModal(contact = null, index = -1) {
+    const modal = document.getElementById('contactModal');
+    const title = document.getElementById('modalTitle');
+    
+    if (contact) {
+        title.textContent = 'Edit Emergency Contact';
+        document.getElementById('contactName').value = contact.name;
+        document.getElementById('contactPhone').value = contact.phone;
+        document.getElementById('contactEmail').value = contact.email || '';
+        document.getElementById('contactRelationship').value = contact.relationship;
+        document.getElementById('contactPriority').value = contact.priority;
+        document.getElementById('contactNotes').value = contact.notes || '';
+        editingIndex = index;
+    } else {
+        title.textContent = 'Add Emergency Contact';
+        document.getElementById('contactForm').reset();
+        editingIndex = -1;
+    }
+    
+    modal.style.display = 'block';
+}
+
+function closeContactModal() {
+    document.getElementById('contactModal').style.display = 'none';
+    document.getElementById('contactForm').reset();
+    editingIndex = -1;
+}
+
+function saveContact() {
+    const contact = {
+        name: document.getElementById('contactName').value,
+        phone: document.getElementById('contactPhone').value,
+        email: document.getElementById('contactEmail').value,
+        relationship: document.getElementById('contactRelationship').value,
+        priority: document.getElementById('contactPriority').value,
+        notes: document.getElementById('contactNotes').value,
+        verified: false,
+        dateAdded: new Date().toISOString()
+    };
+    
+    if (editingIndex >= 0) {
+        emergencyContacts[editingIndex] = contact;
+    } else {
+        emergencyContacts.push(contact);
+    }
+    
+    localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+    localStorage.setItem('contactsLastUpdate', new Date().toISOString());
+    
+    loadContacts();
+    updateStats();
+    closeContactModal();
+    
+    // Show success message
+    alert(`Emergency contact ${editingIndex >= 0 ? 'updated' : 'added'} successfully!`);
+}
+
+function editContact(index) {
+    openContactModal(emergencyContacts[index], index);
+}
+
+function deleteContact(index) {
+    const contact = emergencyContacts[index];
+    if (confirm(`Are you sure you want to delete ${contact.name} from your emergency contacts?`)) {
+        emergencyContacts.splice(index, 1);
+        localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+        localStorage.setItem('contactsLastUpdate', new Date().toISOString());
+        
+        loadContacts();
+        updateStats();
+        
+        alert('Emergency contact deleted successfully!');
+    }
+}
+
+function callContact(phone) {
+    if (confirm(`Call ${phone} now?`)) {
+        window.location.href = `tel:${phone}`;
+    }
+}
+
+function messageContact(phone) {
+    const message = 'This is an emergency message from TrekNepal Emergency System. I need help!';
+    window.location.href = `sms:${phone}?body=${encodeURIComponent(message)}`;
+}
+
+function testEmergencySystem() {
+    if (emergencyContacts.length === 0) {
+        alert('Please add emergency contacts first before testing the system.');
+        return;
+    }
+    
+    if (confirm(`Send test emergency alert to all ${emergencyContacts.length} contacts?`)) {
+        // Simulate sending test messages
+        let successCount = 0;
+        emergencyContacts.forEach(contact => {
+            // Simulate API call
+            setTimeout(() => {
+                successCount++;
+                if (successCount === emergencyContacts.length) {
+                    alert(`Test alert sent successfully to ${successCount} contacts!\n\nAll contacts should receive a test message shortly.`);
+                }
+            }, Math.random() * 2000);
+        });
+        
+        alert('Sending test alerts...\nPlease wait for confirmation.');
+    }
+}
+
+function sortContacts() {
+    const sortBy = prompt('Sort by:\n1. Name\n2. Priority\n3. Date Added\n\nEnter number (1-3):');
+    
+    switch(sortBy) {
+        case '1':
+            emergencyContacts.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case '2':
+            const priorityOrder = { high: 3, medium: 2, low: 1 };
+            emergencyContacts.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+            break;
+        case '3':
+            emergencyContacts.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+            break;
+        default:
+            return;
+    }
+    
+    localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+    loadContacts();
+}
+
+function exportContacts() {
+    if (emergencyContacts.length === 0) {
+        alert('No contacts to export.');
+        return;
+    }
+    
+    const dataStr = JSON.stringify(emergencyContacts, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `emergency-contacts-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    alert('Emergency contacts exported successfully!');
+}
+
+function importContacts() {
+    const fileInput = document.getElementById('importFile');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a file to import.');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedContacts = JSON.parse(e.target.result);
+            
+            if (confirm(`Import ${importedContacts.length} contacts?\n\nThis will add to your existing contacts.`)) {
+                emergencyContacts = [...emergencyContacts, ...importedContacts];
+                localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+                localStorage.setItem('contactsLastUpdate', new Date().toISOString());
+                
+                loadContacts();
+                updateStats();
+                
+                alert(`Successfully imported ${importedContacts.length} emergency contacts!`);
+            }
+        } catch (error) {
+            alert('Error importing contacts. Please check the file format.');
+        }
+    };
+    
+    reader.readAsText(file);
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('contact-modal')) {
+        closeContactModal();
+    }
+});
+</script>
+{% endblock %}

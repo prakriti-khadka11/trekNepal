@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% block title %}SOS Emergency Alert{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sos-container {
+        background: linear-gradient(135deg, #ff4757, #ff3742);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    
+    .sos-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        color: #333;
+        max-width: 500px;
+        width: 90%;
+        animation: slideUp 0.5s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .emergency-type-btn {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        padding: 15px;
+        margin: 10px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .emergency-type-btn:hover,
+    .emergency-type-btn.active {
+        background: #ff4757;
+        color: white;
+        border-color: #ff4757;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+    }
+    
+    .severity-btn {
+        border-radius: 25px;
+        padding: 10px 20px;
+        margin: 5px;
+        border: 2px solid;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .severity-btn.low {
+        border-color: #28a745;
+        color: #28a745;
+    }
+    
+    .severity-btn.medium {
+        border-color: #ffc107;
+        color: #ffc107;
+    }
+    
+    .severity-btn.critical {
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+    
+    .severity-btn.active.low {
+        background: #28a745;
+        color: white;
+    }
+    
+    .severity-btn.active.medium {
+        background: #ffc107;
+        color: white;
+    }
+    
+    .severity-btn.active.critical {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .location-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .location-btn:hover {
+        background: #0056b3;
+        transform: scale(1.05);
+    }
+    
+    .submit-sos {
+        background: linear-gradient(135deg, #ff4757, #ff3742);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 20px;
+    }
+    
+    .submit-sos:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(255, 71, 87, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sos-container">
+    <div class="sos-card">
+        <div class="text-center mb-4">
+            <h2 class="text-danger mb-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Emergency SOS Alert
+            </h2>
+            <p class="text-muted">Fill out the details below to send an emergency alert</p>
+        </div>
+        
+        <form method="post" id="sosForm">
+            {% csrf_token %}
+            
+            <!-- Emergency Type Selection -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Emergency Type</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="emergency-type-btn" data-type="medical">
+                            <i class="fas fa-heartbeat fa-2x mb-2 d-block"></i>
+                            <strong>Medical Emergency</strong>
+                            <small class="d-block text-muted">Health issues, injuries</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="emergency-type-btn" data-type="accident">
+                            <i class="fas fa-car-crash fa-2x mb-2 d-block"></i>
+                            <strong>Accident</strong>
+                            <small class="d-block text-muted">Vehicle, trekking accidents</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="emergency-type-btn" data-type="lost">
+                            <i class="fas fa-map-marked-alt fa-2x mb-2 d-block"></i>
+                            <strong>Lost/Stranded</strong>
+                            <small class="d-block text-muted">Lost in mountains, remote areas</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="emergency-type-btn" data-type="security">
+                            <i class="fas fa-shield-alt fa-2x mb-2 d-block"></i>
+                            <strong>Security Issue</strong>
+                            <small class="d-block text-muted">Theft, harassment, danger</small>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="emergency_type" id="emergencyType" required>
+            </div>
+            
+            <!-- Severity Level -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Severity Level</label>
+                <div class="text-center">
+                    <button type="button" class="severity-btn low" data-severity="low">
+                        <i class="fas fa-info-circle me-1"></i>Low
+                    </button>
+                    <button type="button" class="severity-btn medium" data-severity="medium">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Medium
+                    </button>
+                    <button type="button" class="severity-btn critical" data-severity="critical">
+                        <i class="fas fa-exclamation-circle me-1"></i>Critical
+                    </button>
+                </div>
+                <input type="hidden" name="severity" id="severity" required>
+            </div>
+            
+            <!-- Location -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Current Location</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="location" id="location" 
+                           placeholder="Enter your current location" required>
+                    <button type="button" class="location-btn" onclick="getCurrentLocation()">
+                        <i class="fas fa-crosshairs me-1"></i>Get Location
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Message -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Emergency Details</label>
+                <textarea class="form-control" name="message" rows="4" 
+                          placeholder="Describe your emergency situation in detail..."></textarea>
+            </div>
+            
+            <!-- Symptoms (for medical emergencies) -->
+            <div class="mb-4" id="symptomsSection" style="display: none;">
+                <label class="form-label fw-bold">Symptoms (Medical Emergency)</label>
+                <textarea class="form-control" name="symptoms" rows="3" 
+                          placeholder="Describe symptoms if this is a medical emergency..."></textarea>
+            </div>
+            
+            <button type="submit" class="submit-sos">
+                <i class="fas fa-paper-plane me-2"></i>
+                Send Emergency Alert
+            </button>
+        </form>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted small">
+                <i class="fas fa-info-circle me-1"></i>
+                Your alert will be sent to emergency services and your emergency contacts
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Emergency type selection
+    const typeButtons = document.querySelectorAll('.emergency-type-btn');
+    const emergencyTypeInput = document.getElementById('emergencyType');
+    const symptomsSection = document.getElementById('symptomsSection');
+    
+    typeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            typeButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            emergencyTypeInput.value = this.dataset.type;
+            
+            // Show symptoms section for medical emergencies
+            if (this.dataset.type === 'medical') {
+                symptomsSection.style.display = 'block';
+            } else {
+                symptomsSection.style.display = 'none';
+            }
+        });
+    });
+    
+    // Severity selection
+    const severityButtons = document.querySelectorAll('.severity-btn');
+    const severityInput = document.getElementById('severity');
+    
+    severityButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            severityButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            severityInput.value = this.dataset.severity;
+        });
+    });
+});
+
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Reverse geocoding to get address
+                fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=YOUR_API_KEY`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.results && data.results.length > 0) {
+                            document.getElementById('location').value = data.results[0].formatted;
+                        } else {
+                            document.getElementById('location').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('location').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                    });
+            },
+            error => {
+                alert('Unable to get your location. Please enter it manually.');
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
+</script>
+{% endblock %}

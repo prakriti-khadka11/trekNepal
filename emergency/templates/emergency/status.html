@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block title %}Emergency Alert Status{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .status-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.5s ease;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .status-badge {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+    
+    .status-raised {
+        background: #ff4757;
+        color: white;
+    }
+    
+    .status-acknowledged {
+        background: #ffa502;
+        color: white;
+    }
+    
+    .status-resolved {
+        background: #26de81;
+        color: white;
+    }
+    
+    .severity-critical {
+        border-left: 5px solid #ff4757;
+        background: #fff5f5;
+    }
+    
+    .severity-medium {
+        border-left: 5px solid #ffa502;
+        background: #fffbf0;
+    }
+    
+    .severity-low {
+        border-left: 5px solid #26de81;
+        background: #f0fff4;
+    }
+    
+    .info-item {
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        background: #f8f9fa;
+    }
+    
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ff4757;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="status-container">
+    <div class="status-card">
+        <div class="text-center mb-4">
+            <h2 class="text-danger mb-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Emergency Alert Status
+            </h2>
+            <span class="status-badge status-{{ alert.status }}">
+                {{ alert.get_status_display }}
+            </span>
+        </div>
+        
+        <div class="info-item severity-{{ alert.severity }}">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Emergency Type:</strong><br>
+                    <span class="text-capitalize">{{ alert.emergency_type }}</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Severity:</strong><br>
+                    {% if alert.severity == 'critical' %}
+                        <span class="text-capitalize text-danger">{{ alert.get_severity_display }}</span>
+                    {% elif alert.severity == 'medium' %}
+                        <span class="text-capitalize text-warning">{{ alert.get_severity_display }}</span>
+                    {% else %}
+                        <span class="text-capitalize text-success">{{ alert.get_severity_display }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-item">
+            <strong>Location:</strong><br>
+            {{ alert.location }}
+        </div>
+        
+        {% if alert.message %}
+        <div class="info-item">
+            <strong>Emergency Details:</strong><br>
+            {{ alert.message }}
+        </div>
+        {% endif %}
+        
+        {% if alert.symptoms %}
+        <div class="info-item">
+            <strong>Symptoms:</strong><br>
+            {{ alert.symptoms }}
+        </div>
+        {% endif %}
+        
+        <div class="info-item">
+            <strong>Alert Time:</strong><br>
+            {{ alert.created_at|date:"F d, Y g:i A" }}
+        </div>
+        
+        <div class="timeline mt-4">
+            <h5 class="mb-3">Alert Timeline</h5>
+            <div class="timeline-item">
+                <strong>Alert Raised</strong><br>
+                <small class="text-muted">{{ alert.created_at|date:"F d, Y g:i A" }}</small>
+            </div>
+            {% if alert.status == 'acknowledged' or alert.status == 'resolved' %}
+            <div class="timeline-item">
+                <strong>Alert Acknowledged</strong><br>
+                <small class="text-muted">Emergency services notified</small>
+            </div>
+            {% endif %}
+            {% if alert.status == 'resolved' %}
+            <div class="timeline-item">
+                <strong>Alert Resolved</strong><br>
+                <small class="text-muted">Emergency situation handled</small>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'emergency_menu' %}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-arrow-left me-1"></i>
+                Back to Emergency Menu
+            </a>
+            <a href="{% url 'emergency_history' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-history me-1"></i>
+                View All Alerts
+            </a>
+        </div>
+        
+        {% if alert.status == 'raised' %}
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Your emergency alert is active.</strong> Emergency services have been notified. 
+            If this is a life-threatening emergency, please call 
+            <a href="tel:112" class="alert-link">112</a> immediately.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

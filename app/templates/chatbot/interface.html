@@ -1,0 +1,671 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}TrekNepal AI Assistant - Intelligent Travel Companion{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chatbot-container {
+        max-width: 800px;
+        margin: 0 auto;
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .chatbot-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+        color: white;
+        padding: 25px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chatbot-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        animation: headerShimmer 3s infinite;
+    }
+    
+    @keyframes headerShimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    .chatbot-header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .chatbot-subtitle {
+        margin: 8px 0 0 0;
+        opacity: 0.95;
+        font-size: 15px;
+        font-weight: 500;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .message {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        max-width: 80%;
+    }
+    
+    .message.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+    }
+    
+    .message.bot {
+        align-self: flex-start;
+    }
+    
+    .message-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    
+    .message.user .message-avatar {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+    
+    .message.bot .message-avatar {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        position: relative;
+    }
+    
+    .message.bot .message-avatar::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 8px;
+        height: 8px;
+        background: #34d399;
+        border-radius: 50%;
+        border: 2px solid white;
+        animation: aiIndicator 2s infinite;
+    }
+    
+    @keyframes aiIndicator {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0.3; }
+    }
+    
+    .message-content {
+        background: white;
+        padding: 15px 18px;
+        border-radius: 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e9ecef;
+        position: relative;
+        word-wrap: break-word;
+    }
+    
+    .message.user .message-content {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        border-color: #4f46e5;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+    }
+    
+    .message.bot .message-content {
+        background: white;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .message-content::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+    }
+    
+    .message.user .message-content::before {
+        right: -16px;
+        top: 15px;
+        border-left-color: #4f46e5;
+    }
+    
+    .message.bot .message-content::before {
+        left: -16px;
+        top: 15px;
+        border-right-color: white;
+    }
+    
+    .message-text {
+        margin: 0;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+    
+    .message-time {
+        font-size: 11px;
+        opacity: 0.7;
+        margin-top: 5px;
+        text-align: right;
+    }
+    
+    .message.bot .message-time {
+        text-align: left;
+    }
+    
+    .chat-input-container {
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .chat-input-form {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+    }
+    
+    .chat-input {
+        flex: 1;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        padding: 12px 20px;
+        font-size: 14px;
+        resize: none;
+        max-height: 100px;
+        min-height: 44px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    
+    .chat-input:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .chat-send-btn {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border: none;
+        color: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+    
+    .chat-send-btn:hover:not(:disabled) {
+        background: linear-gradient(135deg, #4338ca, #6d28d9);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    }
+    
+    .chat-send-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+    
+    .typing-indicator {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        color: #6c757d;
+        font-style: italic;
+        padding: 10px 0;
+    }
+    
+    .typing-dots {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        background: #6c757d;
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    
+    @keyframes typing {
+        0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+    
+    .welcome-message {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6c757d;
+    }
+    
+    .welcome-message i {
+        font-size: 4rem;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 25px;
+        animation: welcomeGlow 3s infinite alternate;
+    }
+    
+    @keyframes welcomeGlow {
+        0% { filter: drop-shadow(0 0 5px rgba(79, 70, 229, 0.3)); }
+        100% { filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.6)); }
+    }
+    
+    .welcome-message h3 {
+        color: #495057;
+        margin-bottom: 15px;
+    }
+    
+    .quick-suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    .suggestion-btn {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .suggestion-btn:hover {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        border-color: #4f46e5;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+    
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 12px 18px;
+        border-radius: 18px;
+        border: 1px solid #f5c6cb;
+        margin: 10px 0;
+        text-align: center;
+    }
+    
+    /* Scrollbar styling */
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .chatbot-container {
+            height: calc(100vh - 80px);
+            margin: 10px;
+            border-radius: 8px;
+        }
+        
+        .message {
+            max-width: 90%;
+        }
+        
+        .chat-messages {
+            padding: 15px;
+        }
+        
+        .chat-input-container {
+            padding: 15px;
+        }
+        
+        .quick-suggestions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .suggestion-btn {
+            width: 100%;
+            max-width: 250px;
+            text-align: center;
+        }
+    }
+    
+    /* Message formatting */
+    .message-content strong {
+        font-weight: 600;
+    }
+    
+    .message-content ul {
+        margin: 10px 0;
+        padding-left: 20px;
+    }
+    
+    .message-content li {
+        margin: 5px 0;
+    }
+    
+    .message.user .message-content strong {
+        color: rgba(255, 255, 255, 0.95);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="chatbot-container">
+        <!-- Header -->
+        <div class="chatbot-header">
+            <h1><i class="fas fa-brain me-3"></i>TrekNepal AI Assistant</h1>
+            <p class="chatbot-subtitle">Advanced AI-powered travel intelligence & personalized recommendations</p>
+        </div>
+        
+        <!-- Messages Area -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Welcome Message -->
+            <div class="welcome-message" id="welcomeMessage">
+                <i class="fas fa-brain"></i>
+                <h3>Welcome to TrekNepal AI Assistant!</h3>
+                <p>I'm your intelligent travel companion powered by advanced AI. I can analyze your travel data, provide personalized recommendations, and help you plan the perfect Nepal adventure!</p>
+                
+                <div class="quick-suggestions">
+                    <button class="suggestion-btn" onclick="sendSuggestion('Hello, analyze my travel profile')">🧠 AI Profile Analysis</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('Show my booking insights')">📊 Booking Intelligence</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('Financial analysis report')">💰 Financial AI Report</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('Recommend destinations for me')">🎯 AI Recommendations</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('Altitude safety analysis')">🏔️ Health Intelligence</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('Generate travel insights')">🚀 Travel Intelligence</button>
+                </div>
+            </div>
+            
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="message-avatar">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <span>AI Assistant is analyzing</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="chat-input-container">
+            <form class="chat-input-form" id="chatForm">
+                {% csrf_token %}
+                <textarea 
+                    class="chat-input" 
+                    id="messageInput" 
+                    placeholder="Ask me anything about your travel data, get AI insights, or request personalized recommendations..."
+                    rows="1"
+                    maxlength="500"
+                ></textarea>
+                <button type="submit" class="chat-send-btn" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class TrekNepalChatbot {
+    constructor() {
+        this.messagesContainer = document.getElementById('chatMessages');
+        this.messageInput = document.getElementById('messageInput');
+        this.sendBtn = document.getElementById('sendBtn');
+        this.chatForm = document.getElementById('chatForm');
+        this.typingIndicator = document.getElementById('typingIndicator');
+        this.welcomeMessage = document.getElementById('welcomeMessage');
+        
+        this.isTyping = false;
+        this.messageCount = 0;
+        
+        this.initializeEventListeners();
+        this.adjustTextareaHeight();
+    }
+    
+    initializeEventListeners() {
+        // Form submission
+        this.chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.sendMessage();
+        });
+        
+        // Enter key to send (Shift+Enter for new line)
+        this.messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.sendMessage();
+            }
+        });
+        
+        // Auto-resize textarea
+        this.messageInput.addEventListener('input', () => {
+            this.adjustTextareaHeight();
+        });
+        
+        // Focus on input
+        this.messageInput.focus();
+    }
+    
+    adjustTextareaHeight() {
+        this.messageInput.style.height = 'auto';
+        this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 100) + 'px';
+    }
+    
+    async sendMessage() {
+        const message = this.messageInput.value.trim();
+        
+        if (!message || this.isTyping) {
+            return;
+        }
+        
+        // Hide welcome message on first interaction
+        if (this.messageCount === 0) {
+            this.welcomeMessage.style.display = 'none';
+        }
+        
+        // Add user message to chat
+        this.addMessage(message, 'user');
+        
+        // Clear input and reset height
+        this.messageInput.value = '';
+        this.adjustTextareaHeight();
+        
+        // Show typing indicator
+        this.showTyping();
+        
+        try {
+            // Send message to backend
+            const response = await fetch('{% url "chatbot_message" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            });
+            
+            const data = await response.json();
+            
+            // Hide typing indicator
+            this.hideTyping();
+            
+            if (data.success) {
+                // Add bot response
+                this.addMessage(data.response, 'bot');
+            } else {
+                // Show error message
+                this.addErrorMessage(data.error || 'Sorry, something went wrong. Please try again.');
+            }
+            
+        } catch (error) {
+            console.error('Error sending message:', error);
+            this.hideTyping();
+            this.addErrorMessage('Network error. Please check your connection and try again.');
+        }
+        
+        // Focus back on input
+        this.messageInput.focus();
+    }
+    
+    addMessage(text, sender) {
+        this.messageCount++;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'message-avatar';
+        avatar.innerHTML = sender === 'user' ? 
+            '<i class="fas fa-user"></i>' : 
+            '<i class="fas fa-brain"></i>';
+        
+        const content = document.createElement('div');
+        content.className = 'message-content';
+        
+        const messageText = document.createElement('p');
+        messageText.className = 'message-text';
+        messageText.innerHTML = this.formatMessage(text);
+        
+        const timestamp = document.createElement('div');
+        timestamp.className = 'message-time';
+        timestamp.textContent = new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        content.appendChild(messageText);
+        content.appendChild(timestamp);
+        
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(content);
+        
+        this.messagesContainer.appendChild(messageDiv);
+        this.scrollToBottom();
+    }
+    
+    addErrorMessage(errorText) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${errorText}`;
+        
+        this.messagesContainer.appendChild(errorDiv);
+        this.scrollToBottom();
+    }
+    
+    formatMessage(text) {
+        // Convert markdown-like formatting to HTML
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+            .replace(/\n/g, '<br>') // Line breaks
+            .replace(/• /g, '• ') // Bullet points
+            .replace(/(\d+\.\s)/g, '<br>$1') // Numbered lists
+            .trim();
+    }
+    
+    showTyping() {
+        this.isTyping = true;
+        this.sendBtn.disabled = true;
+        this.typingIndicator.style.display = 'flex';
+        this.scrollToBottom();
+    }
+    
+    hideTyping() {
+        this.isTyping = false;
+        this.sendBtn.disabled = false;
+        this.typingIndicator.style.display = 'none';
+    }
+    
+    scrollToBottom() {
+        setTimeout(() => {
+            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        }, 100);
+    }
+}
+
+// Quick suggestion function
+function sendSuggestion(message) {
+    const chatbot = window.trekNepalChatbot;
+    if (chatbot) {
+        chatbot.messageInput.value = message;
+        chatbot.sendMessage();
+    }
+}
+
+// Initialize chatbot when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.trekNepalChatbot = new TrekNepalChatbot();
+});
+
+// Handle page visibility for better UX
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && window.trekNepalChatbot) {
+        window.trekNepalChatbot.messageInput.focus();
+    }
+});
+</script>
+{% endblock %}

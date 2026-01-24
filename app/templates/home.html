@@ -48,35 +48,6 @@
 </div>
 
 
-<!-- Floating Emergency Button (Fixed on right) -->
-<a href="{% url 'emergency_dashboard' %}" 
-   style="
-       position: fixed;      /* FIXED on screen, does not scroll */
-       top: 150px;            /* distance from top of viewport */
-       right: 20px;          /* distance from right of viewport */
-       width: 50px;          /* circle width */
-       height: 50px;         /* circle height */
-       background-color: #dc3545; /* red circle */
-       border-radius: 50%;   /* circular */
-       display: flex;
-       align-items: center;
-       justify-content: center;
-       z-index: 9999;        /* always on top */
-       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-       transition: transform 0.2s, box-shadow 0.2s;
-       cursor: pointer;
-   "
-   onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.4)';"
-   onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)';"
->
-    <img src="/static/img/emergencyBulb.png" 
-         alt="Emergency" 
-         style="width: 70px; height: 70px;">
-</a>
-
-
-
-
 <!-- Search Section -->
 <div class="search-section py-5 bg-light">
     <div class="container">

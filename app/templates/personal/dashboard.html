@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Personal Dashboard - TrekNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        animation: float 20s infinite linear;
+    }
+    
+    @keyframes float {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin-bottom: 20px;
+    }
+    
+    .feature-card h5 {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .feature-card p {
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    
+    .feature-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    
+    .feature-btn:hover {
+        transform: scale(1.05);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+    
+    .stats-label {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
+    }
+    
+    .quick-actions {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .quick-action-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 20px;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: block;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .quick-action-btn:hover {
+        transform: scale(1.02);
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .welcome-text {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .travel-tip {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid #ffc107;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="welcome-text">
+            <h1 class="mb-2">Welcome back, {{ user.get_full_name|default:user.username }}! 👋</h1>
+            <p class="mb-0 opacity-90">Manage your travel expenses, documents, and plan your next adventure</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-2 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_expenses }}</div>
+                <p class="stats-label">Total Expenses</p>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ active_budgets }}</div>
+                <p class="stats-label">Active Budgets</p>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ wishlist_count }}</div>
+                <p class="stats-label">Wishlist Items</p>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ documents_count }}</div>
+                <p class="stats-label">Documents</p>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_bookings }}</div>
+                <p class="stats-label">Total Bookings</p>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">NPR {{ total_booking_cost|floatformat:0 }}</div>
+                <p class="stats-label">Booking Costs</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Section -->
+    {% if budget_alerts or document_alerts %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5><i class="fas fa-bell me-2"></i>Important Alerts</h5>
+            {% for alert in budget_alerts %}
+            <div class="alert alert-{{ alert.type }} alert-dismissible fade show">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Budget Alert:</strong> {{ alert.message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            
+            {% for alert in document_alerts %}
+            <div class="alert alert-{{ alert.type }} alert-dismissible fade show">
+                <i class="fas fa-file-alt me-2"></i>
+                <strong>Document Alert:</strong> {{ alert.message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Travel Tip -->
+    <div class="travel-tip">
+        <h6><i class="fas fa-lightbulb me-2"></i>Travel Tip of the Day</h6>
+        <p class="mb-0">Always keep digital copies of your important documents in cloud storage. It's a lifesaver when traveling!</p>
+    </div>
+
+    <!-- Personal Management Features -->
+    <div class="row">
+        <!-- Expense Tracker -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h5>Expense Tracker</h5>
+                <p>Track your travel expenses with detailed analytics and beautiful charts. Monitor spending by category and location.</p>
+                <a href="{% url 'expense_tracker' %}" class="feature-btn">
+                    <i class="fas fa-arrow-right me-2"></i>Manage Expenses
+                </a>
+            </div>
+        </div>
+
+        <!-- Travel Budget -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <h5>Travel Budget</h5>
+                <p>Plan and manage your travel budgets. Set spending limits and track progress for each trip destination.</p>
+                <a href="{% url 'travel_budget' %}" class="feature-btn">
+                    <i class="fas fa-arrow-right me-2"></i>Manage Budget
+                </a>
+            </div>
+        </div>
+
+        <!-- Travel Wishlist -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #e91e63, #ad1457);">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h5>Travel Wishlist</h5>
+                <p>Keep track of destinations you want to visit. Set priorities, estimated costs, and target dates for your dream trips.</p>
+                <a href="{% url 'travel_wishlist' %}" class="feature-btn">
+                    <i class="fas fa-arrow-right me-2"></i>View Wishlist
+                </a>
+            </div>
+        </div>
+
+        <!-- Travel Documents -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h5>Travel Documents</h5>
+                <p>Store and manage your travel documents. Get alerts for expiring passports, visas, and other important papers.</p>
+                <a href="{% url 'travel_documents' %}" class="feature-btn">
+                    <i class="fas fa-arrow-right me-2"></i>Manage Documents
+                </a>
+            </div>
+        </div>
+
+        <!-- Trip Planner -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #6f42c1, #563d7c);">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h5>Trip Planner</h5>
+                <p>Plan your trips with detailed itineraries. Organize activities, bookings, and important information in one place.</p>
+                <a href="#" class="feature-btn" onclick="showComingSoon()">
+                    <i class="fas fa-arrow-right me-2"></i>Plan Trip
+                </a>
+            </div>
+        </div>
+
+        <!-- Settings & Preferences -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #6c757d, #495057);">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h5>Preferences</h5>
+                <p>Customize your experience. Set your preferred currency, travel style, and notification preferences.</p>
+                <a href="{% url 'user_preferences' %}" class="feature-btn">
+                    <i class="fas fa-arrow-right me-2"></i>Settings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h5 class="mb-3"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+        <div class="row">
+            <div class="col-md-3 mb-2">
+                <a href="{% url 'add_expense' %}" class="quick-action-btn">
+                    <i class="fas fa-plus me-2"></i>Add Expense
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="{% url 'add_budget' %}" class="quick-action-btn">
+                    <i class="fas fa-plus me-2"></i>Create Budget
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="{% url 'add_wishlist_item' %}" class="quick-action-btn">
+                    <i class="fas fa-plus me-2"></i>Add to Wishlist
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="{% url 'add_document' %}" class="quick-action-btn">
+                    <i class="fas fa-plus me-2"></i>Add Document
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        {% if recent_expenses %}
+        <div class="col-md-6">
+            <div class="quick-actions">
+                <h5 class="mb-3"><i class="fas fa-history me-2"></i>Recent Expenses</h5>
+                {% for expense in recent_expenses %}
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <strong>{{ expense.title }}</strong>
+                        <small class="text-muted d-block">{{ expense.date }} • {{ expense.location|default:"No location" }}</small>
+                    </div>
+                    <span class="badge bg-primary">{{ expense.currency }} {{ expense.amount }}</span>
+                </div>
+                {% endfor %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'expense_tracker' %}" class="btn btn-sm btn-outline-primary">View All Expenses</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if recent_bookings %}
+        <div class="col-md-6">
+            <div class="quick-actions">
+                <h5 class="mb-3"><i class="fas fa-calendar-check me-2"></i>Recent Bookings</h5>
+                {% for booking in recent_bookings %}
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <strong>{{ booking.travel_package.title|default:"Travel Booking" }}</strong>
+                        <small class="text-muted d-block">
+                            {{ booking.travel_date }} • {{ booking.num_people }} people
+                            <span class="badge badge-sm bg-{% if booking.status == 'PAID' %}success{% elif booking.status == 'PENDING' %}warning{% else %}danger{% endif %} ms-1">
+                                {{ booking.status }}
+                            </span>
+                        </small>
+                    </div>
+                    <span class="badge bg-success">NPR {{ booking.total_price }}</span>
+                </div>
+                {% endfor %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'my_bookings' %}" class="btn btn-sm btn-outline-success">View All Bookings</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if not recent_expenses and not recent_bookings %}
+    <!-- Recent Activity -->
+    <div class="quick-actions">
+        <h5 class="mb-3"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+        <div class="text-center py-4">
+            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+            <h6 class="text-muted">No recent activity</h6>
+            <p class="text-muted">Start by adding an expense or making a booking to see your activity here.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function showComingSoon() {
+    alert('🚀 Trip Planner feature coming soon! Stay tuned for this exciting addition to your travel toolkit.');
+}
+</script>
+{% endblock %}

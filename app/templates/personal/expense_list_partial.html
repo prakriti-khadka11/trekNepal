@@ -1,0 +1,50 @@
+{% if filtered_expenses %}
+    {% for expense in filtered_expenses %}
+    <div class="expense-item">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="category-badge" style="background-color: {{ expense.category.color }};">
+                        <i class="{{ expense.category.icon }}"></i>{{ expense.category.name }}
+                    </div>
+                    {% if expense.is_booking_expense %}
+                        <span class="booking-expense-badge">Booking</span>
+                    {% endif %}
+                </div>
+                
+                <h6 class="expense-title">{{ expense.title }}</h6>
+                
+                <div class="expense-meta">
+                    <span><i class="fas fa-calendar"></i>{{ expense.date }}</span>
+                    {% if expense.location %}
+                        <span><i class="fas fa-map-marker-alt"></i>{{ expense.location }}</span>
+                    {% endif %}
+                    <span><i class="fas fa-clock"></i>{{ expense.created_at|timesince }} ago</span>
+                </div>
+                
+                {% if expense.notes %}
+                    <p class="text-muted mt-2 mb-0 small">{{ expense.notes|truncatewords:20 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="text-end">
+                <div class="expense-amount">{{ expense.currency }} {{ expense.amount }}</div>
+                {% if expense.receipt_image %}
+                    <small class="text-success">
+                        <i class="fas fa-paperclip me-1"></i>Receipt
+                    </small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <i class="fas fa-receipt"></i>
+        <h5>No expenses found</h5>
+        <p>Start tracking your travel expenses by adding your first expense!</p>
+        <button class="add-expense-btn mt-3" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+            <i class="fas fa-plus me-2"></i>Add Your First Expense
+        </button>
+    </div>
+{% endif %}

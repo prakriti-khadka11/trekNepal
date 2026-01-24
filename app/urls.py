@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from django.shortcuts import render
 
 from . import views
@@ -76,9 +76,18 @@ urlpatterns = [
     path('activate/<uidb64>/<token>', views.activate, name='activate'),
     path('verify_code/', views.verify_code, name='verify_code'),
 
-   path('book/<int:travel_id>/', views.book_travel, name='book_travel'),
+    path('book/<int:travel_id>/', views.book_travel, name='book_travel'),
     path('khalti/initiate/', views.khalti_initiate_temp, name='khalti_initiate_temp'),
-    path('khalti/verify/', views.khalti_verify, name='khalti_verify')
+    path('khalti/verify/', views.khalti_verify, name='khalti_verify'),
+    
+    # Personal Features
+    path('personal/', include('app.personal_urls')),
+    
+    # Altitude Sickness Prevention System
+    path('altitude/', include('app.altitude_urls')),
+    
+    # Chatbot
+    path('chatbot/', include('app.chatbot_urls')),
     ]
 
  

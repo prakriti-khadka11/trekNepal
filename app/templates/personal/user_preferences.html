@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Preferences - TrekNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preferences-header {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .preference-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    
+    .preference-section {
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .preference-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .save-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .save-btn:hover {
+        transform: scale(1.05);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="preferences-header">
+        <h2 class="mb-1"><i class="fas fa-cog me-2"></i>User Preferences</h2>
+        <p class="mb-0 opacity-90">Customize your TrekNepal experience</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="preference-card">
+            <!-- General Preferences -->
+            <div class="preference-section">
+                <h5 class="mb-3"><i class="fas fa-user-cog me-2 text-primary"></i>General Preferences</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Preferred Currency</label>
+                        <select class="form-select" name="preferred_currency">
+                            <option value="NPR" {% if preferences.preferred_currency == 'NPR' %}selected{% endif %}>NPR - Nepalese Rupee</option>
+                            <option value="USD" {% if preferences.preferred_currency == 'USD' %}selected{% endif %}>USD - US Dollar</option>
+                            <option value="EUR" {% if preferences.preferred_currency == 'EUR' %}selected{% endif %}>EUR - Euro</option>
+                            <option value="INR" {% if preferences.preferred_currency == 'INR' %}selected{% endif %}>INR - Indian Rupee</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Travel Style</label>
+                        <select class="form-select" name="travel_style">
+                            <option value="budget" {% if preferences.travel_style == 'budget' %}selected{% endif %}>Budget Traveler</option>
+                            <option value="comfort" {% if preferences.travel_style == 'comfort' %}selected{% endif %}>Comfort Traveler</option>
+                            <option value="luxury" {% if preferences.travel_style == 'luxury' %}selected{% endif %}>Luxury Traveler</option>
+                            <option value="adventure" {% if preferences.travel_style == 'adventure' %}selected{% endif %}>Adventure Seeker</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Preferences -->
+            <div class="preference-section">
+                <h5 class="mb-3"><i class="fas fa-bell me-2 text-warning"></i>Notification Preferences</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="budget_alerts" 
+                                   {% if preferences.budget_alerts %}checked{% endif %}>
+                            <label class="form-check-label">
+                                Budget Alerts
+                            </label>
+                            <small class="form-text text-muted d-block">Get notified when you exceed budget limits</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="document_expiry_alerts" 
+                                   {% if preferences.document_expiry_alerts %}checked{% endif %}>
+                            <label class="form-check-label">
+                                Document Expiry Alerts
+                            </label>
+                            <small class="form-text text-muted d-block">Get notified about expiring documents</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="preference-section">
+                <h5 class="mb-3"><i class="fas fa-phone me-2 text-danger"></i>Emergency Contact</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Contact Name</label>
+                        <input type="text" class="form-control" name="emergency_contact_name" 
+                               value="{{ preferences.emergency_contact_name }}" placeholder="Full Name">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" name="emergency_contact_phone" 
+                               value="{{ preferences.emergency_contact_phone }}" placeholder="+977-XXXXXXXXXX">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" name="emergency_contact_email" 
+                               value="{{ preferences.emergency_contact_email }}" placeholder="email@example.com">
+                    </div>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    This contact will be notified in case of emergencies during your travels
+                </small>
+            </div>
+
+            <!-- Account Information -->
+            <div class="preference-section">
+                <h5 class="mb-3"><i class="fas fa-user me-2 text-info"></i>Account Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" value="{{ user.first_name }}" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" value="{{ user.last_name }}" readonly>
+                    </div>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    To update account information, please contact support
+                </small>
+            </div>
+
+            <!-- Save Button -->
+            <div class="text-center">
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save me-2"></i>Save Preferences
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Emergency History{% endblock %}
+
+{% block extra_css %}
+<style>
+    .history-container {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        min-height: 100vh;
+        padding: 50px 0;
+    }
+    
+    .history-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 15px 0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .history-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+    
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    .status-raised {
+        background: #ff4757;
+        color: white;
+    }
+    
+    .status-acknowledged {
+        background: #ffa502;
+        color: white;
+    }
+    
+    .status-resolved {
+        background: #26de81;
+        color: white;
+    }
+    
+    .severity-indicator {
+        width: 4px;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 15px 0 0 15px;
+    }
+    
+    .severity-critical {
+        background: #ff4757;
+    }
+    
+    .severity-medium {
+        background: #ffa502;
+    }
+    
+    .severity-low {
+        background: #26de81;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #e9ecef;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="text-white mb-3">
+                <i class="fas fa-history me-3"></i>
+                Emergency Alert History
+            </h2>
+            <p class="text-white-50">View all your past emergency alerts and their status</p>
+        </div>
+        
+        {% if alerts %}
+            <div class="row">
+                {% for alert in alerts %}
+                <div class="col-lg-6 col-xl-4">
+                    <div class="history-card position-relative" onclick="window.location.href='{% url 'emergency_status' alert.id %}'">
+                        <div class="severity-indicator severity-{{ alert.severity }}"></div>
+                        
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="mb-1 text-capitalize">{{ alert.emergency_type }}</h6>
+                                <small class="text-muted">{{ alert.created_at|date:"M d, Y g:i A" }}</small>
+                            </div>
+                            <span class="status-badge status-{{ alert.status }}">
+                                {{ alert.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                <span class="text-truncate">{{ alert.location }}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle text-muted me-2"></i>
+                                <span class="text-capitalize">{{ alert.get_severity_display }} Priority</span>
+                            </div>
+                        </div>
+                        
+                        {% if alert.message %}
+                        <div class="text-muted small">
+                            {{ alert.message|truncatewords:15 }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-3 pt-3 border-top">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ alert.created_at|timesince }} ago
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'emergency_menu' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Back to Emergency Menu
+                </a>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h4 class="text-muted mb-3">No Emergency Alerts</h4>
+                <p class="text-muted mb-4">
+                    You haven't raised any emergency alerts yet. We hope you never need to, 
+                    but if you do, we're here to help.
+                </p>
+                <a href="{% url 'sos_alert' %}" class="btn btn-danger me-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Raise Emergency Alert
+                </a>
+                <a href="{% url 'emergency_menu' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Emergency Menu
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

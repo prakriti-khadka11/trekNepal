@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if profile %}Update{% else %}Create{% endif %} Altitude Profile - TrekNepal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header" style="background: linear-gradient(135deg, #2c3e50, #34495e); color: white;">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-md me-2"></i>
+                        {% if profile %}Update{% else %}Create{% endif %} Your Altitude Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        This information helps us assess your altitude sickness risk and provide personalized recommendations.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <h6 class="text-primary mb-3">Basic Information</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" name="age" 
+                                       value="{{ profile.age|default:'' }}" required min="10" max="100">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fitness Level</label>
+                                <select class="form-select" name="fitness_level" required>
+                                    <option value="">Select Fitness Level</option>
+                                    <option value="beginner" {% if profile.fitness_level == 'beginner' %}selected{% endif %}>
+                                        Beginner - Minimal exercise
+                                    </option>
+                                    <option value="intermediate" {% if profile.fitness_level == 'intermediate' %}selected{% endif %}>
+                                        Intermediate - Regular exercise
+                                    </option>
+                                    <option value="advanced" {% if profile.fitness_level == 'advanced' %}selected{% endif %}>
+                                        Advanced - Very active
+                                    </option>
+                                    <option value="expert" {% if profile.fitness_level == 'expert' %}selected{% endif %}>
+                                        Expert - Professional athlete level
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Altitude Experience -->
+                        <h6 class="text-primary mb-3 mt-4">Altitude Experience</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="previous_altitude_experience" 
+                                           {% if profile.previous_altitude_experience %}checked{% endif %}>
+                                    <label class="form-check-label">
+                                        I have previous high-altitude experience
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Maximum Altitude Reached (meters)</label>
+                                <input type="number" class="form-control" name="max_altitude_reached" 
+                                       value="{{ profile.max_altitude_reached|default:0 }}" min="0" max="9000">
+                                <small class="text-muted">Enter 0 if you've never been to high altitude</small>
+                            </div>
+                        </div>
+
+                        <!-- Medical History -->
+                        <h6 class="text-primary mb-3 mt-4">Medical History</h6>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="has_altitude_sickness_history" 
+                                       {% if profile.has_altitude_sickness_history %}checked{% endif %}>
+                                <label class="form-check-label">
+                                    I have experienced altitude sickness before
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Medical Conditions</label>
+                            <textarea class="form-control" name="medical_conditions" rows="3" 
+                                      placeholder="List any heart, lung, or other medical conditions that might affect altitude tolerance">{{ profile.medical_conditions|default:'' }}</textarea>
+                            <small class="text-muted">Include conditions like heart disease, lung problems, anemia, etc.</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Current Medications</label>
+                            <textarea class="form-control" name="medications" rows="2" 
+                                      placeholder="List any medications you're currently taking">{{ profile.medications|default:'' }}</textarea>
+                        </div>
+
+                        <!-- Risk Assessment Preview -->
+                        {% if profile %}
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Current Risk Assessment</h6>
+                            <p class="mb-0">
+                                Your altitude sickness risk level: 
+                                <span class="badge bg-{% if profile.get_risk_level == 'low' %}success{% elif profile.get_risk_level == 'medium' %}warning{% else %}danger{% endif %}">
+                                    {{ profile.get_risk_level|title }} Risk
+                                </span>
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'altitude_dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>{% if profile %}Update{% else %}Create{% endif %} Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

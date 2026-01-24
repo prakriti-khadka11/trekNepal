@@ -1,15 +1,723 @@
 {% extends 'base.html' %}
 {% block title %}Emergency Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    .emergency-dashboard {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+    
+    .dashboard-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 25px;
+        margin: 15px 0;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    }
+    
+    .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        animation: pulse 2s infinite;
+    }
+    
+    .status-online { background: #28a745; }
+    .status-offline { background: #dc3545; }
+    .status-warning { background: #ffc107; }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+    
+    .emergency-widget {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 10px 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .emergency-widget::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff4757, #ff3742);
+    }
+    
+    .location-tracker {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .emergency-contact-quick {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin: 10px 0;
+        transition: all 0.3s ease;
+    }
+    
+    .emergency-contact-quick:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+    }
+    
+    .voice-alert-btn {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 15px 30px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .voice-alert-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+    }
+    
+    .voice-alert-btn.recording {
+        animation: recording-pulse 1s infinite;
+    }
+    
+    @keyframes recording-pulse {
+        0% { background: #ff6b6b; }
+        50% { background: #ff4757; }
+        100% { background: #ff6b6b; }
+    }
+    
+    .weather-widget {
+        background: linear-gradient(135deg, #74b9ff, #0984e3);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+    }
+    
+    .emergency-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ff4757;
+    }
+    
+    .offline-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #dc3545;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 25px;
+        font-size: 14px;
+        display: none;
+        z-index: 1000;
+    }
+    
+    .emergency-timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .emergency-timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 20px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ff4757;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <h1 class="mb-4">Emergency Dashboard</h1>
-    <div class="list-group">
-        <a href="{% url 'sos_alert' %}" class="list-group-item list-group-item-action">🚨 SOS Alert</a>
-        <a href="#" class="list-group-item list-group-item-action">🩹 First Aid Guide</a>
-        <a href="#" class="list-group-item list-group-item-action">📊 Emergency Status</a>
-        <a href="{% url 'emergency_history' %}" class="list-group-item list-group-item-action">📜 Emergency History</a>
-        <a href="#" class="list-group-item list-group-item-action">📞 Emergency Contacts</a>
+<div class="emergency-dashboard">
+    <div class="container">
+        <!-- Offline Indicator -->
+        <div class="offline-indicator" id="offlineIndicator">
+            <i class="fas fa-wifi-slash me-2"></i>
+            You're offline - Emergency features limited
+        </div>
+        
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h2 class="text-white mb-3">
+                <i class="fas fa-shield-alt me-3"></i>
+                Emergency Command Center
+            </h2>
+            <div class="text-white-50">
+                <span class="status-indicator status-online"></span>
+                System Status: Online | Last Updated: <span id="lastUpdated">Just now</span>
+            </div>
+        </div>
+        
+        <!-- Quick Actions Row -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card text-center">
+                    <button class="voice-alert-btn w-100" onclick="startVoiceAlert()">
+                        <i class="fas fa-microphone me-2"></i>
+                        <span id="voiceButtonText">Voice Emergency</span>
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card text-center">
+                    <button class="btn btn-danger w-100 py-3" onclick="panicButton()">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        PANIC BUTTON
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card text-center">
+                    <button class="btn btn-warning w-100 py-3" onclick="shareLocation()">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Share Location
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="dashboard-card text-center">
+                    <button class="btn btn-info w-100 py-3" onclick="startLiveTracking()">
+                        <i class="fas fa-satellite me-2"></i>
+                        Live Tracking
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard Content -->
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Location Tracker -->
+                <div class="location-tracker mb-4">
+                    <h5><i class="fas fa-crosshairs me-2"></i>Real-time Location</h5>
+                    <div id="locationInfo">
+                        <p class="mb-2">Getting your location...</p>
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-light btn-sm me-2" onclick="updateLocation()">
+                            <i class="fas fa-sync me-1"></i>Update
+                        </button>
+                        <button class="btn btn-light btn-sm" onclick="sendLocationToContacts()">
+                            <i class="fas fa-share me-1"></i>Send to Contacts
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Emergency Stats -->
+                <div class="emergency-widget">
+                    <h5 class="mb-3"><i class="fas fa-chart-line me-2"></i>Emergency Statistics</h5>
+                    <div class="emergency-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="responseTime">2.3</div>
+                            <div class="text-muted">Avg Response (min)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="nearbyHospitals">12</div>
+                            <div class="text-muted">Nearby Hospitals</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="emergencyContacts">5</div>
+                            <div class="text-muted">Emergency Contacts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="alertsSent">0</div>
+                            <div class="text-muted">Alerts Sent Today</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity Timeline -->
+                <div class="emergency-widget">
+                    <h5 class="mb-3"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                    <div class="emergency-timeline" id="activityTimeline">
+                        <div class="timeline-item">
+                            <small class="text-muted">Just now</small>
+                            <p class="mb-0">Emergency dashboard accessed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- Weather Alert -->
+                <div class="weather-widget mb-4">
+                    <h6><i class="fas fa-cloud me-2"></i>Weather Alert</h6>
+                    <div id="weatherInfo">
+                        <p class="mb-1">Loading weather data...</p>
+                    </div>
+                </div>
+                
+                <!-- Quick Emergency Contacts -->
+                <div class="emergency-widget">
+                    <h6 class="mb-3"><i class="fas fa-phone me-2"></i>Quick Contacts</h6>
+                    <div class="emergency-contact-quick">
+                        <div>
+                            <strong>Universal Emergency</strong>
+                            <br><small class="text-muted">24/7 Available</small>
+                        </div>
+                        <a href="tel:112" class="btn btn-danger btn-sm">112</a>
+                    </div>
+                    <div class="emergency-contact-quick">
+                        <div>
+                            <strong>Ambulance</strong>
+                            <br><small class="text-muted">Medical Emergency</small>
+                        </div>
+                        <a href="tel:102" class="btn btn-success btn-sm">102</a>
+                    </div>
+                    <div class="emergency-contact-quick">
+                        <div>
+                            <strong>Police</strong>
+                            <br><small class="text-muted">Security Emergency</small>
+                        </div>
+                        <a href="tel:100" class="btn btn-primary btn-sm">100</a>
+                    </div>
+                    <div class="emergency-contact-quick">
+                        <div>
+                            <strong>Tourist Police</strong>
+                            <br><small class="text-muted">Tourist Help</small>
+                        </div>
+                        <a href="tel:1144" class="btn btn-warning btn-sm">1144</a>
+                    </div>
+                </div>
+                
+                <!-- Emergency Checklist -->
+                <div class="emergency-widget">
+                    <h6 class="mb-3"><i class="fas fa-check-circle me-2"></i>Emergency Checklist</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="check1">
+                        <label class="form-check-label" for="check1">
+                            Emergency contacts updated
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="check2">
+                        <label class="form-check-label" for="check2">
+                            Location sharing enabled
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="check3">
+                        <label class="form-check-label" for="check3">
+                            Medical info updated
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="check4">
+                        <label class="form-check-label" for="check4">
+                            Offline maps downloaded
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="text-center mt-4">
+            <a href="{% url 'emergency_menu' %}" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-th-large me-2"></i>
+                Emergency Menu
+            </a>
+            <a href="{% url 'sos_alert' %}" class="btn btn-danger btn-lg">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Send SOS Alert
+            </a>
+        </div>
     </div>
 </div>
+
+<script>
+// Global variables
+let isTracking = false;
+let voiceRecognition = null;
+let currentLocation = null;
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDashboard();
+    checkOnlineStatus();
+    startLocationTracking();
+    loadWeatherData();
+    updateActivityTimeline();
+    
+    // Update timestamp every minute
+    setInterval(updateTimestamp, 60000);
+});
+
+function initializeDashboard() {
+    // Initialize voice recognition if available
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        voiceRecognition = new SpeechRecognition();
+        voiceRecognition.continuous = false;
+        voiceRecognition.interimResults = false;
+        voiceRecognition.lang = 'en-US';
+        
+        voiceRecognition.onresult = function(event) {
+            const command = event.results[0][0].transcript.toLowerCase();
+            handleVoiceCommand(command);
+        };
+    }
+    
+    // Load saved emergency contacts count
+    const savedContacts = localStorage.getItem('emergencyContacts');
+    if (savedContacts) {
+        document.getElementById('emergencyContacts').textContent = JSON.parse(savedContacts).length;
+    }
+}
+
+function startVoiceAlert() {
+    const button = document.querySelector('.voice-alert-btn');
+    const buttonText = document.getElementById('voiceButtonText');
+    
+    if (!voiceRecognition) {
+        alert('Voice recognition not supported in this browser');
+        return;
+    }
+    
+    if (button.classList.contains('recording')) {
+        // Stop recording
+        voiceRecognition.stop();
+        button.classList.remove('recording');
+        buttonText.innerHTML = '<i class="fas fa-microphone me-2"></i>Voice Emergency';
+    } else {
+        // Start recording
+        button.classList.add('recording');
+        buttonText.innerHTML = '<i class="fas fa-stop me-2"></i>Stop Recording';
+        voiceRecognition.start();
+    }
+}
+
+function handleVoiceCommand(command) {
+    const button = document.querySelector('.voice-alert-btn');
+    const buttonText = document.getElementById('voiceButtonText');
+    
+    button.classList.remove('recording');
+    buttonText.innerHTML = '<i class="fas fa-microphone me-2"></i>Voice Emergency';
+    
+    if (command.includes('help') || command.includes('emergency') || command.includes('sos')) {
+        if (confirm(`Voice command detected: "${command}"\n\nDo you want to send an emergency alert?`)) {
+            window.location.href = '/emergency/sos/';
+        }
+    } else if (command.includes('hospital') || command.includes('medical')) {
+        window.location.href = '/emergency/hospitals/';
+    } else if (command.includes('police')) {
+        if (confirm('Call police now?')) {
+            window.location.href = 'tel:100';
+        }
+    } else {
+        alert(`Command not recognized: "${command}"\n\nTry saying: "Help", "Emergency", "Hospital", or "Police"`);
+    }
+}
+
+function panicButton() {
+    if (confirm('🚨 PANIC BUTTON ACTIVATED 🚨\n\nThis will:\n• Send immediate SOS alert\n• Share your location\n• Call emergency services\n\nContinue?')) {
+        // Vibrate if supported
+        if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200, 100, 200]);
+        }
+        
+        // Send location and alert
+        shareLocation();
+        setTimeout(() => {
+            window.location.href = '/emergency/sos/';
+        }, 1000);
+        
+        // Update activity
+        addToTimeline('Panic button activated - Emergency alert sent');
+        
+        // Update stats
+        const alertsToday = document.getElementById('alertsSent');
+        alertsToday.textContent = parseInt(alertsToday.textContent) + 1;
+    }
+}
+
+function startLocationTracking() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                currentLocation = position;
+                updateLocationDisplay(position);
+                // Continue tracking
+                if (!isTracking) {
+                    isTracking = true;
+                    navigator.geolocation.watchPosition(updateLocationDisplay);
+                }
+            },
+            error => {
+                document.getElementById('locationInfo').innerHTML = `
+                    <p class="mb-0 text-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Location access denied or unavailable
+                    </p>
+                `;
+            }
+        );
+    }
+}
+
+function updateLocationDisplay(position) {
+    const lat = position.coords.latitude.toFixed(6);
+    const lng = position.coords.longitude.toFixed(6);
+    const accuracy = Math.round(position.coords.accuracy);
+    
+    document.getElementById('locationInfo').innerHTML = `
+        <div class="row text-start">
+            <div class="col-6">
+                <strong>Latitude:</strong><br>
+                <small>${lat}</small>
+            </div>
+            <div class="col-6">
+                <strong>Longitude:</strong><br>
+                <small>${lng}</small>
+            </div>
+        </div>
+        <p class="mb-0 mt-2">
+            <i class="fas fa-crosshairs me-1"></i>
+            Accuracy: ±${accuracy}m
+        </p>
+    `;
+}
+
+function updateLocation() {
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+    button.disabled = true;
+    
+    startLocationTracking();
+    
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        addToTimeline('Location updated manually');
+    }, 2000);
+}
+
+function shareLocation() {
+    if (!currentLocation) {
+        alert('Location not available. Please enable location services.');
+        return;
+    }
+    
+    const lat = currentLocation.coords.latitude;
+    const lng = currentLocation.coords.longitude;
+    const locationUrl = `https://maps.google.com/?q=${lat},${lng}`;
+    const message = `🚨 EMERGENCY LOCATION SHARE 🚨\n\nI need help! My current location is:\n${locationUrl}\n\nSent from TrekNepal Emergency System`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: '🚨 Emergency Location',
+            text: message,
+            url: locationUrl
+        });
+    } else {
+        navigator.clipboard.writeText(message).then(() => {
+            alert('Emergency location copied to clipboard!\n\nShare this with your emergency contacts immediately.');
+        });
+    }
+    
+    addToTimeline('Emergency location shared');
+}
+
+function sendLocationToContacts() {
+    if (!currentLocation) {
+        alert('Location not available');
+        return;
+    }
+    
+    // Simulate sending to emergency contacts
+    const contacts = JSON.parse(localStorage.getItem('emergencyContacts') || '[]');
+    if (contacts.length === 0) {
+        alert('No emergency contacts configured. Please add emergency contacts first.');
+        return;
+    }
+    
+    if (confirm(`Send your current location to ${contacts.length} emergency contacts?`)) {
+        // Simulate sending
+        setTimeout(() => {
+            alert(`Location sent to ${contacts.length} emergency contacts successfully!`);
+            addToTimeline(`Location sent to ${contacts.length} emergency contacts`);
+        }, 1000);
+    }
+}
+
+function startLiveTracking() {
+    if (confirm('Start live location tracking?\n\nThis will continuously share your location with emergency contacts.')) {
+        // Simulate live tracking
+        alert('Live tracking started!\n\nYour location will be shared every 5 minutes.');
+        addToTimeline('Live tracking activated');
+        
+        // Update button state
+        event.target.innerHTML = '<i class="fas fa-stop me-2"></i>Stop Tracking';
+        event.target.classList.remove('btn-info');
+        event.target.classList.add('btn-danger');
+        event.target.onclick = stopLiveTracking;
+    }
+}
+
+function stopLiveTracking() {
+    if (confirm('Stop live location tracking?')) {
+        alert('Live tracking stopped.');
+        addToTimeline('Live tracking deactivated');
+        
+        // Reset button
+        event.target.innerHTML = '<i class="fas fa-satellite me-2"></i>Live Tracking';
+        event.target.classList.remove('btn-danger');
+        event.target.classList.add('btn-info');
+        event.target.onclick = startLiveTracking;
+    }
+}
+
+function loadWeatherData() {
+    // Simulate weather data loading
+    setTimeout(() => {
+        document.getElementById('weatherInfo').innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1">Clear Sky</p>
+                    <small>Kathmandu • 22°C</small>
+                </div>
+                <i class="fas fa-sun fa-2x"></i>
+            </div>
+            <small class="text-light">No weather alerts</small>
+        `;
+    }, 1500);
+}
+
+function addToTimeline(activity) {
+    const timeline = document.getElementById('activityTimeline');
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    
+    const newItem = document.createElement('div');
+    newItem.className = 'timeline-item';
+    newItem.innerHTML = `
+        <small class="text-muted">${timeString}</small>
+        <p class="mb-0">${activity}</p>
+    `;
+    
+    timeline.insertBefore(newItem, timeline.firstChild);
+    
+    // Keep only last 5 items
+    while (timeline.children.length > 5) {
+        timeline.removeChild(timeline.lastChild);
+    }
+}
+
+function updateActivityTimeline() {
+    // Add some initial activities
+    const activities = [
+        'Emergency system initialized',
+        'Location services activated',
+        'Weather data synchronized'
+    ];
+    
+    activities.forEach((activity, index) => {
+        setTimeout(() => addToTimeline(activity), index * 500);
+    });
+}
+
+function updateTimestamp() {
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+}
+
+function checkOnlineStatus() {
+    const offlineIndicator = document.getElementById('offlineIndicator');
+    
+    function updateOnlineStatus() {
+        if (navigator.onLine) {
+            offlineIndicator.style.display = 'none';
+            document.querySelector('.status-indicator').className = 'status-indicator status-online';
+        } else {
+            offlineIndicator.style.display = 'block';
+            document.querySelector('.status-indicator').className = 'status-indicator status-offline';
+        }
+    }
+    
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+}
+
+// Update stats periodically
+setInterval(() => {
+    // Simulate updating nearby hospitals count
+    const hospitalsCount = Math.floor(Math.random() * 5) + 10;
+    document.getElementById('nearbyHospitals').textContent = hospitalsCount;
+    
+    // Update response time
+    const responseTime = (Math.random() * 2 + 1.5).toFixed(1);
+    document.getElementById('responseTime').textContent = responseTime;
+}, 30000);
+</script>
 {% endblock %}

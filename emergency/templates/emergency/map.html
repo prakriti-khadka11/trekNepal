@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Emergency Services Map{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    #map {
+        height: 70vh;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .emergency-info {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .emergency-number {
+        background: #f8f9fa;
+        border-left: 4px solid #ff4757;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    .district-selector {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-danger">
+        <i class="fas fa-map-marked-alt me-2"></i>
+        Emergency Services Map
+    </h2>
+    
+    <div class="district-selector">
+        <label class="form-label fw-bold">Select District:</label>
+        <select class="form-select" id="districtSelect" onchange="updateMap()">
+            {% for district_name in districts.keys %}
+                <option value="{{ district_name }}">{{ district_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="emergency-info">
+        <h4 class="text-danger mb-3">
+            <i class="fas fa-phone me-2"></i>
+            Emergency Contact Numbers
+        </h4>
+        
+        <div class="row">
+            {% for name, number in emergency_numbers.items %}
+            <div class="col-md-6">
+                <div class="emergency-number">
+                    <h6 class="mb-1">{{ name|title|replace:"_":" " }}</h6>
+                    <a href="tel:{{ number }}" class="btn btn-sm btn-danger">
+                        <i class="fas fa-phone me-1"></i>{{ number }}
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+let map;
+let markers = [];
+
+// Initialize map
+function initMap() {
+    map = L.map('map').setView([27.7172, 85.3240], 7); // Nepal center
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    updateMap();
+}
+
+function updateMap() {
+    // Clear existing markers
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+    
+    const selectedDistrict = document.getElementById('districtSelect').value;
+    const districtData = {{ districts|safe }}[selectedDistrict];
+    
+    if (districtData && districtData.hospitals) {
+        districtData.hospitals.forEach(hospital => {
+            const marker = L.marker([hospital.lat, hospital.lng])
+                .addTo(map)
+                .bindPopup(`
+                    <div class="text-center">
+                        <h6 class="text-danger">${hospital.name}</h6>
+                        <p class="mb-2">${selectedDistrict} District</p>
+                        <a href="tel:102" class="btn btn-sm btn-success">
+                            <i class="fas fa-phone me-1"></i>Call Ambulance
+                        </a>
+                    </div>
+                `);
+            markers.push(marker);
+        });
+        
+        // Center map on first hospital
+        if (districtData.hospitals.length > 0) {
+            const firstHospital = districtData.hospitals[0];
+            map.setView([firstHospital.lat, firstHospital.lng], 12);
+        }
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', initMap);
+</script>
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Travel Documents - TrekNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .document-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    
+    .document-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .document-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .document-type-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 10px;
+    }
+    
+    .expiring-soon {
+        border-left-color: #dc3545;
+        background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+    }
+    
+    .add-document-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        border-radius: 25px;
+        padding: 12px 25px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .add-document-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="document-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-1"><i class="fas fa-file-alt me-2"></i>Travel Documents</h2>
+                <p class="mb-0 opacity-90">Manage your travel documents and get expiry alerts</p>
+            </div>
+            <button class="btn add-document-btn" data-bs-toggle="modal" data-bs-target="#addDocumentModal">
+                <i class="fas fa-plus me-2"></i>Add Document
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="text-center p-3 bg-light rounded">
+                <h3 class="text-primary">{{ total_documents }}</h3>
+                <p class="mb-0">Total Documents</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center p-3 bg-light rounded">
+                <h3 class="text-warning">{{ expiring_count }}</h3>
+                <p class="mb-0">Expiring Soon</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center p-3 bg-light rounded">
+                <h3 class="text-success">{{ total_documents|add:"-"|add:expiring_count }}</h3>
+                <p class="mb-0">Valid Documents</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiring Soon Alert -->
+    {% if expiring_soon %}
+    <div class="alert alert-warning">
+        <h6><i class="fas fa-exclamation-triangle me-2"></i>Documents Expiring Soon</h6>
+        <p class="mb-0">You have {{ expiring_count }} document(s) expiring within 30 days. Please renew them before your next trip.</p>
+    </div>
+    {% endif %}
+
+    <!-- Documents List -->
+    <div class="row">
+        {% for document in documents %}
+        <div class="col-md-6 mb-3">
+            <div class="document-card {% if document.is_expiring_soon %}expiring-soon{% endif %}">
+                <div class="document-type-badge" style="background-color: 
+                    {% if document.document_type == 'passport' %}#007bff
+                    {% elif document.document_type == 'visa' %}#28a745
+                    {% elif document.document_type == 'insurance' %}#ffc107
+                    {% elif document.document_type == 'ticket' %}#17a2b8
+                    {% elif document.document_type == 'permit' %}#6f42c1
+                    {% else %}#6c757d{% endif %};">
+                    {{ document.get_document_type_display }}
+                </div>
+                
+                <h5 class="mb-2">{{ document.title }}</h5>
+                
+                {% if document.document_number %}
+                <p class="mb-1"><strong>Number:</strong> {{ document.document_number }}</p>
+                {% endif %}
+                
+                {% if document.issue_date %}
+                <p class="mb-1"><strong>Issued:</strong> {{ document.issue_date }}</p>
+                {% endif %}
+                
+                {% if document.expiry_date %}
+                <p class="mb-1"><strong>Expires:</strong> 
+                    <span class="{% if document.is_expiring_soon %}text-danger fw-bold{% endif %}">
+                        {{ document.expiry_date }}
+                    </span>
+                    {% if document.is_expiring_soon %}
+                        <i class="fas fa-exclamation-triangle text-danger ms-1"></i>
+                    {% endif %}
+                </p>
+                {% endif %}
+                
+                {% if document.issuing_authority %}
+                <p class="mb-1"><strong>Authority:</strong> {{ document.issuing_authority }}</p>
+                {% endif %}
+                
+                {% if document.notes %}
+                <p class="mb-2 text-muted">{{ document.notes|truncatewords:15 }}</p>
+                {% endif %}
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>Added {{ document.created_at|date:"M d, Y" }}
+                    </small>
+                    {% if document.document_file %}
+                    <a href="{{ document.document_file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                        <i class="fas fa-download me-1"></i>View
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No Documents Added Yet</h4>
+                <p class="text-muted">Start organizing your travel documents by adding your first document!</p>
+                <button class="btn add-document-btn" data-bs-toggle="modal" data-bs-target="#addDocumentModal">
+                    <i class="fas fa-plus me-2"></i>Add Your First Document
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Document Modal -->
+<div class="modal fade" id="addDocumentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add Travel Document</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'add_document' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Document Type</label>
+                            <select class="form-select" name="document_type" required>
+                                <option value="">Select Type</option>
+                                <option value="passport">Passport</option>
+                                <option value="visa">Visa</option>
+                                <option value="insurance">Travel Insurance</option>
+                                <option value="ticket">Flight Ticket</option>
+                                <option value="hotel">Hotel Booking</option>
+                                <option value="permit">Trekking Permit</option>
+                                <option value="vaccination">Vaccination Certificate</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" name="title" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Document Number</label>
+                            <input type="text" class="form-control" name="document_number" placeholder="Optional">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Issuing Authority</label>
+                            <input type="text" class="form-control" name="issuing_authority" placeholder="Optional">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Issue Date</label>
+                            <input type="date" class="form-control" name="issue_date">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="date" class="form-control" name="expiry_date">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Document File</label>
+                        <input type="file" class="form-control" name="document_file" accept=".pdf,.jpg,.jpeg,.png">
+                        <small class="text-muted">Upload PDF, JPG, or PNG files</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3" placeholder="Optional notes"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn add-document-btn">Add Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

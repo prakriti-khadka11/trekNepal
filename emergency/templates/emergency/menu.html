@@ -2,28 +2,195 @@
 
 {% block title %}Emergency Menu{% endblock %}
 
+{% block extra_css %}
+<style>
+    .emergency-menu-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 50px 0;
+    }
+    
+    .emergency-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin: 15px 0;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+    
+    .emergency-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .emergency-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: block;
+        text-align: center;
+    }
+    
+    .sos-card { border-left: 5px solid #ff4757; }
+    .sos-card:hover .emergency-icon { color: #ff4757; }
+    
+    .history-card { border-left: 5px solid #5352ed; }
+    .history-card:hover .emergency-icon { color: #5352ed; }
+    
+    .aid-card { border-left: 5px solid #26de81; }
+    .aid-card:hover .emergency-icon { color: #26de81; }
+    
+    .help-card { border-left: 5px solid #fd79a8; }
+    .help-card:hover .emergency-icon { color: #fd79a8; }
+    
+    .location-card { border-left: 5px solid #fdcb6e; }
+    .location-card:hover .emergency-icon { color: #fdcb6e; }
+    
+    .map-card { border-left: 5px solid #6c5ce7; }
+    .map-card:hover .emergency-icon { color: #6c5ce7; }
+    
+    .emergency-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    .emergency-desc {
+        color: #666;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <h2 class="mb-4 text-danger"><i class="fas fa-ambulance me-2"></i>Emergency Menu</h2>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <a href="{% url 'sos_alert' %}" class="btn btn-danger w-100 py-3">🚨 SOS Alert</a>
+<div class="emergency-menu-container">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="text-white mb-3">
+                <i class="fas fa-ambulance me-3"></i>
+                Emergency Services
+            </h2>
+            <p class="text-white-50">Quick access to emergency services and help</p>
         </div>
-        <div class="col-md-4">
-            <a href="{% url 'emergency_history' %}" class="btn btn-secondary w-100 py-3">📜 Emergency History</a>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'emergency_dashboard' %}" class="emergency-card sos-card">
+                    <i class="fas fa-tachometer-alt emergency-icon"></i>
+                    <div class="emergency-title">Emergency Dashboard</div>
+                    <div class="emergency-desc">Advanced emergency control center with real-time features</div>
+                </a>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'sos_alert' %}" class="emergency-card sos-card">
+                    <i class="fas fa-exclamation-triangle emergency-icon"></i>
+                    <div class="emergency-title">SOS Emergency Alert</div>
+                    <div class="emergency-desc">Send immediate emergency alert with your location</div>
+                </a>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'emergency_contacts_manage' %}" class="emergency-card history-card">
+                    <i class="fas fa-address-book emergency-icon"></i>
+                    <div class="emergency-title">Emergency Contacts</div>
+                    <div class="emergency-desc">Manage your emergency contacts with advanced features</div>
+                </a>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'nearby_hospitals' %}" class="emergency-card help-card">
+                    <i class="fas fa-hospital emergency-icon"></i>
+                    <div class="emergency-title">Medical Emergency</div>
+                    <div class="emergency-desc">Find hospitals, medical tips, and first aid guidance</div>
+                </a>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'emergency_map' %}" class="emergency-card map-card">
+                    <i class="fas fa-map emergency-icon"></i>
+                    <div class="emergency-title">Emergency Services Map</div>
+                    <div class="emergency-desc">Interactive map with emergency services locations</div>
+                </a>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'emergency_history' %}" class="emergency-card location-card">
+                    <i class="fas fa-history emergency-icon"></i>
+                    <div class="emergency-title">Emergency History</div>
+                    <div class="emergency-desc">View your past emergency alerts and analytics</div>
+                </a>
+            </div>
         </div>
-        <div class="col-md-4">
-            <a href="#" class="btn btn-warning w-100 py-3">🩹 First Aid Guide</a>
-        </div>
-        <div class="col-md-4">
-            <a href="#" class="btn btn-info w-100 py-3">📍 Nearby Help</a>
-        </div>
-        <div class="col-md-4">
-            <a href="#" class="btn btn-success w-100 py-3">⚠️ Share Location</a>
-        </div>
-        <div class="col-md-4">
-            <a href="#" class="btn btn-primary w-100 py-3">📝 Select Emergency Type</a>
+        
+        <div class="text-center mt-5">
+            <div class="bg-white rounded-3 p-4 d-inline-block">
+                <h5 class="text-danger mb-3">
+                    <i class="fas fa-phone me-2"></i>
+                    Quick Emergency Numbers
+                </h5>
+                <div class="row text-center">
+                    <div class="col-6 col-md-3 mb-2">
+                        <a href="tel:112" class="btn btn-outline-danger btn-sm w-100">
+                            <strong>112</strong><br>
+                            <small>Universal</small>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <a href="tel:100" class="btn btn-outline-primary btn-sm w-100">
+                            <strong>100</strong><br>
+                            <small>Police</small>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <a href="tel:102" class="btn btn-outline-success btn-sm w-100">
+                            <strong>102</strong><br>
+                            <small>Ambulance</small>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <a href="tel:1144" class="btn btn-outline-warning btn-sm w-100">
+                            <strong>1144</strong><br>
+                            <small>Tourist Police</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+function showFirstAid() {
+    alert('First Aid Guide feature coming soon! In case of emergency, call 102 for ambulance.');
+}
+
+function shareEmergencyLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const locationUrl = `https://maps.google.com/?q=${lat},${lng}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Emergency Location Share',
+                    text: `I need help! My current location is:`,
+                    url: locationUrl
+                });
+            } else {
+                navigator.clipboard.writeText(`Emergency Location: ${locationUrl}`).then(() => {
+                    alert('Location copied to clipboard! Share this with emergency contacts.');
+                });
+            }
+        });
+    }
+}
+</script>
 {% endblock %}
