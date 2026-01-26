@@ -18,6 +18,7 @@ urlpatterns = [
     # User Profile and Bookings
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('booking/<int:id>/', views.booking_detail, name='booking_detail'),
+    path('booking/<int:booking_id>/receipt/', views.booking_receipt, name='booking_receipt'),
     path('booking/confirmation/', lambda request: render(request, 'booking_confirmation.html'), name='booking_confirmation'),
     path('user-data/', views.user_data, name='user_data'),
     path("bookings/<int:booking_id>/cancel/", views.cancel_booking, name="cancel_booking"),
@@ -67,6 +68,9 @@ urlpatterns = [
     path("guide/dashboard/", views.guide_dashboard, name="guide_dashboard"),
     path("guide/profile/", views.guide_profile, name="guide_profile"),
 
+    # Admin Dashboard
+    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
+
 
     path('reset-password/', views.request_password_reset, name='reset-password'),
     path('reset-password/<uidb64>/<token>/', views.reset_password_confirm, name='reset_password_confirm'),
@@ -88,7 +92,7 @@ urlpatterns = [
     
     # Chatbot
     path('chatbot/', include('app.chatbot_urls')),
-    ]
+]
 
  
  

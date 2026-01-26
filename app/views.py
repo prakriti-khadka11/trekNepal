@@ -25,6 +25,15 @@ settings.KHALTI_PUBLIC_KEY
 
 # Helper function to check if user is an admin
 def home(request):
+    # If user is logged in, check user type and redirect accordingly
+    if request.user.is_authenticated:
+        # Check if user is admin (superuser or staff)
+        if request.user.is_superuser or request.user.is_staff:
+            return redirect("admin_dashboard")
+        # Check if user is a verified guide
+        elif hasattr(request.user, 'guide') and request.user.guide.verified:
+            return redirect("guide_dashboard")
+    
     # Get featured destinations
     destinations = Destination.objects.all().order_by('-id')[:6]
     
@@ -61,6 +70,13 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            # Check if user has a guide profile
+            if hasattr(user, 'guide'):
+                # Guide trying to login through regular login - redirect to guide login
+                messages.warning(request, "You are registered as a guide. Please use the guide login page.")
+                return redirect("guide_login")
+            
+            # Regular user or admin login
             login(request, user)
             messages.success(request, "Login successful!")
             return redirect("home")
@@ -186,6 +202,40 @@ def book_travel(request, travel_id):
 def my_bookings(request):
     bookings = Booking.objects.filter(user=request.user)
     return render(request, "my_bookings.html", {"bookings": bookings})
+
+@login_required
+def booking_receipt(request, booking_id):
+    """Display booking confirmation details (same as PDF email) in the system"""
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    
+    # Import the dynamic details function
+    from .utils import get_dynamic_booking_details
+    dynamic_details = get_dynamic_booking_details(booking)
+    
+    # Generate the same data that goes into the PDF
+    booking_details = {
+        'booking_id': f'TNP-{booking.id}',
+        'booking_date': booking.booking_date.date(),
+        'payment_status': booking.status,
+        'customer_name': booking.user.get_full_name() or booking.user.username,
+        'customer_email': booking.user.email,
+        'travel_date': booking.travel_date,
+        'num_people': booking.num_people,
+        'package_title': booking.travel_package.title,
+        'destination': f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}",
+        'hotel': dynamic_details['hotel'],
+        'accommodation': dynamic_details['accommodation'],
+        'ticket_no': dynamic_details['ticket_number'],
+        'total_amount': booking.total_price,
+        'payment_method': 'Khalti (Demo)',
+        'transaction_id': booking.khalti_pidx,
+        'destination_info': dynamic_details['destination_info']
+    }
+    
+    return render(request, 'booking_receipt.html', {
+        'booking': booking,
+        'details': booking_details
+    })
 
 
 def user_data(request):
@@ -427,7 +477,144 @@ from .models import Guide
 @login_required
 def guide_dashboard(request):
     guide = Guide.objects.filter(user=request.user).first()
-    return render(request, "guide_dashboard.html", {"guide": guide})
+    
+    if guide:
+        # Get bookings assigned to this guide
+        assigned_bookings = Booking.objects.filter(guide=guide).order_by('-booking_date')
+        
+        # Get booking statistics
+        total_bookings = assigned_bookings.count()
+        pending_bookings = assigned_bookings.filter(status='PENDING').count()
+        paid_bookings = assigned_bookings.filter(status='PAID').count()
+        
+        # Get recent bookings (last 5)
+        recent_bookings = assigned_bookings[:5]
+        
+        # Get upcoming bookings (future travel dates)
+        from django.utils import timezone
+        upcoming_bookings = assigned_bookings.filter(
+            travel_date__gte=timezone.now().date(),
+            status='PAID'
+        ).order_by('travel_date')
+        
+        # Get guide reviews and average rating
+        guide_reviews = guide.reviews.all().order_by('-id')[:5]
+        average_rating = guide.average_rating()
+        
+        # Calculate total earnings (from paid bookings)
+        from django.db.models import Sum
+        total_earnings = assigned_bookings.filter(status='PAID').aggregate(
+            total=Sum('total_price')
+        )['total'] or 0
+        
+        context = {
+            'guide': guide,
+            'assigned_bookings': assigned_bookings,
+            'total_bookings': total_bookings,
+            'pending_bookings': pending_bookings,
+            'paid_bookings': paid_bookings,
+            'recent_bookings': recent_bookings,
+            'upcoming_bookings': upcoming_bookings,
+            'guide_reviews': guide_reviews,
+            'average_rating': average_rating,
+            'total_earnings': total_earnings,
+        }
+    else:
+        context = {'guide': None}
+    
+    return render(request, "guide_dashboard.html", context)
+
+@login_required
+def admin_dashboard(request):
+    # Check if user is admin
+    if not (request.user.is_superuser or request.user.is_staff):
+        return redirect('home')
+    
+    # Get database statistics
+    from django.contrib.auth.models import User
+    from django.db.models import Sum, Count
+    from django.utils import timezone
+    from datetime import datetime, timedelta
+    
+    # User statistics
+    total_users = User.objects.count()
+    new_users_this_month = User.objects.filter(
+        date_joined__gte=timezone.now().replace(day=1)
+    ).count()
+    
+    # Guide statistics
+    total_guides = Guide.objects.count()
+    verified_guides = Guide.objects.filter(verified=True).count()
+    pending_guides = Guide.objects.filter(verified=False).count()
+    
+    # Booking statistics
+    total_bookings = Booking.objects.count()
+    pending_bookings = Booking.objects.filter(status='PENDING').count()
+    paid_bookings = Booking.objects.filter(status='PAID').count()
+    failed_bookings = Booking.objects.filter(status='FAILED').count()
+    
+    # Revenue statistics
+    total_revenue = Booking.objects.filter(status='PAID').aggregate(
+        total=Sum('total_price')
+    )['total'] or 0
+    
+    this_month_revenue = Booking.objects.filter(
+        status='PAID',
+        booking_date__gte=timezone.now().replace(day=1)
+    ).aggregate(total=Sum('total_price'))['total'] or 0
+    
+    # Package statistics
+    total_packages = TravelPackage.objects.count()
+    total_destinations = Destination.objects.count()
+    total_countries = Country.objects.count()
+    
+    # Recent bookings (last 10)
+    recent_bookings = Booking.objects.select_related(
+        'user', 'travel_package', 'guide'
+    ).order_by('-booking_date')[:10]
+    
+    # Recent users (last 10)
+    recent_users = User.objects.order_by('-date_joined')[:10]
+    
+    # Pending guide approvals
+    pending_guide_approvals = Guide.objects.filter(verified=False).select_related('user')[:5]
+    
+    # Contact messages (recent 5)
+    recent_contacts = ContactUs.objects.order_by('-created_at')[:5]
+    
+    context = {
+        # User stats
+        'total_users': total_users,
+        'new_users_this_month': new_users_this_month,
+        
+        # Guide stats
+        'total_guides': total_guides,
+        'verified_guides': verified_guides,
+        'pending_guides': pending_guides,
+        
+        # Booking stats
+        'total_bookings': total_bookings,
+        'pending_bookings': pending_bookings,
+        'paid_bookings': paid_bookings,
+        'failed_bookings': failed_bookings,
+        
+        # Revenue stats
+        'total_revenue': total_revenue,
+        'this_month_revenue': this_month_revenue,
+        
+        # Content stats
+        'total_packages': total_packages,
+        'total_destinations': total_destinations,
+        'total_countries': total_countries,
+        
+        # Recent data
+        'recent_bookings': recent_bookings,
+        'recent_users': recent_users,
+        'pending_guide_approvals': pending_guide_approvals,
+        'recent_contacts': recent_contacts,
+    }
+    
+    return render(request, "admin_dashboard.html", context)
 
 @login_required
 def guide_profile(request):

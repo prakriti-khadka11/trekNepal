@@ -12,6 +12,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from datetime import date
 import os
+import random
 
 
 class AppTokenGenerator(PasswordResetTokenGenerator):
@@ -21,6 +22,262 @@ class AppTokenGenerator(PasswordResetTokenGenerator):
 
 
 account_activation_token = AppTokenGenerator()
+
+def get_dynamic_booking_details(booking):
+    """Generate realistic booking details based on destination and package type"""
+    destination = booking.travel_package.destination
+    package_title = booking.travel_package.title.lower()
+    location = destination.location.lower()
+    
+    # Hotel mapping based on destination/location
+    hotel_mapping = {
+        # Everest Region
+        'everest': [
+            'Hotel Everest View, Syangboche',
+            'Yeti Mountain Home, Namche Bazaar',
+            'Hotel Himalayan Lodge, Namche',
+            'Everest Summit Lodge, Monjo'
+        ],
+        'namche': [
+            'Hotel Sherpaland, Namche Bazaar',
+            'Yeti Mountain Home, Namche',
+            'Hotel Himalayan Lodge, Namche'
+        ],
+        'lukla': [
+            'Hotel Himalayan Lodge, Lukla',
+            'Summit Lodge, Lukla',
+            'Yeti Mountain Home, Lukla'
+        ],
+        'jiri': [
+            'Hotel Jiri View, Jiri',
+            'Sherpa Lodge, Jiri',
+            'Mountain Guest House, Jiri',
+            'Jiri Trekking Lodge, Jiri'
+        ],
+        'solukhumbu': [
+            'Sherpa Lodge, Solukhumbu',
+            'Mountain View Hotel, Solukhumbu',
+            'Everest Gateway Lodge, Solukhumbu'
+        ],
+        
+        # Annapurna Region
+        'annapurna': [
+            'Hotel Himalayan Front, Pokhara',
+            'Annapurna View Lodge, Ghandruk',
+            'Mountain Lodge, Chomrong',
+            'Himalayan Lodge, Tadapani'
+        ],
+        'pokhara': [
+            'Hotel Himalayan Front, Pokhara',
+            'Temple Tree Resort, Pokhara',
+            'Hotel Barahi, Pokhara',
+            'Mount Kailash Resort, Pokhara'
+        ],
+        'ghandruk': [
+            'Annapurna View Lodge, Ghandruk',
+            'Mountain Lodge, Ghandruk',
+            'Himalayan Lodge, Ghandruk'
+        ],
+        'kaski': [
+            'Hotel Mountain View, Kaski',
+            'Annapurna Lodge, Kaski',
+            'Himalayan Guest House, Kaski'
+        ],
+        
+        # Langtang Region
+        'langtang': [
+            'Hotel Langtang View, Syabrubesi',
+            'Himalayan Lodge, Langtang Village',
+            'Mountain View Lodge, Kyanjin Gompa'
+        ],
+        'rasuwa': [
+            'Langtang Gateway Lodge, Rasuwa',
+            'Mountain View Hotel, Rasuwa',
+            'Himalayan Lodge, Rasuwa'
+        ],
+        
+        # Kathmandu Valley
+        'kathmandu': [
+            'Hotel Himalayan Heritage, Kathmandu',
+            'Kathmandu Guest House, Thamel',
+            'Hotel Tibet International, Kathmandu',
+            'Dwarika\'s Hotel, Kathmandu'
+        ],
+        'bhaktapur': [
+            'Heritage Hotel, Bhaktapur',
+            'Traditional Lodge, Bhaktapur',
+            'Bhaktapur Guest House, Bhaktapur'
+        ],
+        'lalitpur': [
+            'Hotel Heritage, Lalitpur',
+            'Patan Guest House, Lalitpur',
+            'Traditional Lodge, Lalitpur'
+        ],
+        
+        # Eastern Nepal
+        'taplejung': [
+            'Kanchenjunga Lodge, Taplejung',
+            'Mountain View Hotel, Taplejung',
+            'Himalayan Guest House, Taplejung'
+        ],
+        'ilam': [
+            'Tea Garden Resort, Ilam',
+            'Ilam Hill Station, Ilam',
+            'Green Valley Lodge, Ilam'
+        ],
+        'dhankuta': [
+            'Hill Station Lodge, Dhankuta',
+            'Mountain View Hotel, Dhankuta',
+            'Dhankuta Guest House, Dhankuta'
+        ],
+        
+        # Western Nepal
+        'palpa': [
+            'Tansen View Hotel, Palpa',
+            'Hill Station Lodge, Tansen',
+            'Heritage Hotel, Palpa'
+        ],
+        'tansen': [
+            'Tansen View Hotel, Tansen',
+            'Hill Station Lodge, Tansen',
+            'Heritage Hotel, Tansen'
+        ],
+        'mustang': [
+            'Mustang Lodge, Lo Manthang',
+            'Upper Mustang Hotel, Mustang',
+            'Desert Lodge, Mustang'
+        ],
+        
+        # Central Nepal
+        'dolakha': [
+            'Sailung Lodge, Dolakha',
+            'Mountain View Hotel, Dolakha',
+            'Himalayan Guest House, Dolakha'
+        ],
+        
+        # Other Popular Destinations
+        'chitwan': [
+            'Jungle Safari Lodge, Chitwan',
+            'Tiger Tops Jungle Lodge, Chitwan',
+            'Hotel Parkland, Chitwan'
+        ],
+        'lumbini': [
+            'Hotel Lumbini Garden, Lumbini',
+            'Buddha Maya Garden Hotel, Lumbini',
+            'Lumbini Village Lodge, Lumbini'
+        ],
+        'bandipur': [
+            'Bandipur Village Resort, Bandipur',
+            'Old Inn Bandipur, Bandipur',
+            'Gaun Ghar Lodge, Bandipur'
+        ],
+        'bardiya': [
+            'Jungle Safari Lodge, Bardiya',
+            'Tiger Reserve Lodge, Bardiya',
+            'Wildlife Resort, Bardiya'
+        ],
+        'koshi': [
+            'Wildlife Lodge, Koshi Tappu',
+            'Bird Watching Resort, Koshi',
+            'Wetland Lodge, Koshi'
+        ],
+        'khaptad': [
+            'Khaptad Lodge, Khaptad',
+            'National Park Lodge, Khaptad',
+            'Mountain Resort, Khaptad'
+        ]
+    }
+    
+    # Accommodation types based on package type and destination
+    accommodation_mapping = {
+        'luxury': [
+            'Deluxe Suite (All Meals Included)',
+            'Premium Room (Breakfast & Dinner)',
+            'Executive Suite (Full Board)',
+            'Luxury Lodge (All Inclusive)'
+        ],
+        'standard': [
+            'Standard Room (Breakfast Included)',
+            'Twin Sharing Room (Breakfast & Dinner)',
+            'Mountain View Room (Half Board)',
+            'Lodge Room (Breakfast Included)'
+        ],
+        'budget': [
+            'Basic Room (Breakfast Only)',
+            'Dormitory Sharing (Meals Extra)',
+            'Tea House Lodge (Basic Meals)',
+            'Budget Room (Breakfast Included)'
+        ],
+        'trekking': [
+            'Tea House Lodge (Basic Meals)',
+            'Mountain Lodge (Breakfast & Dinner)',
+            'Trekking Lodge (Full Board)',
+            'Local Guest House (Traditional Meals)'
+        ]
+    }
+    
+    # Determine hotel based on destination with improved matching
+    hotel = None
+    
+    # First, try exact location match
+    for key, hotels in hotel_mapping.items():
+        if key in location.lower():
+            hotel = random.choice(hotels)
+            break
+    
+    # If no location match, try destination name match
+    if not hotel:
+        for key, hotels in hotel_mapping.items():
+            if key in destination.name.lower():
+                hotel = random.choice(hotels)
+                break
+    
+    # If still no match, provide region-based fallback
+    if not hotel:
+        # Determine region and provide appropriate fallback
+        if any(word in location.lower() or word in destination.name.lower() for word in ['everest', 'solukhumbu', 'khumbu', 'sagarmatha']):
+            hotel = 'Sherpa Lodge, Everest Region'
+        elif any(word in location.lower() or word in destination.name.lower() for word in ['annapurna', 'pokhara', 'kaski', 'ghandruk']):
+            hotel = 'Mountain Lodge, Annapurna Region'
+        elif any(word in location.lower() or word in destination.name.lower() for word in ['langtang', 'rasuwa', 'helambu']):
+            hotel = 'Himalayan Lodge, Langtang Region'
+        elif any(word in location.lower() or word in destination.name.lower() for word in ['kathmandu', 'bhaktapur', 'lalitpur', 'patan']):
+            hotel = 'Heritage Hotel, Kathmandu Valley'
+        elif any(word in location.lower() or word in destination.name.lower() for word in ['chitwan', 'sauraha', 'jungle', 'safari']):
+            hotel = 'Jungle Lodge, Chitwan'
+        elif any(word in location.lower() or word in destination.name.lower() for word in ['lumbini', 'buddha', 'kapilvastu']):
+            hotel = 'Buddha Lodge, Lumbini'
+        else:
+            # Final fallback with location-specific naming
+            hotel = f'Mountain Lodge, {destination.location}'
+    
+    # Determine accommodation type based on package price and type
+    accommodation_type = 'standard'
+    if booking.travel_package.price > 100000:  # High-end packages
+        accommodation_type = 'luxury'
+    elif booking.travel_package.price < 30000:  # Budget packages
+        accommodation_type = 'budget'
+    elif any(word in package_title for word in ['trek', 'hiking', 'base camp']):
+        accommodation_type = 'trekking'
+    
+    accommodation = random.choice(accommodation_mapping[accommodation_type])
+    
+    # Generate realistic ticket number
+    destination_code = destination.name[:3].upper()
+    year = booking.booking_date.year
+    month = booking.booking_date.month
+    ticket_number = f"TNP-{destination_code}-{booking.id}-{year}{month:02d}"
+    
+    return {
+        'hotel': hotel,
+        'accommodation': accommodation,
+        'ticket_number': ticket_number,
+        'destination_info': {
+            'name': destination.name,
+            'location': destination.location,
+            'country': destination.country.name if destination.country else 'Nepal'
+        }
+    }
 
 def generate_booking_pdf(booking):
     buffer = BytesIO()
@@ -36,6 +293,10 @@ def generate_booking_pdf(booking):
 
     styles = getSampleStyleSheet()
     elements = []
+    
+    # Get dynamic booking details
+    dynamic_details = get_dynamic_booking_details(booking)
+    
     logo_path = os.path.join(settings.BASE_DIR, "app/static/img/logo.png")
     logo = Image(logo_path, width=160, height=50)
 
@@ -99,12 +360,14 @@ def generate_booking_pdf(booking):
     elements.append(Paragraph("<b>Customer Details</b>", styles["Heading3"]))
     elements.append(customer_table)
     elements.append(Spacer(1, 20))
+    
+    # Use dynamic details for travel table
     travel_table = Table([
         ["Package", booking.travel_package.title],
-        ["Destination", booking.travel_package.destination.name],
-        ["Hotel", "Hotel Everest View, Nepal"],
-        ["Accommodation", "Deluxe Room (Breakfast Included)"],
-        ["Ticket No.", f"TNP-{booking.id}-{date.today().year}"],
+        ["Destination", f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}"],
+        ["Hotel", dynamic_details['hotel']],
+        ["Accommodation", dynamic_details['accommodation']],
+        ["Ticket No.", dynamic_details['ticket_number']],
     ], colWidths=[150, 300])
 
     travel_table.setStyle(TableStyle([

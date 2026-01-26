@@ -1,0 +1,227 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | TrekNepal Admin{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+/* Simple and Clean Admin Styling */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #28a745;
+    --light-bg: #f8f9fa;
+    --border-color: #e9ecef;
+}
+
+/* Header */
+#header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    color: white !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+}
+
+#header h1, #header h1 a {
+    color: white !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+#user-tools a {
+    color: rgba(255,255,255,0.9) !important;
+    text-decoration: none !important;
+    padding: 5px 10px !important;
+    border-radius: 4px !important;
+    transition: background 0.3s ease !important;
+}
+
+#user-tools a:hover {
+    background: rgba(255,255,255,0.2) !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background: var(--light-bg) !important;
+    border-radius: 6px !important;
+    margin: 15px 0 !important;
+    padding: 10px 15px !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.breadcrumbs a {
+    color: var(--primary-color) !important;
+    text-decoration: none !important;
+}
+
+.breadcrumbs a:hover {
+    text-decoration: underline !important;
+}
+
+/* Module styling */
+.module {
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    margin-bottom: 20px !important;
+    border: 1px solid var(--border-color) !important;
+    overflow: hidden !important;
+}
+
+.module h2, .module caption {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    color: white !important;
+    font-weight: 500 !important;
+    padding: 12px 15px !important;
+    margin: 0 !important;
+    font-size: 1rem !important;
+}
+
+.module h2 a, .module caption a {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+/* Table styling */
+.module table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+.module th, .module td {
+    padding: 10px 15px !important;
+    border-bottom: 1px solid #f1f3f4 !important;
+    text-align: left !important;
+}
+
+.module tr:hover {
+    background: #f8f9fa !important;
+}
+
+/* Links */
+.addlink, .changelink, .viewlink {
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+.addlink {
+    background: var(--success-color) !important;
+    color: white !important;
+}
+
+.changelink, .viewlink {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
+.addlink:hover, .changelink:hover, .viewlink:hover {
+    opacity: 0.8 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Buttons */
+.button, input[type=submit], input[type=button] {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover {
+    opacity: 0.9 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Form styling */
+.form-row {
+    padding: 15px !important;
+    border-bottom: 1px solid #f1f3f4 !important;
+}
+
+.form-row:last-child {
+    border-bottom: none !important;
+}
+
+/* Input fields */
+input[type=text], input[type=email], input[type=password], 
+input[type=number], input[type=date], textarea, select {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+    transition: border-color 0.3s ease !important;
+}
+
+input[type=text]:focus, input[type=email]:focus, input[type=password]:focus,
+input[type=number]:focus, input[type=date]:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Messages */
+.success, .info, .warning, .error {
+    padding: 10px 15px !important;
+    border-radius: 6px !important;
+    margin: 10px 0 !important;
+    font-weight: 500 !important;
+}
+
+.success {
+    background: #d4edda !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb !important;
+}
+
+.info {
+    background: #d1ecf1 !important;
+    color: #0c5460 !important;
+    border: 1px solid #bee5eb !important;
+}
+
+.warning {
+    background: #fff3cd !important;
+    color: #856404 !important;
+    border: 1px solid #ffeaa7 !important;
+}
+
+.error {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+}
+
+/* Clean dashboard layout */
+#content {
+    padding: 20px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #content {
+        padding: 10px !important;
+    }
+    
+    .module {
+        margin-bottom: 15px !important;
+    }
+    
+    .module th, .module td {
+        padding: 8px 10px !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">TrekNepal Admin</a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

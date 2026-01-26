@@ -1,17 +1,20 @@
-
 from django.contrib import admin
-from .models import Booking, ContactUs, Destination, Review, SliderImage, TourDetail, TravelPackage, Country, Trekking, PeakClimbing
 from .models import (
-    TourImage, PackageImage, DestinationGalleryImage,
-    TrekkingGalleryImage, PeakClimbingGalleryImage
+    Booking, ContactUs, Destination, Review, SliderImage, TourDetail, TravelPackage, Country, 
+    Trekking, PeakClimbing, TourImage, PackageImage, DestinationGalleryImage,
+    TrekkingGalleryImage, PeakClimbingGalleryImage, PopularPlace, PeakClimbingBooking,
+    Profile, Guide, GuideReview, ExpenseCategory, TravelExpense, TravelBudget, 
+    TravelWishlist, TravelDocument, UserPreference, AltitudeProfile, 
+    AcclimatizationPlan, SymptomLog, EmergencyProtocol
 )
 
 # Booking Admin
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'travel_package', 'num_people', 'total_price', 'travel_date', 'booking_date')
-    list_filter = ('travel_date', 'booking_date', 'travel_package')
-    search_fields = ('user__username', 'travel_package__title')
+    list_display = ('user', 'travel_package', 'num_people', 'total_price', 'travel_date', 'booking_date', 'status')
+    list_filter = ('travel_date', 'booking_date', 'travel_package', 'status')
+    search_fields = ('user__username', 'travel_package__title', 'khalti_pidx')
+    readonly_fields = ('khalti_pidx',)
 
 # Contact Us Admin
 @admin.register(ContactUs)
@@ -23,8 +26,8 @@ class ContactUsAdmin(admin.ModelAdmin):
 # Destination Admin
 @admin.register(Destination)
 class DestinationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'location', 'description')
-    list_filter = ('location',)
+    list_display = ('name', 'location', 'country')
+    list_filter = ('location', 'country')
     search_fields = ('name', 'location')
 
 # Review Admin
@@ -50,8 +53,6 @@ class TourDetailAdmin(admin.ModelAdmin):
     search_fields = ('title',)
     inlines = [TourImageInline]
 
-
-
 class PackageImageInline(admin.TabularInline):
     model = PackageImage
     extra = 1
@@ -62,7 +63,6 @@ class TravelPackageAdmin(admin.ModelAdmin):
     list_filter = ('destination', 'price')
     search_fields = ('title', 'destination__name')
     inlines = [PackageImageInline]
-
 
 # Country Admin
 @admin.register(Country)
@@ -76,11 +76,10 @@ class TrekkingGalleryInline(admin.TabularInline):
 
 @admin.register(Trekking)
 class TrekkingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'country', 'difficulty', 'price')
-    list_filter = ('country', 'difficulty', 'price')
+    list_display = ('title', 'country', 'difficulty', 'price', 'is_active')
+    list_filter = ('country', 'difficulty', 'price', 'is_active')
     search_fields = ('title', 'country')
     inlines = [TrekkingGalleryInline]
-
 
 class PeakClimbingGalleryInline(admin.TabularInline):
     model = PeakClimbingGalleryImage
@@ -88,40 +87,37 @@ class PeakClimbingGalleryInline(admin.TabularInline):
 
 @admin.register(PeakClimbing)
 class PeakClimbingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'country', 'difficulty', 'price')
-    list_filter = ('country', 'difficulty', 'price')
+    list_display = ('title', 'country', 'difficulty', 'price', 'is_active')
+    list_filter = ('country', 'difficulty', 'price', 'is_active')
     search_fields = ('title', 'country')
     inlines = [PeakClimbingGalleryInline]
-
-
-# Add this to your admin.py file
-
-from .models import DestinationGalleryImage
 
 class DestinationGalleryInline(admin.TabularInline):
     model = DestinationGalleryImage
     extra = 1
 
-class DestinationAdmin(admin.ModelAdmin):
-    inlines = [DestinationGalleryInline]
-    list_display = ('name', 'location', 'description')
-    search_fields = ('name', 'location')
+# Popular Places Admin
+@admin.register(PopularPlace)
+class PopularPlaceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'destination', 'is_active', 'date_added')
+    list_filter = ('is_active', 'date_added', 'destination')
+    search_fields = ('title', 'destination__name')
 
-# Re-register the Destination model with the updated admin class
-admin.site.unregister(Destination)
-admin.site.register(Destination, DestinationAdmin)
+# Peak Climbing Booking Admin
+@admin.register(PeakClimbingBooking)
+class PeakClimbingBookingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'peak_climbing', 'num_people', 'total_price', 'climbing_date', 'booking_date')
+    list_filter = ('climbing_date', 'booking_date')
+    search_fields = ('user__username', 'peak_climbing__title')
 
-# Guide
+# Profile Admin
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_verified', 'email_verification_code')
+    list_filter = ('is_verified',)
+    search_fields = ('user__username', 'user__email')
 
-from django.contrib import admin
-from .models import Guide
-
-# @admin.register(Guide)
-# class GuideAdmin(admin.ModelAdmin):
-#     list_display = ("user", "verified")
-#     list_filter = ("verified",)
-#     search_fields = ("user__username", "user__email")
-
+# Guide Admin
 @admin.register(Guide)
 class GuideAdmin(admin.ModelAdmin):
     list_display = (
@@ -144,3 +140,84 @@ class GuideAdmin(admin.ModelAdmin):
         self.message_user(request, f"{updated} guide(s) successfully approved.")
     approve_guides.short_description = "Approve selected guides"
 
+# Guide Review Admin
+@admin.register(GuideReview)
+class GuideReviewAdmin(admin.ModelAdmin):
+    list_display = ('guide', 'user', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at')
+    search_fields = ('guide__user__username', 'user__username')
+
+# ===== PERSONAL FEATURES ADMIN =====
+
+# Expense Category Admin
+@admin.register(ExpenseCategory)
+class ExpenseCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon', 'color')
+    search_fields = ('name',)
+
+# Travel Expense Admin
+@admin.register(TravelExpense)
+class TravelExpenseAdmin(admin.ModelAdmin):
+    list_display = ('user', 'title', 'category', 'amount', 'currency', 'date', 'location', 'is_booking_expense')
+    list_filter = ('category', 'currency', 'date', 'is_booking_expense', 'created_at')
+    search_fields = ('user__username', 'title', 'location')
+    readonly_fields = ('created_at',)
+
+# Travel Budget Admin
+@admin.register(TravelBudget)
+class TravelBudgetAdmin(admin.ModelAdmin):
+    list_display = ('user', 'title', 'destination', 'total_budget', 'currency', 'start_date', 'end_date', 'is_active')
+    list_filter = ('currency', 'is_active', 'start_date', 'end_date')
+    search_fields = ('user__username', 'title', 'destination')
+
+# Travel Wishlist Admin
+@admin.register(TravelWishlist)
+class TravelWishlistAdmin(admin.ModelAdmin):
+    list_display = ('user', 'destination', 'country', 'priority', 'target_date', 'is_completed')
+    list_filter = ('priority', 'is_completed', 'country', 'target_date')
+    search_fields = ('user__username', 'destination', 'country')
+
+# Travel Document Admin
+@admin.register(TravelDocument)
+class TravelDocumentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'document_type', 'title', 'document_number', 'issue_date', 'expiry_date', 'issuing_authority')
+    list_filter = ('document_type', 'issue_date', 'expiry_date')
+    search_fields = ('user__username', 'title', 'document_number', 'issuing_authority')
+
+# User Preference Admin
+@admin.register(UserPreference)
+class UserPreferenceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'preferred_currency', 'travel_style', 'budget_alerts', 'document_expiry_alerts')
+    list_filter = ('preferred_currency', 'travel_style', 'budget_alerts', 'document_expiry_alerts')
+    search_fields = ('user__username', 'emergency_contact_name')
+
+# ===== ALTITUDE SAFETY ADMIN =====
+
+# Altitude Profile Admin
+@admin.register(AltitudeProfile)
+class AltitudeProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'age', 'fitness_level', 'max_altitude_reached', 'has_altitude_sickness_history', 'created_at')
+    list_filter = ('fitness_level', 'has_altitude_sickness_history', 'previous_altitude_experience')
+    search_fields = ('user__username',)
+    readonly_fields = ('created_at', 'updated_at')
+
+# Acclimatization Plan Admin
+@admin.register(AcclimatizationPlan)
+class AcclimatizationPlanAdmin(admin.ModelAdmin):
+    list_display = ('user', 'trek_name', 'start_altitude', 'target_altitude', 'trek_duration', 'risk_level', 'is_active')
+    list_filter = ('risk_level', 'is_active', 'created_at')
+    search_fields = ('user__username', 'trek_name')
+
+# Symptom Log Admin
+@admin.register(SymptomLog)
+class SymptomLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'date', 'current_altitude', 'headache', 'nausea', 'fatigue', 'oxygen_saturation')
+    list_filter = ('date', 'headache', 'nausea', 'fatigue', 'confusion', 'difficulty_walking')
+    search_fields = ('user__username',)
+
+# Emergency Protocol Admin
+@admin.register(EmergencyProtocol)
+class EmergencyProtocolAdmin(admin.ModelAdmin):
+    list_display = ('location_name', 'altitude_range_min', 'altitude_range_max', 'rescue_contact', 'nearest_hospital')
+    list_filter = ('altitude_range_min', 'altitude_range_max', 'oxygen_availability')
+    search_fields = ('location_name', 'rescue_contact', 'nearest_hospital')

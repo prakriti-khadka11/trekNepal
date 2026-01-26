@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - TrekNepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-center text-danger">
+        <i class="fas fa-cogs me-2"></i>Admin Dashboard
+    </h2>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h4>{{ total_users }}</h4>
+                    <p class="mb-0">Total Users</p>
+                    <small>+{{ new_users_this_month }} this month</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-tie fa-2x mb-2"></i>
+                    <h4>{{ verified_guides }}</h4>
+                    <p class="mb-0">Active Guides</p>
+                    <small>{{ pending_guides }} pending approval</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                    <h4>{{ total_bookings }}</h4>
+                    <p class="mb-0">Total Bookings</p>
+                    <small>{{ paid_bookings }} confirmed</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                    <h4>NPR {{ total_revenue|floatformat:0 }}</h4>
+                    <p class="mb-0">Total Revenue</p>
+                    <small>NPR {{ this_month_revenue|floatformat:0 }} this month</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card border-left-success">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Packages</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_packages }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-suitcase fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-left-info">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Destinations</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_destinations }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-map-marker-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-left-warning">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Countries</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_countries }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-globe fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-database me-2"></i>Django Admin
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/app/booking/" class="btn btn-outline-success btn-block">
+                                <i class="fas fa-clipboard-list me-2"></i>Manage Bookings
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/app/guide/" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-user-tie me-2"></i>Manage Guides
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/app/travelpackage/" class="btn btn-outline-warning btn-block">
+                                <i class="fas fa-suitcase me-2"></i>Manage Packages
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Guide Approvals -->
+    {% if pending_guide_approvals %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-white">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Pending Guide Approvals</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Guide Name</th>
+                                    <th>Email</th>
+                                    <th>Experience</th>
+                                    <th>Languages</th>
+                                    <th>Certificate</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for guide in pending_guide_approvals %}
+                                <tr>
+                                    <td><strong>{{ guide.user.get_full_name|default:guide.user.username }}</strong></td>
+                                    <td>{{ guide.user.email }}</td>
+                                    <td>{{ guide.experience_years }} years</td>
+                                    <td>{{ guide.languages|default:"Not specified" }}</td>
+                                    <td>
+                                        {% if guide.license_certificate %}
+                                            <a href="{{ guide.license_certificate.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-file-alt"></i> View
+                                            </a>
+                                        {% else %}
+                                            <span class="text-danger">Missing</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="/admin/app/guide/{{ guide.id }}/change/" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i> Review
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Bookings -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-list me-2"></i>Recent Bookings</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_bookings %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer</th>
+                                        <th>Package</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in recent_bookings %}
+                                    <tr>
+                                        <td><strong>#{{ booking.id }}</strong></td>
+                                        <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
+                                        <td>{{ booking.travel_package.title|truncatechars:30 }}</td>
+                                        <td>NPR {{ booking.total_price|floatformat:0 }}</td>
+                                        <td>
+                                            {% if booking.status == 'PAID' %}
+                                                <span class="badge bg-success">Paid</span>
+                                            {% elif booking.status == 'PENDING' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">{{ booking.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No recent bookings</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-user-plus me-2"></i>New Users</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_users %}
+                        {% for user in recent_users %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
+                                <small class="text-muted">{{ user.email }}</small>
+                                <br><small class="text-muted">{{ user.date_joined|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">No recent users</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Contact Messages -->
+    {% if recent_contacts %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-envelope me-2"></i>Recent Contact Messages</h6>
+                </div>
+                <div class="card-body">
+                    {% for contact in recent_contacts %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ contact.name }}</h6>
+                                <p class="text-muted mb-1">{{ contact.email }}</p>
+                                <p class="mb-0">{{ contact.message|truncatechars:100 }}</p>
+                            </div>
+                            <small class="text-muted">{{ contact.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<style>
+    .border-left-success {
+        border-left: 4px solid #28a745 !important;
+    }
+    .border-left-info {
+        border-left: 4px solid #17a2b8 !important;
+    }
+    .border-left-warning {
+        border-left: 4px solid #ffc107 !important;
+    }
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #495057;
+    }
+    .btn-block {
+        width: 100%;
+    }
+</style>
+{% endblock %}

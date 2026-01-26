@@ -59,7 +59,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # Add custom templates directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,10 +122,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kathmandu'  # Nepal timezone
 
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
 
 

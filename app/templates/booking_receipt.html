@@ -1,37 +1,415 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Booking Receipt</title>
-    <style>
-        body { font-family: Arial; }
-        .box { border:1px solid #222; padding:20px; }
-        h1 { color:#2c3e50; }
-    </style>
-</head>
+{% extends 'base.html' %}
+{% load static %}
 
-<body>
-<div class="box">
-    <h1>Nepal Trek Booking Receipt</h1>
+{% block title %}Booking Confirmation - TrekNepal{% endblock %}
 
-    <p><strong>Booking ID:</strong> {{ booking.id }}</p>
-    <p><strong>User:</strong> {{ booking.user.username }}</p>
-    <p><strong>Email:</strong> {{ booking.user.email }}</p>
+{% block extra_css %}
+<style>
+    .receipt-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .receipt-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .receipt-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    .receipt-logo {
+        width: 120px;
+        height: auto;
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
+    
+    .receipt-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .receipt-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-top: 8px;
+    }
+    
+    .receipt-body {
+        padding: 40px;
+    }
+    
+    .booking-meta {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .booking-meta h4 {
+        color: #667eea;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+    
+    .meta-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        padding: 5px 0;
+    }
+    
+    .meta-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .meta-value {
+        color: #6c757d;
+    }
+    
+    .status-paid {
+        background: #28a745;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .details-section {
+        margin-bottom: 30px;
+    }
+    
+    .section-title {
+        color: #495057;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .details-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .details-table th {
+        background: #667eea;
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        width: 200px;
+    }
+    
+    .details-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e9ecef;
+        color: #495057;
+    }
+    
+    .details-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .details-table tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    .payment-summary {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    
+    .total-amount {
+        font-size: 24px;
+        font-weight: 700;
+        color: #28a745;
+        text-align: center;
+        margin: 15px 0;
+    }
+    
+    .receipt-footer {
+        background: #f8f9fa;
+        padding: 30px;
+        text-align: center;
+        color: #6c757d;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    .action-buttons {
+        text-align: center;
+        margin: 30px 0;
+    }
+    
+    .btn-print {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-print:hover {
+        background: linear-gradient(135deg, #5a6fd8, #6a4190);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-back {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-back:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    @media print {
+        .action-buttons, .receipt-footer {
+            display: none;
+        }
+        
+        .receipt-container {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .receipt-body {
+            padding: 20px;
+        }
+        
+        .meta-item {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .details-table th,
+        .details-table td {
+            padding: 10px;
+            font-size: 14px;
+        }
+        
+        .details-table th {
+            width: auto;
+        }
+    }
+</style>
+{% endblock %}
 
-    <h3>Package</h3>
-    <p>{{ booking.travel_package.title }}</p>
-
-    <h3>Travel Details</h3>
-    <p><strong>Date:</strong> {{ booking.travel_date }}</p>
-    <p><strong>People:</strong> {{ booking.num_people }}</p>
-
-    <h3>Payment</h3>
-    <p><strong>Total Price:</strong> Rs {{ booking.total_price }}</p>
-    <p><strong>Status:</strong> {{ booking.status }}</p>
-    <p><strong>Khalti Transaction:</strong> {{ booking.khalti_pidx }}</p>
-
-    <hr>
-    <p>This is a demo academic project receipt.</p>
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="receipt-header">
+            <img src="{% static 'img/logo.png' %}" alt="TrekNepal Logo" class="receipt-logo">
+            <h1 class="receipt-title">Booking Confirmation</h1>
+            <p class="receipt-subtitle">Your adventure awaits! Here are your booking details.</p>
+        </div>
+        
+        <!-- Body -->
+        <div class="receipt-body">
+            <!-- Booking Meta Information -->
+            <div class="booking-meta">
+                <h4><i class="fas fa-info-circle me-2"></i>Booking Information</h4>
+                <div class="meta-item">
+                    <span class="meta-label">Booking ID:</span>
+                    <span class="meta-value"><strong>{{ details.booking_id }}</strong></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Booking Date:</span>
+                    <span class="meta-value">{{ details.booking_date }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Payment Status:</span>
+                    <span class="meta-value">
+                        {% if details.payment_status == 'PAID' %}
+                            <span class="status-paid">✓ PAID</span>
+                        {% else %}
+                            <span class="badge bg-warning">{{ details.payment_status }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Customer Details -->
+            <div class="details-section">
+                <h3 class="section-title"><i class="fas fa-user me-2"></i>Customer Details</h3>
+                <table class="details-table">
+                    <tr>
+                        <th>Customer Name</th>
+                        <td>{{ details.customer_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ details.customer_email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Travel Date</th>
+                        <td>{{ details.travel_date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Number of People</th>
+                        <td>{{ details.num_people }} person{{ details.num_people|pluralize }}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Travel & Accommodation -->
+            <div class="details-section">
+                <h3 class="section-title"><i class="fas fa-mountain me-2"></i>Travel & Accommodation</h3>
+                <table class="details-table">
+                    <tr>
+                        <th>Package</th>
+                        <td>{{ details.package_title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Destination</th>
+                        <td>
+                            <strong>{{ details.destination }}</strong>
+                            {% if details.destination_info.country %}
+                                <br><small class="text-muted">{{ details.destination_info.country }}</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Hotel</th>
+                        <td>{{ details.hotel }}</td>
+                    </tr>
+                    <tr>
+                        <th>Accommodation</th>
+                        <td>{{ details.accommodation }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ticket No.</th>
+                        <td>
+                            <strong>{{ details.ticket_no }}</strong>
+                            <br><small class="text-muted">Valid for travel on {{ details.travel_date }}</small>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Payment Summary -->
+            <div class="details-section">
+                <h3 class="section-title"><i class="fas fa-credit-card me-2"></i>Payment Summary</h3>
+                <table class="details-table">
+                    <tr>
+                        <th>Total Amount</th>
+                        <td><strong>NPR {{ details.total_amount|floatformat:0 }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Payment Method</th>
+                        <td>{{ details.payment_method }}</td>
+                    </tr>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <td>{{ details.transaction_id }}</td>
+                    </tr>
+                </table>
+                
+                <div class="payment-summary">
+                    <div class="total-amount">
+                        Total Paid: NPR {{ details.total_amount|floatformat:0 }}
+                    </div>
+                    <p class="text-center mb-0">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Payment completed successfully
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button onclick="window.print()" class="btn-print">
+                    <i class="fas fa-print me-2"></i>Print Receipt
+                </button>
+                <a href="{% url 'my_bookings' %}" class="btn-back">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Bookings
+                </a>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="receipt-footer">
+            <p><strong>This is a system-generated booking confirmation.</strong></p>
+            <p>The same details have been sent to your email address: <strong>{{ details.customer_email }}</strong></p>
+            <p>For any queries, please contact us at <strong>info@treknepal.com</strong> or call <strong>+977-1-4432142</strong></p>
+            <p class="mb-0">
+                <small>© {{ booking.booking_date.year }} TrekNepal - Your Gateway to Adventure</small>
+            </p>
+        </div>
+    </div>
 </div>
-</body>
-</html>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-focus for better UX
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add smooth scroll animation
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Add print functionality
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    });
+</script>
+{% endblock %}
