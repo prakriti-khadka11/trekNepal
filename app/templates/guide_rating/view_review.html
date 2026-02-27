@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Review{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Your Review</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Guide Info -->
+                    <div class="guide-info mb-4 p-3 bg-light rounded">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 text-center">
+                                {% if guide.profile_picture %}
+                                    <img src="{{ guide.profile_picture.url }}" alt="{{ guide.user.username }}" 
+                                         class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/guide.png' %}" alt="Guide" 
+                                         class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <h4>{{ guide.user.get_full_name|default:guide.user.username }}</h4>
+                                <p class="mb-1"><strong>Experience:</strong> {{ guide.experience_years }} years</p>
+                                <p class="mb-0"><strong>Languages:</strong> {{ guide.languages|default:"Not specified" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review Display -->
+                    <div class="review-display p-4 border rounded">
+                        <div class="mb-3">
+                            <h5>Your Rating</h5>
+                            <div class="rating-display">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <span class="text-warning fs-4">⭐</span>
+                                    {% else %}
+                                        <span class="text-muted fs-4">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 fw-bold">{{ review.rating }}/5</span>
+                            </div>
+                        </div>
+
+                        {% if review.comment %}
+                        <div class="mb-3">
+                            <h5>Your Comment</h5>
+                            <p class="text-muted">{{ review.comment }}</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="text-muted">
+                            <small>Reviewed on {{ review.created_at|date:"F d, Y" }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Booking Info -->
+                    <div class="booking-info mt-4 p-3 bg-light rounded">
+                        <h5>Trip Details</h5>
+                        <p class="mb-1"><strong>Package:</strong> {{ booking.travel_package.title }}</p>
+                        <p class="mb-1"><strong>Travel Date:</strong> {{ booking.travel_date }}</p>
+                        <p class="mb-0"><strong>Booking ID:</strong> TNP-{{ booking.id }}</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{% url 'my_bookings' %}" class="btn btn-primary">
+                            Back to My Bookings
+                        </a>
+                        <a href="{% url 'guide_profile_public' review.guide.id %}" class="btn btn-outline-info">
+                            View Guide Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

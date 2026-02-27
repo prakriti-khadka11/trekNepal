@@ -84,6 +84,14 @@ urlpatterns = [
     path('khalti/initiate/', views.khalti_initiate_temp, name='khalti_initiate_temp'),
     path('khalti/verify/', views.khalti_verify, name='khalti_verify'),
     
+    # Khalti for Trekking
+    path('khalti/initiate/trekking/', views.khalti_initiate_trekking, name='khalti_initiate_trekking'),
+    path('khalti/verify/trekking/', views.khalti_verify_trekking, name='khalti_verify_trekking'),
+    
+    # Khalti for Peak Climbing
+    path('khalti/initiate/peak/', views.khalti_initiate_peak, name='khalti_initiate_peak'),
+    path('khalti/verify/peak/', views.khalti_verify_peak, name='khalti_verify_peak'),
+    
     # Personal Features
     path('personal/', include('app.personal_urls')),
     
@@ -92,6 +100,12 @@ urlpatterns = [
     
     # Chatbot
     path('chatbot/', include('app.chatbot_urls')),
+    
+    # Guide Rating and Review System
+    path('guide-rating/', include('app.guide_rating_urls')),
+    
+    # Custom Package Request System
+    path('custom-request/', include('app.custom_request_urls')),
 ]
 
  

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Accept Quote{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Accept Quote</h4>
+                </div>
+                <div class="card-body">
+                    <h5>{{ quote.package_title }}</h5>
+                    <p>{{ quote.description }}</p>
+                    
+                    <div class="alert alert-info">
+                        <h6>Quote Summary:</h6>
+                        <p><strong>Total Price:</strong> ${{ quote.total_price }}</p>
+                        <p><strong>Advance Payment ({{ quote.advance_payment_percentage }}%):</strong> ${{ quote.get_advance_amount }}</p>
+                        <p><strong>Valid Until:</strong> {{ quote.expires_at|date:"M d, Y" }}</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            By accepting this quote, you agree to proceed with the booking. Our team will contact you shortly to finalize payment and arrangements.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check me-2"></i>Yes, Accept This Quote
+                            </button>
+                            <a href="{% url 'view_custom_request' quote.custom_request.id %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

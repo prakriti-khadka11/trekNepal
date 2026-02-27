@@ -650,8 +650,18 @@
                         </li>
                         {% if user.is_authenticated %}
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'all_guides_list' %}">
+                                <i class="fas fa-user-tie me-1"></i>Our Guides
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'altitude_dashboard' %}">
                                 <i class="fas fa-mountain me-1"></i>Altitude Safety
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'create_custom_request' %}">
+                                <i class="fas fa-magic me-1"></i>Custom Request
                             </a>
                         </li>
                         {% endif %}
@@ -662,6 +672,7 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My Bookings</a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_custom_requests' %}"><i class="fas fa-magic me-2"></i>My Custom Requests</a></li>
                                 <li><a class="dropdown-item" href="{% url 'personal_dashboard' %}">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>

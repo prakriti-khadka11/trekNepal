@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Guides{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Our Expert Guides</h1>
+        <p class="lead text-muted">Meet our verified guides and choose the best for your adventure</p>
+    </div>
+
+    {% if guides_with_ratings %}
+        <div class="row">
+            {% for item in guides_with_ratings %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm guide-card">
+                    <div class="card-body">
+                        <!-- Guide Image -->
+                        <div class="text-center mb-3">
+                            {% if item.guide.profile_picture %}
+                                <img src="{{ item.guide.profile_picture.url }}" 
+                                     alt="{{ item.guide.user.username }}" 
+                                     class="rounded-circle" 
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'img/guide.png' %}" 
+                                     alt="Guide" 
+                                     class="rounded-circle" 
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+
+                        <!-- Guide Name -->
+                        <h5 class="card-title text-center mb-2">
+                            {{ item.guide.user.get_full_name|default:item.guide.user.username }}
+                        </h5>
+
+                        <!-- Guide Level Badge -->
+                        <div class="text-center mb-3">
+                            <span class="badge bg-{{ item.guide_level.badge }}">
+                                {{ item.guide_level.icon }} {{ item.guide_level.name }}
+                            </span>
+                        </div>
+
+                        <!-- Rating Display -->
+                        <div class="text-center mb-3">
+                            <div class="rating-stars mb-1">
+                                {% if item.total_reviews > 0 %}
+                                    {% for i in "12345" %}
+                                        {% if i|add:"0" <= item.average_rating %}
+                                            <span class="text-warning fs-5">⭐</span>
+                                        {% else %}
+                                            <span class="text-muted fs-5">☆</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">No ratings yet</span>
+                                {% endif %}
+                            </div>
+                            {% if item.total_reviews > 0 %}
+                                <p class="mb-0">
+                                    <strong>{{ item.average_rating|floatformat:1 }}</strong>/5 
+                                    <span class="text-muted">({{ item.total_reviews }} review{{ item.total_reviews|pluralize }})</span>
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Guide Info -->
+                        <div class="guide-info mb-3">
+                            <p class="mb-1 text-center">
+                                <small><strong>Experience:</strong> {{ item.guide.experience_years }} years</small>
+                            </p>
+                            <p class="mb-1 text-center">
+                                <small><strong>Languages:</strong> {{ item.guide.languages|default:"Not specified" }}</small>
+                            </p>
+                        </div>
+
+                        <!-- Bio Preview -->
+                        {% if item.guide.bio %}
+                        <p class="text-muted small text-center mb-3">
+                            {{ item.guide.bio|truncatewords:15 }}
+                        </p>
+                        {% endif %}
+
+                        <!-- View Profile Button -->
+                        <div class="text-center">
+                            <a href="{% url 'guide_profile_public' item.guide.id %}" 
+                               class="btn btn-primary btn-sm">
+                                View Full Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="alert alert-info">
+                <h4>No Guides Available</h4>
+                <p>We're currently onboarding new guides. Please check back soon!</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.guide-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+}
+
+.guide-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+}
+
+.guide-info {
+    border-top: 1px solid #e9ecef;
+    border-bottom: 1px solid #e9ecef;
+    padding: 10px 0;
+}
+</style>
+{% endblock %}

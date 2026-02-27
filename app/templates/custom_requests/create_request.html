@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Request Custom Package{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-magic me-2"></i>Request Your Custom Package</h3>
+                    <p class="mb-0 mt-2">Can't find the perfect package? Tell us what you're looking for!</p>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Destination Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-map-marker-alt me-2"></i>Destination</h5>
+                            <div class="mb-3">
+                                {{ form.destination.label_tag }}
+                                {{ form.destination }}
+                                {% if form.destination.errors %}
+                                    <div class="text-danger">{{ form.destination.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.alternative_destinations.label_tag }}
+                                {{ form.alternative_destinations }}
+                                <small class="text-muted">Separate multiple destinations with commas</small>
+                                {% if form.alternative_destinations.errors %}
+                                    <div class="text-danger">{{ form.alternative_destinations.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Travel Dates Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-calendar me-2"></i>Travel Dates</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.preferred_start_date.label_tag }}
+                                    {{ form.preferred_start_date }}
+                                    {% if form.preferred_start_date.errors %}
+                                        <div class="text-danger">{{ form.preferred_start_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.preferred_end_date.label_tag }}
+                                    {{ form.preferred_end_date }}
+                                    {% if form.preferred_end_date.errors %}
+                                        <div class="text-danger">{{ form.preferred_end_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                {{ form.flexible_dates }}
+                                {{ form.flexible_dates.label_tag }}
+                            </div>
+                        </div>
+
+                        <!-- Group Size & Budget Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-users me-2"></i>Group & Budget</h5>
+                            <div class="mb-3">
+                                {{ form.num_travelers.label_tag }}
+                                {{ form.num_travelers }}
+                                {% if form.num_travelers.errors %}
+                                    <div class="text-danger">{{ form.num_travelers.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.budget_min.label_tag }}
+                                    {{ form.budget_min }}
+                                    {% if form.budget_min.errors %}
+                                        <div class="text-danger">{{ form.budget_min.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.budget_max.label_tag }}
+                                    {{ form.budget_max }}
+                                    {% if form.budget_max.errors %}
+                                        <div class="text-danger">{{ form.budget_max.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preferences Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-cog me-2"></i>Preferences</h5>
+                            <div class="mb-3">
+                                {{ form.activity_type.label_tag }}
+                                {{ form.activity_type }}
+                                {% if form.activity_type.errors %}
+                                    <div class="text-danger">{{ form.activity_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.accommodation_preference.label_tag }}
+                                {{ form.accommodation_preference }}
+                                {% if form.accommodation_preference.errors %}
+                                    <div class="text-danger">{{ form.accommodation_preference.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-check mb-3">
+                                {{ form.guide_required }}
+                                {{ form.guide_required.label_tag }}
+                            </div>
+                        </div>
+
+                        <!-- Special Requirements Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-info-circle me-2"></i>Additional Information</h5>
+                            <div class="mb-3">
+                                {{ form.special_requirements.label_tag }}
+                                {{ form.special_requirements }}
+                                {% if form.special_requirements.errors %}
+                                    <div class="text-danger">{{ form.special_requirements.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.additional_notes.label_tag }}
+                                {{ form.additional_notes }}
+                                {% if form.additional_notes.errors %}
+                                    <div class="text-danger">{{ form.additional_notes.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- File Uploads Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-paperclip me-2"></i>Attachments</h5>
+                            <div class="mb-3">
+                                {{ form.inspiration_image.label_tag }}
+                                {{ form.inspiration_image }}
+                                <small class="text-muted d-block">Upload photos of places you'd like to visit</small>
+                                {% if form.inspiration_image.errors %}
+                                    <div class="text-danger">{{ form.inspiration_image.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.reference_document.label_tag }}
+                                {{ form.reference_document }}
+                                <small class="text-muted d-block">Upload any reference documents or itinerary ideas</small>
+                                {% if form.reference_document.errors %}
+                                    <div class="text-danger">{{ form.reference_document.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Request
+                            </button>
+                            <a href="{% url 'my_custom_requests' %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-question-circle me-2"></i>How it works</h5>
+                    <ol class="mb-0">
+                        <li>Fill out this form with your travel preferences</li>
+                        <li>Our team will review your request within 24-48 hours</li>
+                        <li>We'll send you a customized quote</li>
+                        <li>Accept the quote and we'll finalize your booking!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

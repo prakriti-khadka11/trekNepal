@@ -5,7 +5,8 @@ from .models import (
     TrekkingGalleryImage, PeakClimbingGalleryImage, PopularPlace, PeakClimbingBooking,
     Profile, Guide, GuideReview, ExpenseCategory, TravelExpense, TravelBudget, 
     TravelWishlist, TravelDocument, UserPreference, AltitudeProfile, 
-    AcclimatizationPlan, SymptomLog, EmergencyProtocol
+    AcclimatizationPlan, SymptomLog, EmergencyProtocol, CustomPackageRequest,
+    RequestQuote, RequestMessage
 )
 
 # Booking Admin
@@ -221,3 +222,27 @@ class EmergencyProtocolAdmin(admin.ModelAdmin):
     list_display = ('location_name', 'altitude_range_min', 'altitude_range_max', 'rescue_contact', 'nearest_hospital')
     list_filter = ('altitude_range_min', 'altitude_range_max', 'oxygen_availability')
     search_fields = ('location_name', 'rescue_contact', 'nearest_hospital')
+
+# Custom Package Request Admin
+@admin.register(CustomPackageRequest)
+class CustomPackageRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'destination', 'num_travelers', 'status', 'created_at')
+    list_filter = ('status', 'created_at', 'activity_type', 'priority')
+    search_fields = ('user__username', 'destination', 'special_requirements')
+    readonly_fields = ('created_at', 'updated_at')
+
+# Request Quote Admin
+@admin.register(RequestQuote)
+class RequestQuoteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'custom_request', 'package_title', 'total_price', 'is_active', 'accepted', 'created_at')
+    list_filter = ('is_active', 'accepted', 'created_at')
+    search_fields = ('package_title', 'custom_request__user__username')
+    readonly_fields = ('created_at',)
+
+# Request Message Admin
+@admin.register(RequestMessage)
+class RequestMessageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'custom_request', 'sender', 'is_admin_message', 'is_read', 'created_at')
+    list_filter = ('is_admin_message', 'is_read', 'created_at')
+    search_fields = ('sender__username', 'message')
+    readonly_fields = ('created_at',)

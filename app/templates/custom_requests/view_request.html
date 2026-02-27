@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Request Details{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Request Details -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Request Details</h4>
+                    {% if custom_request.status == 'PENDING' %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% elif custom_request.status == 'REVIEWING' %}
+                        <span class="badge bg-info">Under Review</span>
+                    {% elif custom_request.status == 'QUOTED' %}
+                        <span class="badge bg-success">Quote Sent</span>
+                    {% elif custom_request.status == 'ACCEPTED' %}
+                        <span class="badge bg-success">Accepted</span>
+                    {% elif custom_request.status == 'REJECTED' %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% elif custom_request.status == 'CONVERTED' %}
+                        <span class="badge bg-success">Converted</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h5><i class="fas fa-map-marker-alt me-2"></i>{{ custom_request.destination }}</h5>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p><strong>Start Date:</strong> {{ custom_request.preferred_start_date|date:"M d, Y" }}</p>
+                            <p><strong>End Date:</strong> {{ custom_request.preferred_end_date|date:"M d, Y" }}</p>
+                            <p><strong>Duration:</strong> {{ custom_request.get_duration_days }} days</p>
+                            <p><strong>Flexible Dates:</strong> {% if custom_request.flexible_dates %}Yes{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Travelers:</strong> {{ custom_request.num_travelers }}</p>
+                            <p><strong>Budget:</strong> ${{ custom_request.budget_min }} - ${{ custom_request.budget_max }} per person</p>
+                            <p><strong>Activity:</strong> {{ custom_request.get_activity_type_display }}</p>
+                            <p><strong>Guide Required:</strong> {% if custom_request.guide_required %}Yes{% else %}No{% endif %}</p>
+                        </div>
+                    </div>
+
+                    {% if custom_request.accommodation_preference %}
+                    <div class="mt-3">
+                        <strong>Accommodation Preference:</strong>
+                        <p>{{ custom_request.accommodation_preference }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if custom_request.special_requirements %}
+                    <div class="mt-3">
+                        <strong>Special Requirements:</strong>
+                        <p>{{ custom_request.special_requirements }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if custom_request.additional_notes %}
+                    <div class="mt-3">
+                        <strong>Additional Notes:</strong>
+                        <p>{{ custom_request.additional_notes }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if custom_request.inspiration_image %}
+                    <div class="mt-3">
+                        <strong>Inspiration Image:</strong><br>
+                        <img src="{{ custom_request.inspiration_image.url }}" alt="Inspiration" class="img-fluid mt-2" style="max-height: 300px;">
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4 text-muted small">
+                        <p>Submitted: {{ custom_request.created_at|date:"M d, Y H:i" }}</p>
+                        <p>Last Updated: {{ custom_request.updated_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quotes Section -->
+            {% if quotes %}
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i>Quotes Received</h5>
+                </div>
+                <div class="card-body">
+                    {% for quote in quotes %}
+                    <div class="border rounded p-3 mb-3">
+                        <h5>{{ quote.package_title }}</h5>
+                        <p>{{ quote.description }}</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Price per Person:</strong> ${{ quote.price_per_person }}</p>
+                                <p><strong>Total Price:</strong> ${{ quote.total_price }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Valid Until:</strong> {{ quote.expires_at|date:"M d, Y" }}</p>
+                                {% if quote.is_expired %}
+                                    <span class="badge bg-danger">Expired</span>
+                                {% elif quote.accepted %}
+                                    <span class="badge bg-success">Accepted</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if not quote.accepted and not quote.is_expired %}
+                        <div class="mt-3">
+                            <a href="{% url 'accept_quote' quote.id %}" class="btn btn-success btn-sm me-2">
+                                <i class="fas fa-check me-1"></i>Accept Quote
+                            </a>
+                            <a href="{% url 'reject_quote' quote.id %}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-times me-1"></i>Reject
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Messages Section -->
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-comments me-2"></i>Messages</h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        <div class="messages-container" style="max-height: 400px; overflow-y: auto;">
+                            {% for msg in messages %}
+                            <div class="message-item mb-3 {% if msg.is_admin_message %}text-end{% endif %}">
+                                <div class="d-inline-block p-3 rounded {% if msg.is_admin_message %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 70%;">
+                                    <strong>{% if msg.is_admin_message %}Admin{% else %}You{% endif %}:</strong>
+                                    <p class="mb-1">{{ msg.message }}</p>
+                                    <small class="text-muted">{{ msg.created_at|date:"M d, Y H:i" }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No messages yet.</p>
+                    {% endif %}
+
+                    <hr>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ message_form.message }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-1"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5>Actions</h5>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'my_custom_requests' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to My Requests
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Need Help?</h5>
+                    <p class="small">If you have questions about your request, use the message section to communicate with our team.</p>
+                    <p class="small mb-0"><strong>Response Time:</strong> Usually within 24-48 hours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

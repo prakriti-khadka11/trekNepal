@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Quote{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h3>Create Quote for Request #{{ custom_request.id }}</h3>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            {{ form.package_title.label_tag }}
+                            {{ form.package_title }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.description.label_tag }}
+                            {{ form.description }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.itinerary.label_tag }}
+                            {{ form.itinerary }}
+                            <small class="text-muted">Day-by-day itinerary</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.price_per_person.label_tag }}
+                                {{ form.price_per_person }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.total_price.label_tag }}
+                                {{ form.total_price }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.inclusions.label_tag }}
+                            {{ form.inclusions }}
+                            <small class="text-muted">One item per line</small>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.exclusions.label_tag }}
+                            {{ form.exclusions }}
+                            <small class="text-muted">One item per line</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.validity_days.label_tag }}
+                                {{ form.validity_days }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.advance_payment_percentage.label_tag }}
+                                {{ form.advance_payment_percentage }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.terms_and_conditions.label_tag }}
+                            {{ form.terms_and_conditions }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.cancellation_policy.label_tag }}
+                            {{ form.cancellation_policy }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Send Quote to User
+                            </button>
+                            <a href="{% url 'admin_view_request' custom_request.id %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Request Summary</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>User:</strong> {{ custom_request.user.username }}</p>
+                    <p><strong>Destination:</strong> {{ custom_request.destination }}</p>
+                    <p><strong>Travelers:</strong> {{ custom_request.num_travelers }}</p>
+                    <p><strong>Budget Range:</strong> ${{ custom_request.budget_min }} - ${{ custom_request.budget_max }}</p>
+                    <p><strong>Duration:</strong> {{ custom_request.get_duration_days }} days</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

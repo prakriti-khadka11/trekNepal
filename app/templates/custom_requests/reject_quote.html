@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Reject Quote{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Reject Quote</h4>
+                </div>
+                <div class="card-body">
+                    <h5>{{ quote.package_title }}</h5>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason for Rejection (Optional)</label>
+                            <textarea name="reason" id="reason" class="form-control" rows="4" placeholder="Let us know why this quote doesn't work for you so we can create a better one..."></textarea>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            We'll use your feedback to create a revised quote that better matches your needs.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times me-2"></i>Reject Quote
+                            </button>
+                            <a href="{% url 'view_custom_request' quote.custom_request.id %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

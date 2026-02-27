@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin - View Request{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Request #{{ custom_request.id }} - {{ custom_request.destination }}</h3>
+        <a href="{% url 'admin_custom_requests' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Request Details -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Request Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>User:</strong> {{ custom_request.user.username }} ({{ custom_request.user.email }})</p>
+                            <p><strong>Destination:</strong> {{ custom_request.destination }}</p>
+                            <p><strong>Dates:</strong> {{ custom_request.preferred_start_date|date:"M d, Y" }} - {{ custom_request.preferred_end_date|date:"M d, Y" }}</p>
+                            <p><strong>Duration:</strong> {{ custom_request.get_duration_days }} days</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Travelers:</strong> {{ custom_request.num_travelers }}</p>
+                            <p><strong>Budget:</strong> ${{ custom_request.budget_min }} - ${{ custom_request.budget_max }} per person</p>
+                            <p><strong>Activity:</strong> {{ custom_request.get_activity_type_display }}</p>
+                            <p><strong>Guide Required:</strong> {% if custom_request.guide_required %}Yes{% else %}No{% endif %}</p>
+                        </div>
+                    </div>
+                    {% if custom_request.special_requirements %}
+                    <hr>
+                    <p><strong>Special Requirements:</strong></p>
+                    <p>{{ custom_request.special_requirements }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Update Status -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="update_status" value="1">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="PENDING" {% if custom_request.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                    <option value="REVIEWING" {% if custom_request.status == 'REVIEWING' %}selected{% endif %}>Reviewing</option>
+                                    <option value="QUOTED" {% if custom_request.status == 'QUOTED' %}selected{% endif %}>Quoted</option>
+                                    <option value="ACCEPTED" {% if custom_request.status == 'ACCEPTED' %}selected{% endif %}>Accepted</option>
+                                    <option value="REJECTED" {% if custom_request.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                                    <option value="CONVERTED" {% if custom_request.status == 'CONVERTED' %}selected{% endif %}>Converted</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label>Admin Notes</label>
+                                <textarea name="admin_notes" class="form-control" rows="3">{{ custom_request.admin_notes }}</textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quotes -->
+            {% if quotes %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quotes Sent</h5>
+                </div>
+                <div class="card-body">
+                    {% for quote in quotes %}
+                    <div class="border p-3 mb-3">
+                        <h6>{{ quote.package_title }}</h6>
+                        <p><strong>Total:</strong> ${{ quote.total_price }}</p>
+                        <p><strong>Status:</strong> 
+                            {% if quote.accepted %}<span class="badge bg-success">Accepted</span>
+                            {% elif quote.is_expired %}<span class="badge bg-danger">Expired</span>
+                            {% else %}<span class="badge bg-warning">Pending</span>{% endif %}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Actions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Actions</h5>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_create_quote' custom_request.id %}" class="btn btn-success">
+                            <i class="fas fa-file-invoice-dollar me-1"></i>Create Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send Message -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Send Message</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="send_message" value="1">
+                        {{ message_form.message }}
+                        <button type="submit" class="btn btn-primary mt-2 w-100">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

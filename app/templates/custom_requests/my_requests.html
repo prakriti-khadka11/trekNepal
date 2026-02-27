@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Custom Requests{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-list-alt me-2"></i>My Custom Package Requests</h2>
+            <p class="text-muted">Track your custom package requests and quotes</p>
+        </div>
+        <a href="{% url 'create_custom_request' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Request
+        </a>
+    </div>
+
+    <!-- Status Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ status_counts.pending }}</h3>
+                    <p class="mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-info">{{ status_counts.reviewing }}</h3>
+                    <p class="mb-0">Under Review</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ status_counts.quoted }}</h3>
+                    <p class="mb-0">Quoted</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">{{ status_counts.accepted }}</h3>
+                    <p class="mb-0">Accepted</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Requests List -->
+    {% if requests %}
+        <div class="row">
+            {% for request in requests %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                {{ request.destination }}
+                            </h5>
+                            {% if request.status == 'PENDING' %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% elif request.status == 'REVIEWING' %}
+                                <span class="badge bg-info">Under Review</span>
+                            {% elif request.status == 'QUOTED' %}
+                                <span class="badge bg-primary">Quote Sent</span>
+                            {% elif request.status == 'ACCEPTED' %}
+                                <span class="badge bg-success">Accepted</span>
+                            {% elif request.status == 'REJECTED' %}
+                                <span class="badge bg-danger">Rejected</span>
+                            {% elif request.status == 'CONVERTED' %}
+                                <span class="badge bg-success">Converted</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="mb-1">
+                                <i class="fas fa-calendar me-2"></i>
+                                <strong>Dates:</strong> {{ request.preferred_start_date|date:"M d, Y" }} - {{ request.preferred_end_date|date:"M d, Y" }}
+                            </p>
+                            <p class="mb-1">
+                                <i class="fas fa-users me-2"></i>
+                                <strong>Travelers:</strong> {{ request.num_travelers }}
+                            </p>
+                            <p class="mb-1">
+                                <i class="fas fa-dollar-sign me-2"></i>
+                                <strong>Budget:</strong> ${{ request.budget_min }} - ${{ request.budget_max }} per person
+                            </p>
+                            <p class="mb-1">
+                                <i class="fas fa-hiking me-2"></i>
+                                <strong>Activity:</strong> {{ request.get_activity_type_display }}
+                            </p>
+                        </div>
+
+                        <div class="text-muted small mb-3">
+                            <i class="fas fa-clock me-1"></i>
+                            Submitted {{ request.created_at|timesince }} ago
+                        </div>
+
+                        {% if request.status == 'QUOTED' %}
+                            <div class="alert alert-success mb-3">
+                                <i class="fas fa-check-circle me-2"></i>
+                                You have {{ request.quotes.count }} new quote{{ request.quotes.count|pluralize }}!
+                            </div>
+                        {% endif %}
+
+                        <a href="{% url 'view_custom_request' request.id %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+            <h4>No Custom Requests Yet</h4>
+            <p class="text-muted">Create your first custom package request to get started!</p>
+            <a href="{% url 'create_custom_request' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create Request
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

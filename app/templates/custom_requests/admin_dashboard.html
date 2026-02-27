@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Custom Requests Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <h2><i class="fas fa-tasks me-2"></i>Custom Package Requests Dashboard</h2>
+    
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3>{{ stats.total }}</h3>
+                    <p class="mb-0">Total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ stats.pending }}</h3>
+                    <p class="mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <h3 class="text-info">{{ stats.reviewing }}</h3>
+                    <p class="mb-0">Reviewing</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-primary">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ stats.quoted }}</h3>
+                    <p class="mb-0">Quoted</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success">{{ stats.accepted }}</h3>
+                    <p class="mb-0">Accepted</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success">{{ stats.converted }}</h3>
+                    <p class="mb-0">Converted</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="PENDING" {% if status_filter == 'PENDING' %}selected{% endif %}>Pending</option>
+                        <option value="REVIEWING" {% if status_filter == 'REVIEWING' %}selected{% endif %}>Reviewing</option>
+                        <option value="QUOTED" {% if status_filter == 'QUOTED' %}selected{% endif %}>Quoted</option>
+                        <option value="ACCEPTED" {% if status_filter == 'ACCEPTED' %}selected{% endif %}>Accepted</option>
+                        <option value="REJECTED" {% if status_filter == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                        <option value="CONVERTED" {% if status_filter == 'CONVERTED' %}selected{% endif %}>Converted</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" name="search" class="form-control" placeholder="Search by destination or user..." value="{{ search_query }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Requests Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Destination</th>
+                            <th>Dates</th>
+                            <th>Travelers</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                        <tr>
+                            <td>#{{ request.id }}</td>
+                            <td>{{ request.user.username }}</td>
+                            <td>{{ request.destination }}</td>
+                            <td>{{ request.preferred_start_date|date:"M d" }} - {{ request.preferred_end_date|date:"M d, Y" }}</td>
+                            <td>{{ request.num_travelers }}</td>
+                            <td>${{ request.budget_min }}-${{ request.budget_max }}</td>
+                            <td>
+                                {% if request.status == 'PENDING' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif request.status == 'REVIEWING' %}
+                                    <span class="badge bg-info">Reviewing</span>
+                                {% elif request.status == 'QUOTED' %}
+                                    <span class="badge bg-primary">Quoted</span>
+                                {% elif request.status == 'ACCEPTED' %}
+                                    <span class="badge bg-success">Accepted</span>
+                                {% elif request.status == 'REJECTED' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% elif request.status == 'CONVERTED' %}
+                                    <span class="badge bg-success">Converted</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ request.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'admin_view_request' request.id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No requests found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

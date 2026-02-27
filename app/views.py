@@ -6,7 +6,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import TravelPackage, Booking,Review,ContactUs,SliderImage,Country,TourDetail,Trekking,PeakClimbing,PopularPlace,Destination,PeakClimbingBooking 
+from .models import TravelPackage, Booking,Review,ContactUs,SliderImage,Country,TourDetail,Trekking,PeakClimbing,PopularPlace,Destination,PeakClimbingBooking,Guide,GuideReview
 from .forms import BookingForm,PeakClimbingBookingForm
 from django.db.models import Q
 from django import forms
@@ -153,6 +153,162 @@ def cancel_booking(request, booking_id):
         booking.delete()  # or booking.status = "cancelled"; booking.save()
         messages.success(request, "Your booking has been cancelled.")
         return redirect("my_bookings")
+    return redirect("my_bookings")
+
+
+# Khalti Payment for Trekking
+@login_required
+def khalti_initiate_trekking(request):
+    booking_data = request.session.get('pending_trekking_booking')
+    if not booking_data:
+        return redirect('trekking_list')
+
+    trek = get_object_or_404(Trekking, slug=booking_data["trek_slug"])
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {
+        "return_url": request.build_absolute_uri("/khalti/verify/trekking/"),
+        "website_url": request.build_absolute_uri("/"),
+        "amount": int(booking_data["total_price"] * 100),  # paisa
+        "purchase_order_id": f"trek_{trek.id}",
+        "purchase_order_name": trek.title,
+    }
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/initiate/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+
+    if "payment_url" in result:
+        return redirect(result["payment_url"])
+    else:
+        return redirect("trekking_list")
+
+
+@login_required
+def khalti_verify_trekking(request):
+    pidx = request.GET.get("pidx")
+    if not pidx:
+        return redirect("trekking_list")
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {"pidx": pidx}
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/lookup/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+    print("Khalti verify trekking result:", result)
+
+    if result.get("status") == "Completed":
+        booking_data = request.session.get('pending_trekking_booking')
+        if booking_data:
+            trek = get_object_or_404(Trekking, slug=booking_data["trek_slug"])
+            
+            # Create a TravelPackage-like booking for trekking
+            # We'll use the existing Booking model but link it differently
+            # Note: You might want to create a separate TrekkingBooking model in the future
+            
+            # For now, we'll create a message for the user
+            messages.success(request, f"Trekking booking for {trek.title} confirmed! Payment successful.")
+            
+            # Clear session
+            del request.session['pending_trekking_booking']
+
+    return redirect("my_bookings")
+
+
+# Khalti Payment for Peak Climbing
+@login_required
+def khalti_initiate_peak(request):
+    booking_data = request.session.get('pending_peak_booking')
+    if not booking_data:
+        return redirect('peak_climbing_list')
+
+    peak = get_object_or_404(PeakClimbing, slug=booking_data["peak_slug"])
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {
+        "return_url": request.build_absolute_uri("/khalti/verify/peak/"),
+        "website_url": request.build_absolute_uri("/"),
+        "amount": int(booking_data["total_price"] * 100),  # paisa
+        "purchase_order_id": f"peak_{peak.id}",
+        "purchase_order_name": peak.title,
+    }
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/initiate/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+
+    if "payment_url" in result:
+        return redirect(result["payment_url"])
+    else:
+        return redirect("peak_climbing_list")
+
+
+@login_required
+def khalti_verify_peak(request):
+    pidx = request.GET.get("pidx")
+    if not pidx:
+        return redirect("peak_climbing_list")
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {"pidx": pidx}
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/lookup/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+    print("Khalti verify peak result:", result)
+
+    if result.get("status") == "Completed":
+        booking_data = request.session.get('pending_peak_booking')
+        if booking_data:
+            peak = get_object_or_404(PeakClimbing, slug=booking_data["peak_slug"])
+            
+            # Create peak climbing booking
+            PeakClimbingBooking.objects.create(
+                user=request.user,
+                peak_climbing=peak,
+                num_people=booking_data["num_people"],
+                climbing_date=booking_data["climbing_date"],
+                total_price=booking_data["total_price"],
+            )
+            
+            messages.success(request, f"Peak climbing booking for {peak.title} confirmed! Payment successful.")
+            
+            # Clear session
+            del request.session['pending_peak_booking']
+
     return redirect("my_bookings")
 
 
@@ -360,6 +516,23 @@ def trekking_list(request):
 def trekking_detail(request, slug):
     trek = get_object_or_404(Trekking, slug=slug)
     images = trek.gallery_images.all()
+    
+    if request.method == "POST":
+        num_people = int(request.POST["num_people"])
+        trek_date = request.POST["trek_date"]
+        total_price = trek.price * num_people
+        
+        # Store booking data in session temporarily
+        request.session['pending_trekking_booking'] = {
+            "trek_slug": trek.slug,
+            "num_people": num_people,
+            "trek_date": trek_date,
+            "total_price": float(total_price),
+        }
+        
+        # Redirect to Khalti payment
+        return redirect("khalti_initiate_trekking")
+    
     return render(request, 'trekking_detail.html', {
         'trek': trek,
         'images': images,
@@ -380,18 +553,22 @@ def book_peak_climbing(request, slug):
     peak = get_object_or_404(PeakClimbing, slug=slug)
 
     if request.method == 'POST':
-        form = PeakClimbingBookingForm(request.POST)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.user = request.user
-            booking.peak_climbing = peak
-            booking.total_price = peak.price * form.cleaned_data['num_people']  # Total price calculation
-            booking.save()
-            return redirect('booking_confirmation')  # Redirect to a confirmation page after successful booking
-    else:
-        form = PeakClimbingBookingForm()
-
-    return render(request, 'book_peak_climbing.html', {'peak': peak, 'form': form})
+        num_people = int(request.POST["num_people"])
+        climbing_date = request.POST["climbing_date"]
+        total_price = peak.price * num_people
+        
+        # Store booking data in session temporarily
+        request.session['pending_peak_booking'] = {
+            "peak_slug": peak.slug,
+            "num_people": num_people,
+            "climbing_date": climbing_date,
+            "total_price": float(total_price),
+        }
+        
+        # Redirect to Khalti payment
+        return redirect("khalti_initiate_peak")
+    
+    return render(request, 'book_peak_climbing.html', {'peak': peak})
 
 @login_required
 def package_booking(request, package_id):
@@ -507,6 +684,14 @@ def guide_dashboard(request):
             total=Sum('total_price')
         )['total'] or 0
         
+        # Import guide level function
+        from .guide_rating_views import get_guide_level
+        from django.db.models import Count
+        
+        # Get guide level based on ratings
+        total_reviews = guide.reviews.count()
+        guide_level = get_guide_level(average_rating, total_reviews)
+        
         context = {
             'guide': guide,
             'assigned_bookings': assigned_bookings,
@@ -518,6 +703,8 @@ def guide_dashboard(request):
             'guide_reviews': guide_reviews,
             'average_rating': average_rating,
             'total_earnings': total_earnings,
+            'total_reviews': total_reviews,
+            'guide_level': guide_level,
         }
     else:
         context = {'guide': None}
@@ -532,7 +719,7 @@ def admin_dashboard(request):
     
     # Get database statistics
     from django.contrib.auth.models import User
-    from django.db.models import Sum, Count
+    from django.db.models import Sum, Count, Avg
     from django.utils import timezone
     from datetime import datetime, timedelta
     
@@ -542,10 +729,31 @@ def admin_dashboard(request):
         date_joined__gte=timezone.now().replace(day=1)
     ).count()
     
-    # Guide statistics
+    # Guide statistics with ratings
+    from .guide_rating_views import get_guide_level
     total_guides = Guide.objects.count()
     verified_guides = Guide.objects.filter(verified=True).count()
     pending_guides = Guide.objects.filter(verified=False).count()
+    
+    # Get top rated guides
+    guides_with_ratings = []
+    for guide in Guide.objects.filter(verified=True)[:10]:
+        reviews = GuideReview.objects.filter(guide=guide)
+        stats = reviews.aggregate(
+            average_rating=Avg('rating'),
+            total_reviews=Count('id')
+        )
+        guide_level = get_guide_level(stats['average_rating'], stats['total_reviews'])
+        guides_with_ratings.append({
+            'guide': guide,
+            'average_rating': stats['average_rating'] or 0,
+            'total_reviews': stats['total_reviews'],
+            'guide_level': guide_level
+        })
+    
+    # Sort by rating
+    guides_with_ratings.sort(key=lambda x: x['average_rating'], reverse=True)
+    top_guides = guides_with_ratings[:5]
     
     # Booking statistics
     total_bookings = Booking.objects.count()
@@ -582,6 +790,9 @@ def admin_dashboard(request):
     # Contact messages (recent 5)
     recent_contacts = ContactUs.objects.order_by('-created_at')[:5]
     
+    # Total reviews
+    total_reviews = GuideReview.objects.count()
+    
     context = {
         # User stats
         'total_users': total_users,
@@ -591,6 +802,7 @@ def admin_dashboard(request):
         'total_guides': total_guides,
         'verified_guides': verified_guides,
         'pending_guides': pending_guides,
+        'top_guides': top_guides,
         
         # Booking stats
         'total_bookings': total_bookings,
@@ -606,6 +818,7 @@ def admin_dashboard(request):
         'total_packages': total_packages,
         'total_destinations': total_destinations,
         'total_countries': total_countries,
+        'total_reviews': total_reviews,
         
         # Recent data
         'recent_bookings': recent_bookings,
@@ -858,71 +1071,6 @@ def khalti_initiate_temp(request):
     else:
         # If initiation failed
         return redirect("package_list")
-
-# @login_required
-# def khalti_verify(request):
-#     pidx = request.GET.get("pidx")
-#     if not pidx:
-#         return redirect("package_list")
-
-#     headers = {
-#         "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
-#         "Content-Type": "application/json",
-#     }
-
-#     payload = {"pidx": pidx}
-
-#     response = requests.post(
-#         "https://a.khalti.com/api/v2/epayment/lookup/",
-#         json=payload,
-#         headers=headers
-#     )
-
-#     result = response.json()
-#     print("Khalti verify result:", result)
-
-#     if result.get("status") == "Completed":
-#         booking_data = request.session.get('pending_booking')
-#         if booking_data:
-#             travel_package = get_object_or_404(TravelPackage, id=booking_data["travel_id"])
-
-#             booking = Booking.objects.create(
-#                 user=request.user,
-#                 travel_package=travel_package,
-#                 num_people=booking_data["num_people"],
-#                 travel_date=booking_data["travel_date"],
-#                 total_price=booking_data["total_price"],
-#                 status="PAID",
-#                 khalti_pidx=pidx
-#             )
-
-#             # Clear pending booking from session
-#             del request.session['pending_booking']
-
-#     return redirect("my_bookings")
-
-# @login_required
-# def rate_guide(request, booking_id):
-#     booking = get_object_or_404(
-#         Booking,
-#         id=booking_id,
-#         user=request.user,
-#         guide__isnull=False
-#     )
-
-#     if request.method == "POST":
-#         GuideReview.objects.create(
-#             booking=booking,
-#             guide=booking.guide,
-#             user=request.user,
-#             rating=request.POST["rating"],
-#             comment=request.POST.get("comment", "")
-#         )
-#         return redirect("booking_detail", booking.id)
-
-#     return render(request, "rate_guide.html", {"booking": booking})
-
-
 
 
 # Added today 

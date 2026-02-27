@@ -706,3 +706,170 @@ class EmergencyProtocol(models.Model):
     
     def __str__(self):
         return f"{self.location_name} ({self.altitude_range_min}-{self.altitude_range_max}m)"
+
+
+# Custom Package Request System Models
+class CustomPackageRequest(models.Model):
+    """Model for users to request custom travel packages"""
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending Review'),
+        ('REVIEWING', 'Under Review'),
+        ('QUOTED', 'Quote Sent'),
+        ('ACCEPTED', 'Quote Accepted'),
+        ('REJECTED', 'Rejected'),
+        ('CONVERTED', 'Converted to Booking'),
+    ]
+    
+    ACTIVITY_CHOICES = [
+        ('trekking', 'Trekking'),
+        ('peak_climbing', 'Peak Climbing'),
+        ('tour', 'Cultural Tour'),
+        ('wildlife', 'Wildlife Safari'),
+        ('pilgrimage', 'Pilgrimage'),
+        ('adventure', 'Adventure Sports'),
+        ('mixed', 'Mixed Activities'),
+    ]
+    
+    # User information
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='custom_requests')
+    
+    # Request details
+    destination = models.CharField(max_length=255, help_text="Desired destination")
+    alternative_destinations = models.TextField(blank=True, help_text="Alternative destinations (comma separated)")
+    
+    # Travel details
+    preferred_start_date = models.DateField(help_text="Preferred start date")
+    preferred_end_date = models.DateField(help_text="Preferred end date")
+    flexible_dates = models.BooleanField(default=False, help_text="Are dates flexible?")
+    
+    num_travelers = models.PositiveIntegerField(default=1, help_text="Number of travelers")
+    
+    # Budget
+    budget_min = models.DecimalField(max_digits=10, decimal_places=2, help_text="Minimum budget per person")
+    budget_max = models.DecimalField(max_digits=10, decimal_places=2, help_text="Maximum budget per person")
+    currency = models.CharField(max_length=3, default='USD')
+    
+    # Preferences
+    activity_type = models.CharField(max_length=20, choices=ACTIVITY_CHOICES, default='mixed')
+    accommodation_preference = models.CharField(max_length=50, blank=True, help_text="e.g., Hotel, Lodge, Camping")
+    guide_required = models.BooleanField(default=True)
+    
+    # Special requirements
+    special_requirements = models.TextField(blank=True, help_text="Dietary restrictions, accessibility needs, etc.")
+    additional_notes = models.TextField(blank=True, help_text="Any other information")
+    
+    # File uploads
+    inspiration_image = models.ImageField(upload_to='custom_requests/', blank=True, null=True, help_text="Upload inspiration photos")
+    reference_document = models.FileField(upload_to='custom_requests/docs/', blank=True, null=True, help_text="Upload itinerary ideas")
+    
+    # Status and tracking
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    priority = models.CharField(max_length=10, choices=[
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('urgent', 'Urgent')
+    ], default='medium')
+    
+    # Admin notes
+    admin_notes = models.TextField(blank=True, help_text="Internal notes for admin")
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Custom Package Request'
+        verbose_name_plural = 'Custom Package Requests'
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.destination} ({self.get_status_display()})"
+    
+    def get_duration_days(self):
+        """Calculate trip duration in days"""
+        if self.preferred_start_date and self.preferred_end_date:
+            return (self.preferred_end_date - self.preferred_start_date).days
+        return 0
+    
+    def get_total_budget_range(self):
+        """Calculate total budget range for all travelers"""
+        return {
+            'min': self.budget_min * self.num_travelers,
+            'max': self.budget_max * self.num_travelers
+        }
+
+
+class RequestQuote(models.Model):
+    """Admin-created quotes for custom package requests"""
+    custom_request = models.ForeignKey(CustomPackageRequest, on_delete=models.CASCADE, related_name='quotes')
+    
+    # Quote details
+    package_title = models.CharField(max_length=255)
+    description = models.TextField(help_text="Detailed package description")
+    itinerary = models.TextField(help_text="Day-by-day itinerary")
+    
+    # Pricing
+    price_per_person = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, default='USD')
+    
+    # Inclusions/Exclusions
+    inclusions = models.TextField(help_text="What's included (one per line)")
+    exclusions = models.TextField(blank=True, help_text="What's not included (one per line)")
+    
+    # Terms
+    validity_days = models.PositiveIntegerField(default=7, help_text="Quote valid for how many days")
+    terms_and_conditions = models.TextField(blank=True)
+    
+    # Payment terms
+    advance_payment_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=30.00, help_text="Advance payment %")
+    cancellation_policy = models.TextField(blank=True)
+    
+    # Status
+    is_active = models.BooleanField(default=True)
+    accepted = models.BooleanField(default=False)
+    accepted_at = models.DateTimeField(null=True, blank=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Quote for {self.custom_request.user.username} - {self.package_title}"
+    
+    def is_expired(self):
+        """Check if quote has expired"""
+        if self.expires_at:
+            from django.utils import timezone
+            return timezone.now() > self.expires_at
+        return False
+    
+    def get_advance_amount(self):
+        """Calculate advance payment amount"""
+        return (self.total_price * self.advance_payment_percentage) / 100
+
+
+class RequestMessage(models.Model):
+    """Messages/communication between user and admin regarding custom requests"""
+    custom_request = models.ForeignKey(CustomPackageRequest, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    message = models.TextField()
+    attachment = models.FileField(upload_to='request_messages/', blank=True, null=True)
+    
+    is_admin_message = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['created_at']
+    
+    def __str__(self):
+        sender_type = "Admin" if self.is_admin_message else "User"
+        return f"{sender_type} message for Request #{self.custom_request.id}"
