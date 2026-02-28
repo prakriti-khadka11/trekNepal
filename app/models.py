@@ -873,3 +873,19 @@ class RequestMessage(models.Model):
     def __str__(self):
         sender_type = "Admin" if self.is_admin_message else "User"
         return f"{sender_type} message for Request #{self.custom_request.id}"
+
+
+class GuideMessage(models.Model):
+    """Messages between users and guides for their bookings"""
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    attachment = models.FileField(upload_to='guide_messages/', blank=True, null=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['created_at']
+    
+    def __str__(self):
+        return f"Message from {self.sender.username} for Booking #{self.booking.id}"

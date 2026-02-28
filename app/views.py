@@ -141,7 +141,12 @@ def package_list(request):
 
 def booking_detail(request, id):
     booking = get_object_or_404(Booking, id=id)
-    return render(request, 'booking_detail.html', {'booking': booking})
+    
+    # Check if user is a guide
+    if hasattr(request.user, 'guide'):
+        return render(request, 'guide_booking_detail.html', {'booking': booking})
+    else:
+        return render(request, 'booking_detail.html', {'booking': booking})
 
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
@@ -356,8 +361,24 @@ def book_travel(request, travel_id):
 
 @login_required
 def my_bookings(request):
+    from .models import GuideMessage
+    
     bookings = Booking.objects.filter(user=request.user)
-    return render(request, "my_bookings.html", {"bookings": bookings})
+    
+    # Get unread message count for each booking
+    unread_counts = {}
+    for booking in bookings:
+        if booking.guide and booking.status == 'PAID':
+            count = GuideMessage.objects.filter(
+                booking=booking,
+                is_read=False
+            ).exclude(sender=request.user).count()
+            unread_counts[booking.id] = count
+    
+    return render(request, "my_bookings.html", {
+        "bookings": bookings,
+        "unread_counts": unread_counts
+    })
 
 @login_required
 def booking_receipt(request, booking_id):
@@ -653,6 +674,8 @@ from .models import Guide
 
 @login_required
 def guide_dashboard(request):
+    from .models import GuideMessage
+    
     guide = Guide.objects.filter(user=request.user).first()
     
     if guide:
@@ -692,6 +715,16 @@ def guide_dashboard(request):
         total_reviews = guide.reviews.count()
         guide_level = get_guide_level(average_rating, total_reviews)
         
+        # Get unread message count for each booking
+        unread_counts = {}
+        for booking in assigned_bookings:
+            if booking.status == 'PAID':
+                count = GuideMessage.objects.filter(
+                    booking=booking,
+                    is_read=False
+                ).exclude(sender=request.user).count()
+                unread_counts[booking.id] = count
+        
         context = {
             'guide': guide,
             'assigned_bookings': assigned_bookings,
@@ -705,6 +738,7 @@ def guide_dashboard(request):
             'total_earnings': total_earnings,
             'total_reviews': total_reviews,
             'guide_level': guide_level,
+            'unread_counts': unread_counts,
         }
     else:
         context = {'guide': None}

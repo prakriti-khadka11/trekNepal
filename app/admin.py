@@ -6,7 +6,7 @@ from .models import (
     Profile, Guide, GuideReview, ExpenseCategory, TravelExpense, TravelBudget, 
     TravelWishlist, TravelDocument, UserPreference, AltitudeProfile, 
     AcclimatizationPlan, SymptomLog, EmergencyProtocol, CustomPackageRequest,
-    RequestQuote, RequestMessage
+    RequestQuote, RequestMessage, GuideMessage
 )
 
 # Booking Admin
@@ -245,4 +245,12 @@ class RequestMessageAdmin(admin.ModelAdmin):
     list_display = ('id', 'custom_request', 'sender', 'is_admin_message', 'is_read', 'created_at')
     list_filter = ('is_admin_message', 'is_read', 'created_at')
     search_fields = ('sender__username', 'message')
+    readonly_fields = ('created_at',)
+
+# Guide Message Admin
+@admin.register(GuideMessage)
+class GuideMessageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'booking', 'sender', 'is_read', 'created_at')
+    list_filter = ('is_read', 'created_at')
+    search_fields = ('sender__username', 'message', 'booking__id')
     readonly_fields = ('created_at',)

@@ -185,13 +185,6 @@
         font-weight: bold;
         color: #4facfe;
     }
-    
-    .import-export {
-        background: #f8f9fa;
-        border-radius: 15px;
-        padding: 20px;
-        margin: 20px 0;
-    }
 </style>
 {% endblock %}
 
@@ -236,19 +229,6 @@
             </button>
         </div>
         
-        <!-- Emergency Test -->
-        <div class="emergency-test">
-            <h6 class="text-warning">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                Test Emergency System
-            </h6>
-            <p class="mb-3">Send a test message to all your emergency contacts to ensure the system works.</p>
-            <button class="btn btn-warning" onclick="testEmergencySystem()">
-                <i class="fas fa-paper-plane me-2"></i>
-                Send Test Alert
-            </button>
-        </div>
-        
         <!-- Contacts List -->
         <div class="contacts-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -268,25 +248,6 @@
                     <i class="fas fa-address-book fa-3x mb-3"></i>
                     <h5>No Emergency Contacts Added</h5>
                     <p>Add your first emergency contact to get started</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Import/Export -->
-        <div class="import-export">
-            <h6><i class="fas fa-exchange-alt me-2"></i>Import/Export Contacts</h6>
-            <div class="row">
-                <div class="col-md-6">
-                    <label class="form-label">Import from file:</label>
-                    <input type="file" class="form-control" id="importFile" accept=".json,.csv">
-                </div>
-                <div class="col-md-6 d-flex align-items-end">
-                    <button class="btn btn-primary me-2" onclick="importContacts()">
-                        <i class="fas fa-upload me-1"></i>Import
-                    </button>
-                    <button class="btn btn-secondary" onclick="exportContacts()">
-                        <i class="fas fa-download me-1"></i>Export
-                    </button>
                 </div>
             </div>
         </div>
@@ -548,29 +509,6 @@ function messageContact(phone) {
     window.location.href = `sms:${phone}?body=${encodeURIComponent(message)}`;
 }
 
-function testEmergencySystem() {
-    if (emergencyContacts.length === 0) {
-        alert('Please add emergency contacts first before testing the system.');
-        return;
-    }
-    
-    if (confirm(`Send test emergency alert to all ${emergencyContacts.length} contacts?`)) {
-        // Simulate sending test messages
-        let successCount = 0;
-        emergencyContacts.forEach(contact => {
-            // Simulate API call
-            setTimeout(() => {
-                successCount++;
-                if (successCount === emergencyContacts.length) {
-                    alert(`Test alert sent successfully to ${successCount} contacts!\n\nAll contacts should receive a test message shortly.`);
-                }
-            }, Math.random() * 2000);
-        });
-        
-        alert('Sending test alerts...\nPlease wait for confirmation.');
-    }
-}
-
 function sortContacts() {
     const sortBy = prompt('Sort by:\n1. Name\n2. Priority\n3. Date Added\n\nEnter number (1-3):');
     
@@ -608,38 +546,6 @@ function exportContacts() {
     link.click();
     
     alert('Emergency contacts exported successfully!');
-}
-
-function importContacts() {
-    const fileInput = document.getElementById('importFile');
-    const file = fileInput.files[0];
-    
-    if (!file) {
-        alert('Please select a file to import.');
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const importedContacts = JSON.parse(e.target.result);
-            
-            if (confirm(`Import ${importedContacts.length} contacts?\n\nThis will add to your existing contacts.`)) {
-                emergencyContacts = [...emergencyContacts, ...importedContacts];
-                localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
-                localStorage.setItem('contactsLastUpdate', new Date().toISOString());
-                
-                loadContacts();
-                updateStats();
-                
-                alert(`Successfully imported ${importedContacts.length} emergency contacts!`);
-            }
-        } catch (error) {
-            alert('Error importing contacts. Please check the file format.');
-        }
-    };
-    
-    reader.readAsText(file);
 }
 
 // Close modal when clicking outside

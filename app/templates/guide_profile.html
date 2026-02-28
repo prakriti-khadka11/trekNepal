@@ -1,0 +1,98 @@
+{% extends 'base_guide.html' %}
+
+{% block title %}My Profile - Guide Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="dashboard-card">
+                <h2 class="mb-4">
+                    <i class="fas fa-user-tie me-2"></i>Guide Profile
+                </h2>
+                
+                {% if guide %}
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4">
+                        {% if guide.profile_picture %}
+                        <img src="{{ guide.profile_picture.url }}" alt="{{ guide.user.username }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-secondary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                            <i class="fas fa-user fa-4x"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <h4>{{ guide.user.get_full_name|default:guide.user.username }}</h4>
+                        <p class="text-muted">{{ guide.user.email }}</p>
+                        
+                        {% if guide.verified %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>Verified Guide
+                        </span>
+                        {% else %}
+                        <span class="badge bg-warning">
+                            <i class="fas fa-clock me-1"></i>Pending Verification
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <h5 class="mb-3">About Me</h5>
+                        <p>{{ guide.bio|default:"No bio added yet." }}</p>
+                        
+                        <hr>
+                        
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <strong><i class="fas fa-calendar me-2"></i>Experience:</strong>
+                                <p>{{ guide.experience_years }} years</p>
+                            </div>
+                            
+                            <div class="col-6 mb-3">
+                                <strong><i class="fas fa-language me-2"></i>Languages:</strong>
+                                <p>{{ guide.languages|default:"Not specified" }}</p>
+                            </div>
+                            
+                            <div class="col-6 mb-3">
+                                <strong><i class="fas fa-star me-2"></i>Average Rating:</strong>
+                                <p>{{ guide.average_rating|floatformat:1 }} / 5.0</p>
+                            </div>
+                            
+                            <div class="col-6 mb-3">
+                                <strong><i class="fas fa-comments me-2"></i>Total Reviews:</strong>
+                                <p>{{ guide.reviews.count }}</p>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="mb-3">
+                            <strong><i class="fas fa-certificate me-2"></i>License Certificate:</strong>
+                            {% if guide.license_certificate %}
+                            <p><a href="{{ guide.license_certificate.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download me-1"></i>View Certificate
+                            </a></p>
+                            {% else %}
+                            <p class="text-muted">No certificate uploaded</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'guide_dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+                
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Guide profile not found. Please contact support.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

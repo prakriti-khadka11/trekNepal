@@ -106,6 +106,9 @@ urlpatterns = [
     
     # Custom Package Request System
     path('custom-request/', include('app.custom_request_urls')),
+    
+    # Guide Messaging System
+    path('guide-messages/', include('app.guide_message_urls')),
 ]
 
  

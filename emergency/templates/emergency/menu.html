@@ -170,27 +170,5 @@
 function showFirstAid() {
     alert('First Aid Guide feature coming soon! In case of emergency, call 102 for ambulance.');
 }
-
-function shareEmergencyLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const locationUrl = `https://maps.google.com/?q=${lat},${lng}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Emergency Location Share',
-                    text: `I need help! My current location is:`,
-                    url: locationUrl
-                });
-            } else {
-                navigator.clipboard.writeText(`Emergency Location: ${locationUrl}`).then(() => {
-                    alert('Location copied to clipboard! Share this with emergency contacts.');
-                });
-            }
-        });
-    }
-}
 </script>
 {% endblock %}

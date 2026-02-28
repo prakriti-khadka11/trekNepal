@@ -190,11 +190,6 @@
             color: #9c27b0;
         }
 
-        .emergency-option[data-type="location"]:hover {
-            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
-            color: #ff9800;
-        }
-
         .emergency-option[data-type="sos"]:hover {
             background: linear-gradient(135deg, #ffebee, #ffcdd2);
             color: #f44336;
@@ -749,10 +744,6 @@
                 <i class="fas fa-address-book"></i>
                 <span>My Contacts</span>
             </div>
-            <div class="emergency-option" data-type="location">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Share Location</span>
-            </div>
             <div class="emergency-option" data-type="sos">
                 <i class="fas fa-exclamation-triangle"></i>
                 <span>SOS Alert</span>
@@ -910,10 +901,6 @@
                     setTimeout(() => window.location.href = '/emergency/contacts/manage/', 500);
                     break;
                     
-                case 'location':
-                    shareEmergencyLocation();
-                    break;
-                    
                 case 'police':
                 case 'fire':
                 case 'ambulance':
@@ -932,39 +919,6 @@
                     
                 default:
                     showNotification('Feature coming soon!', 'warning');
-            }
-        }
-
-        function shareEmergencyLocation() {
-            if (navigator.geolocation) {
-                showNotification('Getting your location...', 'info');
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        const locationUrl = `https://maps.google.com/?q=${lat},${lng}`;
-                        const message = `🚨 EMERGENCY LOCATION SHARE 🚨\n\nI need help! My current location is:\n${locationUrl}\n\nSent from TrekNepal Emergency System`;
-                        
-                        if (navigator.share) {
-                            navigator.share({
-                                title: '🚨 Emergency Location',
-                                text: message,
-                                url: locationUrl
-                            }).then(() => {
-                                showNotification('Location shared successfully!', 'success');
-                            });
-                        } else {
-                            navigator.clipboard.writeText(message).then(() => {
-                                showNotification('Emergency location copied to clipboard!', 'success');
-                            });
-                        }
-                    },
-                    error => {
-                        showNotification('Unable to get location. Please enable location services.', 'error');
-                    }
-                );
-            } else {
-                showNotification('Geolocation not supported by this browser.', 'error');
             }
         }
 

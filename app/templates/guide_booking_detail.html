@@ -1,0 +1,82 @@
+{% extends 'base_guide.html' %}
+
+{% block title %}Booking Details - Guide Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Booking #{{ booking.id }}</h3>
+                        {% if booking.status == 'PAID' %}
+                            <span class="badge bg-success">Paid</span>
+                        {% elif booking.status == 'PENDING' %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% else %}
+                            <span class="badge bg-danger">{{ booking.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Booking Information</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><strong>Booking Date:</strong> {{ booking.booking_date|date:"F d, Y" }}</li>
+                                <li class="mb-2"><strong>Travel Date:</strong> {{ booking.travel_date|date:"F d, Y" }}</li>
+                                <li class="mb-2"><strong>Number of People:</strong> {{ booking.num_people }}</li>
+                                <li class="mb-2"><strong>Total Price:</strong> ${{ booking.total_price }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Traveler Information</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><strong>Name:</strong> {{ booking.user.get_full_name|default:booking.user.username }}</li>
+                                <li class="mb-2"><strong>Email:</strong> {{ booking.user.email }}</li>
+                            </ul>
+                            
+                            {% if booking.status == 'PAID' %}
+                            <a href="{% url 'guide_chat' booking.id %}" class="btn btn-primary mt-3">
+                                <i class="fas fa-comments me-2"></i>Message Traveler
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if booking.travel_package %}
+                    <div class="border-top pt-4 mt-4">
+                        <h5>Package Details</h5>
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                {% if booking.travel_package.featured_image %}
+                                <img src="{{ booking.travel_package.featured_image.url }}" alt="{{ booking.travel_package.title }}" class="img-fluid rounded">
+                                {% else %}
+                                <img src="/static/img/placeholder.jpg" alt="{{ booking.travel_package.title }}" class="img-fluid rounded">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <h4>{{ booking.travel_package.title }}</h4>
+                                <p class="text-muted">{{ booking.travel_package.short_description|default:booking.travel_package.destination.name }}</p>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ booking.travel_package.destination.name }}</li>
+                                    <li class="mb-2"><i class="fas fa-calendar me-2 text-primary"></i> {{ booking.travel_package.duration }} Days</li>
+                                    <li class="mb-2"><i class="fas fa-dollar-sign me-2 text-primary"></i> ${{ booking.travel_package.price }} per person</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="border-top pt-4 mt-4 text-center">
+                        <a href="{% url 'guide_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
