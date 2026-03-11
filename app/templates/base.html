@@ -707,12 +707,12 @@
 
                     <!-- Font size increase and decrease -->
                     <li class="nav-item">
-                        <button id="increase-text" class="btn btn-outline-secondary ms-2">
+                        <button id="increase-text" class="btn btn-outline-secondary ms-2" data-bs-toggle="tooltip" title="Increase text size">
                             <i class="fas fa-font"></i>+
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button id="decrease-text" class="btn btn-outline-secondary ms-2">
+                        <button id="decrease-text" class="btn btn-outline-secondary ms-2" data-bs-toggle="tooltip" title="Decrease text size">
                             <i class="fas fa-font"></i>−
                         </button>
                     </li>
@@ -800,6 +800,7 @@
                     <li class="mb-2"><a href="{% url 'home' %}" class="text-light text-decoration-none">Home</a></li>
                     <li class="mb-2"><a href="{% url 'package_list' %}" class="text-light text-decoration-none">Packages</a></li>
                     <li class="mb-2"><a href="{% url 'explore_countries' %}" class="text-light text-decoration-none">Destinations</a></li>
+                    <li class="mb-2"><a href="{% url 'faq' %}" class="text-light text-decoration-none"><i class="fas fa-question-circle me-1"></i>FAQ</a></li>
                     <li class="mb-2"><a href="{% url 'contact_us' %}" class="text-light text-decoration-none">Contact Us</a></li>
                 </ul>
             </div>
@@ -840,6 +841,17 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Initialize Bootstrap Tooltips -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+    </script>
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1170,6 +1182,192 @@
     }
 });
 
+    </script>
+    
+    <!-- Keyboard Shortcuts for Better Usability -->
+    <script>
+    console.log('Keyboard shortcuts loaded!');
+    
+    document.addEventListener('keydown', function(e) {
+        // Debug log
+        if (e.altKey) {
+            console.log('Alt/Option key pressed with:', e.key);
+        }
+        
+        // Check if user is typing in an input field
+        const isInputField = e.target.tagName === 'INPUT' || 
+                            e.target.tagName === 'TEXTAREA' || 
+                            e.target.isContentEditable;
+        
+        // Don't trigger shortcuts when typing in forms
+        if (isInputField && e.key !== 'Escape' && e.key !== '?') {
+            return;
+        }
+        
+        // Alt/Option + H = Home
+        if (e.altKey && (e.key === 'h' || e.key === 'H')) {
+            e.preventDefault();
+            console.log('Navigating to home...');
+            window.location.href = '{% url "home" %}';
+            return;
+        }
+        
+        // Alt/Option + P = Packages
+        if (e.altKey && (e.key === 'p' || e.key === 'P')) {
+            e.preventDefault();
+            console.log('Navigating to packages...');
+            window.location.href = '{% url "package_list" %}';
+            return;
+        }
+        
+        // Alt/Option + C = Contact
+        if (e.altKey && (e.key === 'c' || e.key === 'C')) {
+            e.preventDefault();
+            console.log('Navigating to contact...');
+            window.location.href = '{% url "contact_us" %}';
+            return;
+        }
+        
+        // Alt/Option + F = FAQ
+        if (e.altKey && (e.key === 'f' || e.key === 'F')) {
+            e.preventDefault();
+            console.log('Navigating to FAQ...');
+            window.location.href = '{% url "faq" %}';
+            return;
+        }
+        
+        // Alt/Option + B = My Bookings (if logged in)
+        {% if user.is_authenticated %}
+        if (e.altKey && (e.key === 'b' || e.key === 'B')) {
+            e.preventDefault();
+            console.log('Navigating to bookings...');
+            window.location.href = '{% url "my_bookings" %}';
+            return;
+        }
+        {% endif %}
+        
+        // Alt/Option + E = Emergency
+        {% if user.is_authenticated %}
+        if (e.altKey && (e.key === 'e' || e.key === 'E')) {
+            e.preventDefault();
+            console.log('Opening emergency menu...');
+            const emergencyBtn = document.querySelector('.emergency-btn');
+            if (emergencyBtn) {
+                emergencyBtn.click();
+            }
+            return;
+        }
+        {% endif %}
+        
+        // Escape = Close modals/menus
+        if (e.key === 'Escape') {
+            const modals = document.querySelectorAll('.modal.show');
+            modals.forEach(modal => {
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) bsModal.hide();
+            });
+            return;
+        }
+        
+        // Shift + / (?) = Show keyboard shortcuts help
+        if (e.shiftKey && e.key === '?') {
+            e.preventDefault();
+            console.log('Showing keyboard shortcuts...');
+            showKeyboardShortcuts();
+            return;
+        }
+    });
+    
+    // Show notification when shortcut is used
+    function showShortcutNotification(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 9999;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        `;
+        notification.innerHTML = `<i class="fas fa-keyboard me-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
+    }
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Make function globally accessible
+    window.showKeyboardShortcuts = function() {
+        // Detect if user is on Mac
+        const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        const modifierKey = isMac ? 'Option (⌥)' : 'Alt';
+        
+        const shortcuts = `
+            <div class="modal fade" id="shortcutsModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title"><i class="fas fa-keyboard me-2"></i>Keyboard Shortcuts</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-muted small mb-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                ${isMac ? 'On Mac, use Option (⌥) key' : 'Use Alt key for shortcuts'}
+                            </p>
+                            <table class="table">
+                                <tbody>
+                                    <tr><td><kbd>${modifierKey}</kbd> + <kbd>H</kbd></td><td>Go to Home</td></tr>
+                                    <tr><td><kbd>${modifierKey}</kbd> + <kbd>P</kbd></td><td>View Packages</td></tr>
+                                    <tr><td><kbd>${modifierKey}</kbd> + <kbd>C</kbd></td><td>Contact Us</td></tr>
+                                    <tr><td><kbd>${modifierKey}</kbd> + <kbd>F</kbd></td><td>View FAQ</td></tr>
+                                    {% if user.is_authenticated %}
+                                    <tr><td><kbd>${modifierKey}</kbd> + <kbd>B</kbd></td><td>My Bookings</td></tr>
+                                    <tr><td><kbd>${modifierKey}</kbd> + <kbd>E</kbd></td><td>Emergency Menu</td></tr>
+                                    {% endif %}
+                                    <tr><td><kbd>Esc</kbd></td><td>Close Modals</td></tr>
+                                    <tr><td><kbd>Shift</kbd> + <kbd>/</kbd> (or <kbd>?</kbd>)</td><td>Show this help</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="alert alert-info mt-3">
+                                <small><i class="fas fa-lightbulb me-1"></i> Tip: You can also click the <i class="fas fa-keyboard"></i> icon in the navbar to see these shortcuts anytime!</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        const existing = document.getElementById('shortcutsModal');
+        if (existing) existing.remove();
+        
+        // Add and show modal
+        document.body.insertAdjacentHTML('beforeend', shortcuts);
+        const modal = new bootstrap.Modal(document.getElementById('shortcutsModal'));
+        modal.show();
+    };
     </script>
     
     {% block extra_js %}{% endblock %}

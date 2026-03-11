@@ -9,6 +9,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('packages/', views.package_list, name='package_list'),
     path('contact/', views.contact_us, name='contact_us'),
+    path('faq/', lambda request: render(request, 'faq.html'), name='faq'),
     
     # Authentication
     path('signup/', views.signup, name='signup'),

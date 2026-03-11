@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ - Frequently Asked Questions{% endblock %}
+
+{% block content %}
+<div class="bg-primary text-white py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Frequently Asked Questions</h1>
+        <p class="lead">Find answers to common questions about TrekNepal</p>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                
+                <!-- Booking Questions -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Booking & Payment</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="bookingAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#booking1">
+                                        How do I book a trek or tour?
+                                    </button>
+                                </h2>
+                                <div id="booking1" class="accordion-collapse collapse show" data-bs-parent="#bookingAccordion">
+                                    <div class="accordion-body">
+                                        Browse our packages, select your preferred trek/tour, choose your travel date and number of people, then proceed to payment. You'll receive a confirmation email once payment is successful.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#booking2">
+                                        Can I cancel or modify my booking?
+                                    </button>
+                                </h2>
+                                <div id="booking2" class="accordion-collapse collapse" data-bs-parent="#bookingAccordion">
+                                    <div class="accordion-body">
+                                        Yes! Go to "My Bookings" and click the "Cancel" button. Cancellation policies apply based on how far in advance you cancel.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#booking3">
+                                        What payment methods do you accept?
+                                    </button>
+                                </h2>
+                                <div id="booking3" class="accordion-collapse collapse" data-bs-parent="#bookingAccordion">
+                                    <div class="accordion-body">
+                                        We accept payments through Khalti (e-wallet, banking, cards). All transactions are secure and encrypted.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guide Questions -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-user-tie me-2"></i>Guides & Communication</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="guideAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#guide1">
+                                        How do I contact my assigned guide?
+                                    </button>
+                                </h2>
+                                <div id="guide1" class="accordion-collapse collapse show" data-bs-parent="#guideAccordion">
+                                    <div class="accordion-body">
+                                        Once your booking is confirmed and a guide is assigned, you'll see a "Message Guide" button in your bookings. Click it to start chatting directly with your guide.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide2">
+                                        Are all guides verified?
+                                    </button>
+                                </h2>
+                                <div id="guide2" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                                    <div class="accordion-body">
+                                        Yes! All guides must submit their license certificates and are verified by our admin team before being assigned to bookings.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Questions -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="mb-0"><i class="fas fa-ambulance me-2"></i>Emergency & Safety</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="emergencyAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#emergency1">
+                                        How do I use the emergency features?
+                                    </button>
+                                </h2>
+                                <div id="emergency1" class="accordion-collapse collapse show" data-bs-parent="#emergencyAccordion">
+                                    <div class="accordion-body">
+                                        Click the red emergency button (bottom right) to access SOS alerts, emergency contacts, nearby hospitals, and altitude sickness tracking. In critical situations, call 112 (universal emergency number).
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#emergency2">
+                                        What is altitude sickness prevention?
+                                    </button>
+                                </h2>
+                                <div id="emergency2" class="accordion-collapse collapse" data-bs-parent="#emergencyAccordion">
+                                    <div class="accordion-body">
+                                        Our Altitude Safety feature helps you track symptoms, create acclimatization plans, and get recommendations. Access it from the main menu under "Altitude Safety".
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Questions -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Account & Profile</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="accountAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#account1">
+                                        How do I reset my password?
+                                    </button>
+                                </h2>
+                                <div id="account1" class="accordion-collapse collapse show" data-bs-parent="#accountAccordion">
+                                    <div class="accordion-body">
+                                        Click "Login" → "Forgot Password?" → Enter your email. You'll receive a password reset link via email.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#account2">
+                                        Can I update my profile information?
+                                    </button>
+                                </h2>
+                                <div id="account2" class="accordion-collapse collapse" data-bs-parent="#accountAccordion">
+                                    <div class="accordion-body">
+                                        Yes! Go to "My Bookings" → Click "Edit Profile" to update your personal information.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Still Need Help? -->
+                <div class="card shadow-sm bg-light">
+                    <div class="card-body text-center">
+                        <h4><i class="fas fa-question-circle me-2"></i>Still Need Help?</h4>
+                        <p class="mb-3">Can't find what you're looking for? Contact our support team!</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="tel:+9779746432142" class="btn btn-primary">
+                                <i class="fas fa-phone me-2"></i>Call Us
+                            </a>
+                            <a href="mailto:prakritikhadka027@gmail.com" class="btn btn-outline-primary">
+                                <i class="fas fa-envelope me-2"></i>Email Us
+                            </a>
+                            <a href="{% url 'contact_us' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-comment me-2"></i>Contact Form
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
