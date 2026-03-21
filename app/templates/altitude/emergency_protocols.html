@@ -5,413 +5,240 @@
 
 {% block extra_css %}
 <style>
-    .altitude-header {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-    
-    .protocol-card {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e9ecef;
-        margin-bottom: 20px;
-        border-left: 4px solid #dc3545;
-    }
-    
-    .emergency-alert {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-        color: white;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    
-    .emergency-contact {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-left: 3px solid #dc3545;
-    }
-    
-    .altitude-badge {
-        background: #dc3545;
-        color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-block;
-        margin-bottom: 10px;
-    }
-    
-    .contact-number {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #dc3545;
-    }
-    
-    .descent-info {
-        background: #fff3cd;
-        border: 1px solid #ffeaa7;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 15px 0;
-    }
-    
-    .medical-facility {
-        background: #d1ecf1;
-        border: 1px solid #bee5eb;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 15px 0;
-    }
-    
-    .current-status {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e9ecef;
-        margin-bottom: 20px;
-    }
-    
-    .status-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid #e9ecef;
-    }
-    
-    .status-item:last-child {
-        border-bottom: none;
-    }
-    
-    .status-label {
-        font-weight: 600;
-        color: #495057;
-    }
-    
-    .status-value {
-        color: #6c757d;
-    }
-    
-    .emergency-steps {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 20px;
-        margin: 15px 0;
-    }
-    
-    .step-item {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #dee2e6;
-    }
-    
-    .step-item:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-    
-    .step-number {
-        background: #dc3545;
-        color: white;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 14px;
-        margin-right: 15px;
-        flex-shrink: 0;
-    }
-    
-    .step-content {
-        flex: 1;
-    }
-    
-    .step-title {
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 5px;
-    }
-    
-    .step-description {
-        color: #6c757d;
-        font-size: 14px;
-        margin: 0;
-    }
-    
-    .no-protocols {
-        text-align: center;
-        padding: 60px 20px;
-        color: #6c757d;
-    }
-    
-    .no-protocols i {
-        font-size: 3rem;
-        color: #dee2e6;
-        margin-bottom: 20px;
-    }
-    
-    .btn-emergency {
-        background: #dc3545;
-        border: none;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-    }
-    
-    .btn-emergency:hover {
-        background: #c82333;
-        color: white;
-        text-decoration: none;
-    }
+  .emg-hero {
+    background: linear-gradient(135deg, #7b0000, #dc3545);
+    border-radius: 16px;
+    padding: 30px 40px;
+    color: white;
+    margin-bottom: 24px;
+  }
+  .emg-hero h2 { font-weight: 700; margin-bottom: 4px; }
+  .emg-hero p { opacity: 0.85; margin: 0; }
+
+  .hotline-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .hotline {
+    flex: 1;
+    min-width: 160px;
+    background: white;
+    border: 2px solid #dc3545;
+    border-radius: 10px;
+    padding: 14px 18px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+  }
+  .hotline:hover { background: #dc3545; color: white; text-decoration: none; }
+  .hotline .num { font-size: 1.5rem; font-weight: 800; color: #dc3545; }
+  .hotline:hover .num { color: white; }
+  .hotline .lbl { font-size: 12px; color: #6c757d; margin-top: 2px; }
+  .hotline:hover .lbl { color: rgba(255,255,255,0.8); }
+
+  .status-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .status-item { flex: 1; min-width: 120px; }
+  .status-item .val { font-size: 1.4rem; font-weight: 700; color: #0f3460; }
+  .status-item .lbl { font-size: 12px; color: #6c757d; }
+
+  .protocol-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    border: 1px solid #e9ecef;
+    border-left: 5px solid #dc3545;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+  .protocol-card h4 { font-weight: 700; margin-bottom: 20px; }
+
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .contact-box {
+    background: #fff5f5;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .contact-box .label { font-size: 12px; color: #6c757d; margin-bottom: 4px; }
+  .contact-box .number { font-size: 1.3rem; font-weight: 800; color: #dc3545; }
+
+  .info-block {
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .info-block.descent { background: #fff3cd; border: 1px solid #ffeaa7; }
+  .info-block.medical { background: #d1ecf1; border: 1px solid #bee5eb; }
+  .info-block h6 { font-weight: 700; margin-bottom: 8px; }
+  .info-block p { margin: 0; font-size: 14px; }
+
+  .steps { margin-top: 16px; }
+  .step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    background: #dc3545;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .step-body strong { display: block; font-size: 14px; margin-bottom: 2px; }
+  .step-body span { font-size: 13px; color: #6c757d; }
+
+  .general-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <!-- Emergency Header -->
-    <div class="altitude-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="mb-2"><i class="fas fa-exclamation-triangle me-3"></i>Emergency Protocols</h1>
-                <p class="mb-0 opacity-90">Critical altitude sickness emergency procedures and contacts</p>
-            </div>
-            <a href="{% url 'altitude_dashboard' %}" class="btn btn-light">
-                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-            </a>
-        </div>
-    </div>
+<div class="container mt-4" style="max-width: 800px;">
 
-    <!-- Emergency Alert -->
-    <div class="emergency-alert">
-        <h4><i class="fas fa-exclamation-circle me-2"></i>EMERGENCY SITUATION</h4>
-        <p class="mb-0">If experiencing severe altitude sickness symptoms, descend immediately and seek medical attention</p>
+  <div class="emg-hero">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2>🚨 Emergency Protocols</h2>
+        <p>Rescue contacts, descent routes, and nearest hospitals</p>
+      </div>
+      <a href="{% url 'altitude_dashboard' %}" class="btn btn-light btn-sm">← Dashboard</a>
     </div>
+  </div>
 
-    <!-- Current Status -->
-    {% if latest_log %}
-    <div class="current-status">
-        <h5 class="mb-3"><i class="fas fa-user-md me-2"></i>Current Status</h5>
-        <div class="status-item">
-            <span class="status-label">Current Altitude</span>
-            <span class="status-value">{{ current_altitude }}m</span>
-        </div>
-        <div class="status-item">
-            <span class="status-label">Last Symptom Check</span>
-            <span class="status-value">{{ latest_log.date }}</span>
-        </div>
-        <div class="status-item">
-            <span class="status-label">AMS Score</span>
-            <span class="status-value">{{ latest_log.get_ams_score }}/18</span>
-        </div>
-        <div class="status-item">
-            <span class="status-label">Severity Level</span>
-            <span class="badge bg-{% if latest_log.get_severity_level == 'severe' %}danger{% elif latest_log.get_severity_level == 'moderate' %}warning{% elif latest_log.get_severity_level == 'mild' %}info{% else %}success{% endif %}">
-                {{ latest_log.get_severity_level|title }}
-            </span>
-        </div>
+  <!-- Quick dial hotlines -->
+  <div class="hotline-bar">
+    <a href="tel:100" class="hotline">
+      <div class="num">100</div>
+      <div class="lbl">Nepal Police</div>
+    </a>
+    <a href="tel:102" class="hotline">
+      <div class="num">102</div>
+      <div class="lbl">Ambulance</div>
+    </a>
+    <a href="tel:1144" class="hotline">
+      <div class="num">1144</div>
+      <div class="lbl">Tourist Helpline</div>
+    </a>
+    <a href="tel:+9771-4220159" class="hotline">
+      <div class="num">HAMS</div>
+      <div class="lbl">Helicopter Rescue</div>
+    </a>
+  </div>
+
+  <!-- Current status -->
+  {% if latest_log %}
+  <div class="status-card">
+    <div class="status-item">
+      <div class="val">{{ current_altitude }}m</div>
+      <div class="lbl">Your Altitude</div>
     </div>
-    {% endif %}
-
-    <!-- Emergency Protocols -->
-    {% if protocols %}
-        {% for protocol in protocols %}
-        <div class="protocol-card">
-            <div class="altitude-badge">
-                {{ protocol.altitude_range_min }}m - {{ protocol.altitude_range_max }}m
-            </div>
-            
-            <h4 class="mb-3">{{ protocol.location_name }}</h4>
-            
-            <!-- Emergency Contacts -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="emergency-contact">
-                        <h6><i class="fas fa-phone me-2"></i>Rescue Contact</h6>
-                        <div class="contact-number">{{ protocol.rescue_contact }}</div>
-                    </div>
-                </div>
-                {% if protocol.helicopter_service %}
-                <div class="col-md-6">
-                    <div class="emergency-contact">
-                        <h6><i class="fas fa-helicopter me-2"></i>Helicopter Service</h6>
-                        <div class="contact-number">{{ protocol.helicopter_service }}</div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-            
-            <!-- Descent Information -->
-            <div class="descent-info">
-                <h6><i class="fas fa-arrow-down me-2"></i>Descent Information</h6>
-                <p><strong>Safe Altitude:</strong> {{ protocol.safe_altitude }}m</p>
-                <p><strong>Estimated Time:</strong> {{ protocol.estimated_descent_time }}</p>
-                <p><strong>Route:</strong> {{ protocol.descent_route }}</p>
-            </div>
-            
-            <!-- Medical Facilities -->
-            <div class="medical-facility">
-                <h6><i class="fas fa-hospital me-2"></i>Medical Facilities</h6>
-                <p><strong>Nearest Hospital:</strong> {{ protocol.nearest_hospital }}</p>
-                {% if protocol.medical_post_location %}
-                <p><strong>Medical Post:</strong> {{ protocol.medical_post_location }}</p>
-                {% endif %}
-                <p><strong>Oxygen Available:</strong> 
-                    {% if protocol.oxygen_availability %}
-                        <span class="text-success"><i class="fas fa-check"></i> Yes</span>
-                    {% else %}
-                        <span class="text-danger"><i class="fas fa-times"></i> No</span>
-                    {% endif %}
-                </p>
-            </div>
-            
-            <!-- Emergency Steps -->
-            <div class="emergency-steps">
-                <h6 class="mb-3"><i class="fas fa-list-ol me-2"></i>Emergency Action Steps</h6>
-                
-                <div class="step-item">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <div class="step-title">Assess Symptoms</div>
-                        <p class="step-description">Check for severe symptoms: confusion, difficulty walking, shortness of breath at rest, chest tightness, or coughing blood.</p>
-                    </div>
-                </div>
-                
-                <div class="step-item">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <div class="step-title">Call for Help</div>
-                        <p class="step-description">Contact rescue services immediately: {{ protocol.rescue_contact }}</p>
-                    </div>
-                </div>
-                
-                <div class="step-item">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <div class="step-title">Begin Descent</div>
-                        <p class="step-description">Start descending immediately to {{ protocol.safe_altitude }}m. Do not delay for weather or other concerns.</p>
-                    </div>
-                </div>
-                
-                <div class="step-item">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <div class="step-title">Administer Oxygen</div>
-                        <p class="step-description">{% if protocol.oxygen_availability %}Use available oxygen supplies.{% else %}Oxygen not available at this location - prioritize rapid descent.{% endif %}</p>
-                    </div>
-                </div>
-                
-                <div class="step-item">
-                    <div class="step-number">5</div>
-                    <div class="step-content">
-                        <div class="step-title">Seek Medical Care</div>
-                        <p class="step-description">Get to {{ protocol.nearest_hospital }} as soon as possible for proper medical evaluation.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <div class="protocol-card">
-            <div class="no-protocols">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h5>No Specific Protocols Available</h5>
-                <p>No emergency protocols found for your current altitude ({{ current_altitude }}m).</p>
-                
-                <!-- General Emergency Guidelines -->
-                <div class="emergency-steps mt-4">
-                    <h6 class="mb-3"><i class="fas fa-list-ol me-2"></i>General Emergency Guidelines</h6>
-                    
-                    <div class="step-item">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <div class="step-title">Recognize Severe Symptoms</div>
-                            <p class="step-description">Confusion, difficulty walking, shortness of breath at rest, chest tightness, coughing blood</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-item">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <div class="step-title">Call Emergency Services</div>
-                            <p class="step-description">Nepal Emergency: 100 | Tourist Helpline: 1144</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-item">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <div class="step-title">Descend Immediately</div>
-                            <p class="step-description">Descend at least 500-1000m or until symptoms improve</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step-item">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <div class="step-title">Seek Medical Attention</div>
-                            <p class="step-description">Get to the nearest medical facility immediately</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Quick Actions -->
-    <div class="row mt-4">
-        <div class="col-md-6 mb-3">
-            <a href="{% url 'symptom_checker' %}" class="btn btn-emergency w-100">
-                <i class="fas fa-stethoscope me-2"></i>Log Current Symptoms
-            </a>
-        </div>
-        <div class="col-md-6 mb-3">
-            <a href="tel:100" class="btn btn-emergency w-100">
-                <i class="fas fa-phone me-2"></i>Call Emergency (100)
-            </a>
-        </div>
+    <div class="status-item">
+      <div class="val">{{ latest_log.get_ams_score }}/18</div>
+      <div class="lbl">AMS Score</div>
     </div>
+    <div class="status-item">
+      {% with rec=latest_log.get_recommendation %}
+      <div class="val"><span class="badge bg-{{ rec.color }}" style="font-size:14px;">{{ latest_log.get_severity_level|title }}</span></div>
+      <div class="lbl">Severity</div>
+      {% endwith %}
+    </div>
+    <div class="status-item">
+      <div class="val" style="font-size:1rem;">{{ latest_log.date }}</div>
+      <div class="lbl">Last Checked</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Specific protocols -->
+  {% if protocols %}
+    {% for protocol in protocols %}
+    <div class="protocol-card">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h4>{{ protocol.location_name }}</h4>
+        <span class="badge bg-danger">{{ protocol.altitude_range_min }}m – {{ protocol.altitude_range_max }}m</span>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-box">
+          <div class="label">🆘 Rescue Contact</div>
+          <div class="number">{{ protocol.rescue_contact }}</div>
+        </div>
+        {% if protocol.helicopter_service %}
+        <div class="contact-box">
+          <div class="label">🚁 Helicopter</div>
+          <div class="number">{{ protocol.helicopter_service }}</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="info-block descent">
+        <h6>⬇️ Descent Plan</h6>
+        <p><strong>Descend to:</strong> {{ protocol.safe_altitude }}m &nbsp;·&nbsp; <strong>Est. time:</strong> {{ protocol.estimated_descent_time }}</p>
+        <p class="mt-1">{{ protocol.descent_route }}</p>
+      </div>
+
+      <div class="info-block medical">
+        <h6>🏥 Medical Facilities</h6>
+        <p><strong>Nearest Hospital:</strong> {{ protocol.nearest_hospital }}</p>
+        {% if protocol.medical_post_location %}<p><strong>Medical Post:</strong> {{ protocol.medical_post_location }}</p>{% endif %}
+        <p><strong>Oxygen:</strong> {% if protocol.oxygen_availability %}<span class="text-success">✓ Available</span>{% else %}<span class="text-danger">✗ Not available — prioritize descent</span>{% endif %}</p>
+      </div>
+
+      <div class="steps">
+        <strong style="font-size:14px;">Emergency Action Steps</strong>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Assess</strong><span>Check for severe symptoms: confusion, difficulty walking, breathlessness at rest</span></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Call for help</strong><span>{{ protocol.rescue_contact }}</span></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Descend immediately</strong><span>Target: {{ protocol.safe_altitude }}m — do not wait for weather</span></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Oxygen</strong><span>{% if protocol.oxygen_availability %}Use available oxygen supplies{% else %}Not available here — rapid descent is the priority{% endif %}</span></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Medical care</strong><span>Get to {{ protocol.nearest_hospital }}</span></div></div>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+  <!-- General guidelines -->
+  <div class="general-card">
+    <h5 class="mb-4">General Emergency Guidelines</h5>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Recognize severe symptoms</strong><span>Confusion, difficulty walking, breathlessness at rest, chest pain, coughing blood</span></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Call emergency services</strong><span>Police: 100 &nbsp;·&nbsp; Ambulance: 102 &nbsp;·&nbsp; Tourist Helpline: 1144</span></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Descend immediately</strong><span>At least 500–1000m or until symptoms improve</span></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Seek medical attention</strong><span>Get to the nearest medical facility as fast as possible</span></div></div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="d-flex gap-3 mt-2 mb-4">
+    <a href="{% url 'symptom_checker' %}" class="btn btn-danger flex-fill">🩺 Log Symptoms Now</a>
+    <a href="{% url 'altitude_dashboard' %}" class="btn btn-outline-secondary flex-fill">← Back to Dashboard</a>
+  </div>
+
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Auto-refresh every 5 minutes for updated protocols
-    setTimeout(function() {
-        location.reload();
-    }, 300000);
-    
-    // Add emergency contact quick dial
-    document.addEventListener('DOMContentLoaded', function() {
-        const contactNumbers = document.querySelectorAll('.contact-number');
-        contactNumbers.forEach(function(number) {
-            number.style.cursor = 'pointer';
-            number.addEventListener('click', function() {
-                const phoneNumber = this.textContent.trim();
-                if (phoneNumber) {
-                    window.location.href = 'tel:' + phoneNumber;
-                }
-            });
-        });
-    });
-</script>
 {% endblock %}

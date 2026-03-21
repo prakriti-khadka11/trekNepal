@@ -2,6 +2,19 @@
 
 {% block title %}Register as Guide - TrekNepal{% endblock %}
 
+{% block extra_css %}
+<style>
+  .auth-form input, .auth-form textarea, .auth-form select {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    margin-top: 4px;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center align-items-center">
@@ -95,5 +108,3 @@
     </div>
 </div>
 {% endblock %}
-
-

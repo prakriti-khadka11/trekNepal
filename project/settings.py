@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-28w3)s3aox&nn+!wz!))cho235k8%jl6ha$axa8w%=p$)uz56b'
 KHALTI_PUBLIC_KEY = "e3ffe35014054966b9b772cbdcb2b614"
 KHALTI_SECRET_KEY = "dc6eb2481b4d4fa3b56373b5afe86234"
+GEMINI_API_KEY = "AIzaSyCJpJi58FB7qWS0mtpt6j7B41-jituJATo"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

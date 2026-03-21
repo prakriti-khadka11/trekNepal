@@ -430,16 +430,8 @@
                     <span class="day-number">Day {{ day.day }}</span>
                     <div class="d-flex align-items-center">
                         <span class="day-altitude">{{ day.altitude }}m</span>
-                        {% if forloop.counter0 > 0 %}
-                            {% with prev_altitude=schedule|slice:":"|slice:"-2:"|first.altitude %}
-                                {% with gain=day.altitude|add:"-"|add:prev_altitude %}
-                                    {% if gain > 0 %}
-                                        <span class="altitude-gain {% if gain > 500 %}high-gain{% endif %}">+{{ gain }}m</span>
-                                    {% elif gain == 0 %}
-                                        <span class="altitude-gain rest">Rest</span>
-                                    {% endif %}
-                                {% endwith %}
-                            {% endwith %}
+                        {% if not forloop.first %}
+                            <span class="altitude-gain">↑ ascending</span>
                         {% endif %}
                     </div>
                 </div>

@@ -1,450 +1,396 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Altitude Symptom Checker - TrekNepal{% endblock %}
+{% block title %}Symptom Checker - Altitude Safety{% endblock %}
 
 {% block extra_css %}
 <style>
-    .symptom-header {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        color: white;
-        border-radius: 12px;
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-    
-    .symptom-card {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e9ecef;
-        margin-bottom: 20px;
-    }
-    
-    .symptom-group {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .symptom-item {
-        margin-bottom: 15px;
-    }
-    
-    .symptom-scale {
-        display: flex;
-        gap: 10px;
-        margin-top: 8px;
-    }
-    
-    .scale-option {
-        flex: 1;
-        text-align: center;
-        padding: 8px;
-        border: 2px solid #dee2e6;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 12px;
-        font-weight: 600;
-    }
-    
-    .scale-option input[type="radio"] {
-        display: none;
-    }
-    
-    .scale-option:hover {
-        border-color: #667eea;
-    }
-    
-    .scale-option.selected {
-        background: #667eea;
-        color: white;
-        border-color: #667eea;
-    }
-    
-    .scale-0 { border-color: #28a745; }
-    .scale-0.selected { background: #28a745; border-color: #28a745; }
-    
-    .scale-1 { border-color: #ffc107; }
-    .scale-1.selected { background: #ffc107; color: #000; border-color: #ffc107; }
-    
-    .scale-2 { border-color: #fd7e14; }
-    .scale-2.selected { background: #fd7e14; border-color: #fd7e14; }
-    
-    .scale-3 { border-color: #dc3545; }
-    .scale-3.selected { background: #dc3545; border-color: #dc3545; }
-    
-    .severe-symptom {
-        background: #fff5f5;
-        border: 1px solid #fed7d7;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
-    }
-    
-    .vitals-input {
-        background: #e8f4fd;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .submit-btn {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border: none;
-        border-radius: 8px;
-        padding: 15px 30px;
-        color: white;
-        font-weight: 600;
-        font-size: 16px;
-    }
-    
-    .submit-btn:hover {
-        transform: scale(1.02);
-        color: white;
-    }
-    
-    .today-log-alert {
-        background: linear-gradient(135deg, #d4edda, #c3e6cb);
-        border: 1px solid #c3e6cb;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
+  .wizard-wrap { max-width: 680px; margin: 0 auto; padding: 24px 16px; }
+  .wizard-progress { display: flex; align-items: center; margin-bottom: 32px; }
+  .wp-step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+  .wp-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 16px; left: 50%; width: 100%;
+    height: 2px; background: #dee2e6; z-index: 0;
+  }
+  .wp-step.done:not(:last-child)::after { background: #667eea; }
+  .wp-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid #dee2e6;
+    background: white; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #aaa; z-index: 1; transition: all 0.3s;
+  }
+  .wp-step.active .wp-dot { border-color: #667eea; color: #667eea; background: #f0f0ff; }
+  .wp-step.done .wp-dot { border-color: #667eea; background: #667eea; color: white; }
+  .wp-label { font-size: 11px; color: #aaa; margin-top: 5px; font-weight: 600; text-transform: uppercase; }
+  .wp-step.active .wp-label, .wp-step.done .wp-label { color: #667eea; }
+  .wizard-card {
+    background: white; border-radius: 16px; padding: 32px;
+    border: 1px solid #e9ecef; box-shadow: 0 4px 16px rgba(0,0,0,0.06); display: none;
+  }
+  .wizard-card.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .card-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .card-sub { color: #888; font-size: 14px; margin-bottom: 24px; }
+  .alt-input-wrap { position: relative; }
+  .alt-input-wrap input {
+    font-size: 28px; font-weight: 700; text-align: center;
+    border: 2px solid #dee2e6; border-radius: 12px; padding: 16px;
+    width: 100%; outline: none; transition: border-color 0.2s;
+  }
+  .alt-input-wrap input:focus { border-color: #667eea; }
+  .alt-unit { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #888; font-size: 16px; font-weight: 600; }
+  .alt-hint { text-align: center; margin-top: 10px; font-size: 13px; color: #888; }
+  .alt-zones { display: flex; gap: 8px; margin-top: 16px; }
+  .alt-zone {
+    flex: 1; text-align: center; padding: 10px 6px; border-radius: 10px;
+    border: 2px solid #dee2e6; cursor: pointer; font-size: 12px; font-weight: 600;
+    transition: all 0.2s; color: #555;
+  }
+  .alt-zone:hover { border-color: #667eea; color: #667eea; }
+  .alt-zone .zone-m { font-size: 15px; font-weight: 700; display: block; }
+  .symptom-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .sym-counter { font-size: 13px; color: #888; font-weight: 600; }
+  .sym-name { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .sym-desc { font-size: 14px; color: #888; margin-bottom: 24px; }
+  .sym-emoji { font-size: 48px; text-align: center; margin-bottom: 16px; }
+  .scale-group { display: flex; gap: 8px; }
+  .scale-btn {
+    flex: 1; text-align: center; padding: 14px 6px; border-radius: 10px;
+    border: 2px solid #dee2e6; cursor: pointer; font-size: 13px; font-weight: 600;
+    transition: all 0.2s; user-select: none; background: white;
+  }
+  .scale-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .scale-btn.s0.active { background: #28a745; border-color: #28a745; color: white; }
+  .scale-btn.s1.active { background: #ffc107; border-color: #ffc107; color: #333; }
+  .scale-btn.s2.active { background: #fd7e14; border-color: #fd7e14; color: white; }
+  .scale-btn.s3.active { background: #dc3545; border-color: #dc3545; color: white; }
+  .live-score-bar {
+    background: #f8f9fa; border-radius: 12px; padding: 16px 20px;
+    margin-top: 20px; display: flex; align-items: center; gap: 16px;
+  }
+  .score-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }
+  .score-track { flex: 1; height: 8px; background: #dee2e6; border-radius: 4px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease, background 0.4s ease; width: 0%; background: #28a745; }
+  .score-num { font-size: 18px; font-weight: 800; min-width: 40px; text-align: right; }
+  .severe-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    border-radius: 10px; border: 2px solid #f5c6cb; background: #fff5f5;
+    margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .severe-item:hover { border-color: #dc3545; }
+  .severe-item.checked { border-color: #dc3545; background: #ffe0e0; }
+  .severe-item input { width: 18px; height: 18px; cursor: pointer; accent-color: #dc3545; }
+  .severe-item label { margin: 0; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .severe-alert {
+    background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 16px; font-size: 14px; display: none;
+  }
+  .result-panel {
+    border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 20px; transition: all 0.4s ease;
+  }
+  .result-panel.safe { background: linear-gradient(135deg,#d4edda,#c3e6cb); border: 2px solid #28a745; }
+  .result-panel.mild { background: linear-gradient(135deg,#fff3cd,#ffeeba); border: 2px solid #ffc107; }
+  .result-panel.moderate { background: linear-gradient(135deg,#ffe5d0,#ffd0b0); border: 2px solid #fd7e14; }
+  .result-panel.severe { background: linear-gradient(135deg,#f8d7da,#f5c6cb); border: 2px solid #dc3545; }
+  .result-icon { font-size: 48px; margin-bottom: 10px; }
+  .result-action { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .result-msg { font-size: 15px; color: #555; }
+  .optional-toggle {
+    text-align: center; color: #667eea; cursor: pointer; font-size: 14px;
+    font-weight: 600; padding: 10px; margin-bottom: 12px;
+  }
+  .optional-toggle:hover { text-decoration: underline; }
+  .optional-section { display: none; }
+  .vitals-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .wizard-nav { display: flex; gap: 12px; margin-top: 24px; }
+  .btn-back {
+    background: white; border: 2px solid #dee2e6; color: #555;
+    padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 15px;
+  }
+  .btn-back:hover { border-color: #667eea; color: #667eea; }
+  .btn-next {
+    flex: 1; background: linear-gradient(135deg,#667eea,#764ba2);
+    border: none; color: white; padding: 14px 24px; border-radius: 10px;
+    font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-next:hover { opacity: 0.9; }
+  .today-notice {
+    background: #d4edda; border: 1px solid #c3e6cb; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-size: 14px;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- Header -->
-    <div class="symptom-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="mb-2"><i class="fas fa-stethoscope me-3"></i>Altitude Symptom Checker</h1>
-                <p class="mb-0 opacity-90">Daily symptom tracking with instant medical recommendations</p>
-            </div>
-            <div class="text-end">
-                <a href="{% url 'symptom_history' %}" class="btn btn-light">
-                    <i class="fas fa-history me-2"></i>View History
-                </a>
-            </div>
-        </div>
+<div class="wizard-wrap">
+
+  {% if today_log %}
+  <div class="today-notice">
+    <span style="font-size:1.4rem;">✅</span>
+    <div>
+      <strong>Already logged today</strong> at {{ today_log.current_altitude }}m &nbsp;·&nbsp;
+      AMS Score: {{ today_log.get_ams_score }}/18 &nbsp;·&nbsp;
+      {% with rec=today_log.get_recommendation %}
+      <span class="badge bg-{{ rec.color }}">{{ rec.action }}</span>
+      {% endwith %}
+      <span style="color:#555;"> — submit again to update</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="wizard-progress">
+    <div class="wp-step active" id="prog-1"><div class="wp-dot">1</div><div class="wp-label">Altitude</div></div>
+    <div class="wp-step" id="prog-2"><div class="wp-dot">2</div><div class="wp-label">Symptoms</div></div>
+    <div class="wp-step" id="prog-3"><div class="wp-dot">3</div><div class="wp-label">Warnings</div></div>
+    <div class="wp-step" id="prog-4"><div class="wp-dot">4</div><div class="wp-label">Result</div></div>
+  </div>
+
+  <form method="post" id="symptomForm">
+    {% csrf_token %}
+
+    <!-- STEP 1 -->
+    <div class="wizard-card active" id="step-1">
+      <div class="card-title">📍 Where are you right now?</div>
+      <div class="card-sub">Enter your current altitude to get started</div>
+      <div class="alt-input-wrap">
+        <input type="number" id="altInput" name="current_altitude"
+               value="{{ today_log.current_altitude|default:'' }}"
+               required min="0" max="9000" placeholder="4200">
+        <span class="alt-unit">m</span>
+      </div>
+      <div class="alt-hint">Or pick a common trek point:</div>
+      <div class="alt-zones">
+        <div class="alt-zone" onclick="setAlt(1400)"><span class="zone-m">1,400m</span>Kathmandu</div>
+        <div class="alt-zone" onclick="setAlt(2860)"><span class="zone-m">2,860m</span>Namche</div>
+        <div class="alt-zone" onclick="setAlt(4380)"><span class="zone-m">4,380m</span>Dingboche</div>
+        <div class="alt-zone" onclick="setAlt(5364)"><span class="zone-m">5,364m</span>EBC</div>
+      </div>
+      <div class="wizard-nav">
+        <button type="button" class="btn-next" onclick="goStep(2)">Next: Rate Symptoms →</button>
+      </div>
     </div>
 
-    {% if today_log %}
-    <!-- Already Logged Today -->
-    <div class="today-log-alert">
-        <h5><i class="fas fa-check-circle me-2 text-success"></i>Today's Symptoms Already Logged</h5>
-        <p class="mb-2">You've already logged your symptoms for today at {{ today_log.current_altitude }}m altitude.</p>
-        <div class="row">
-            <div class="col-md-6">
-                <strong>AMS Score:</strong> {{ today_log.get_ams_score }}/18<br>
-                <strong>Status:</strong> {{ today_log.get_severity_level|title }}
-            </div>
-            <div class="col-md-6">
-                {% with rec=today_log.get_recommendation %}
-                <strong>Recommendation:</strong><br>
-                <span class="badge bg-{{ rec.color }}">{{ rec.action }}</span>
-                <p class="small mt-1 mb-0">{{ rec.message }}</p>
-                {% endwith %}
-            </div>
-        </div>
-        <hr>
-        <p class="mb-0"><strong>Note:</strong> You can update today's log by submitting a new entry below.</p>
+    <!-- STEP 2 -->
+    <div class="wizard-card" id="step-2">
+      <div class="symptom-nav">
+        <div class="sym-counter" id="sym-counter">Symptom 1 of 6</div>
+        <div style="font-size:13px;color:#888;">Tap to rate</div>
+      </div>
+      <div id="sym-emoji" class="sym-emoji">🤕</div>
+      <div id="sym-name" class="sym-name">Headache</div>
+      <div id="sym-desc" class="sym-desc">Do you have a headache right now?</div>
+
+      <input type="hidden" name="headache" id="val-headache" value="{{ today_log.headache|default:0 }}">
+      <input type="hidden" name="nausea" id="val-nausea" value="{{ today_log.nausea|default:0 }}">
+      <input type="hidden" name="fatigue" id="val-fatigue" value="{{ today_log.fatigue|default:0 }}">
+      <input type="hidden" name="dizziness" id="val-dizziness" value="{{ today_log.dizziness|default:0 }}">
+      <input type="hidden" name="sleep_difficulty" id="val-sleep_difficulty" value="{{ today_log.sleep_difficulty|default:0 }}">
+      <input type="hidden" name="appetite_loss" id="val-appetite_loss" value="{{ today_log.appetite_loss|default:0 }}">
+
+      <div class="scale-group" id="scale-group">
+        <label class="scale-btn s0 active" data-val="0" onclick="pickSymptom(0)">😊 None</label>
+        <label class="scale-btn s1" data-val="1" onclick="pickSymptom(1)">😐 Mild</label>
+        <label class="scale-btn s2" data-val="2" onclick="pickSymptom(2)">😟 Moderate</label>
+        <label class="scale-btn s3" data-val="3" onclick="pickSymptom(3)">😣 Severe</label>
+      </div>
+
+      <div class="live-score-bar">
+        <div><div class="score-label">AMS Score</div></div>
+        <div class="score-track"><div class="score-fill" id="score-fill"></div></div>
+        <div class="score-num" id="score-num">0<span style="font-size:12px;color:#aaa;">/18</span></div>
+      </div>
+
+      <div class="wizard-nav">
+        <button type="button" class="btn-back" onclick="goStep(1)">← Back</button>
+        <button type="button" class="btn-next" id="btn-sym-next" onclick="nextSymptom()">Next →</button>
+      </div>
     </div>
-    {% endif %}
 
-    <!-- Symptom Checker Form -->
-    <form method="post" id="symptomForm">
-        {% csrf_token %}
-        
-        <!-- Current Altitude -->
-        <div class="symptom-card">
-            <h5><i class="fas fa-mountain me-2 text-primary"></i>Current Location</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <label class="form-label">Current Altitude (meters)</label>
-                    <input type="number" class="form-control" name="current_altitude" 
-                           value="{{ today_log.current_altitude|default:'' }}" required min="0" max="9000">
-                    <small class="text-muted">Enter your current altitude in meters</small>
-                </div>
-            </div>
+    <!-- STEP 3 -->
+    <div class="wizard-card" id="step-3">
+      <div class="card-title">🚨 Any serious warning signs?</div>
+      <div class="card-sub">Tick any that apply — these need immediate attention</div>
+      <div class="severe-alert" id="severe-alert">⚠️ Serious symptom detected. If at altitude, consider descending immediately and seeking medical help.</div>
+      <div class="severe-item" id="si-confusion">
+        <input type="checkbox" name="confusion" id="confusion" {% if today_log.confusion %}checked{% endif %}>
+        <label for="confusion">Confusion or altered mental state</label>
+      </div>
+      <div class="severe-item" id="si-diff_walk">
+        <input type="checkbox" name="difficulty_walking" id="diff_walk" {% if today_log.difficulty_walking %}checked{% endif %}>
+        <label for="diff_walk">Difficulty walking or loss of coordination</label>
+      </div>
+      <div class="severe-item" id="si-sob">
+        <input type="checkbox" name="shortness_of_breath_at_rest" id="sob" {% if today_log.shortness_of_breath_at_rest %}checked{% endif %}>
+        <label for="sob">Shortness of breath at rest</label>
+      </div>
+      <div class="severe-item" id="si-chest">
+        <input type="checkbox" name="chest_tightness" id="chest" {% if today_log.chest_tightness %}checked{% endif %}>
+        <label for="chest">Chest tightness or pain</label>
+      </div>
+      <div class="severe-item" id="si-cough_blood" style="border-color:#dc3545;background:#fff0f0;">
+        <input type="checkbox" name="coughing_blood" id="cough_blood" {% if today_log.coughing_blood %}checked{% endif %}>
+        <label for="cough_blood" style="color:#dc3545;">Coughing up blood or pink frothy sputum</label>
+      </div>
+      <div class="wizard-nav">
+        <button type="button" class="btn-back" onclick="goStep(2, true)">← Back</button>
+        <button type="button" class="btn-next" onclick="goStep(4)">See My Result →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="wizard-card" id="step-4">
+      <div class="card-title">Your Safety Assessment</div>
+      <div class="card-sub">Based on your symptoms right now</div>
+      <div class="result-panel safe" id="result-panel">
+        <div class="result-icon" id="result-icon">✅</div>
+        <div class="result-action" id="result-action">You're Doing Well</div>
+        <div class="result-msg" id="result-msg">No significant AMS symptoms. Stay hydrated and keep monitoring.</div>
+      </div>
+      <div class="optional-toggle" onclick="toggleOptional()">
+        <span id="opt-toggle-text">+ Add vitals &amp; notes (optional)</span>
+      </div>
+      <div class="optional-section" id="optional-section">
+        <div class="vitals-row" style="margin-bottom:16px;">
+          <div>
+            <label class="form-label fw-semibold" style="font-size:14px;">SpO2 (%)</label>
+            <input type="number" class="form-control" name="oxygen_saturation"
+                   value="{{ today_log.oxygen_saturation|default:'' }}" min="70" max="100" placeholder="e.g. 94">
+            <small class="text-muted">Normal: 95–100%</small>
+          </div>
+          <div>
+            <label class="form-label fw-semibold" style="font-size:14px;">Heart Rate (BPM)</label>
+            <input type="number" class="form-control" name="heart_rate"
+                   value="{{ today_log.heart_rate|default:'' }}" min="40" max="200" placeholder="e.g. 78">
+            <small class="text-muted">Normal: 60–100 BPM</small>
+          </div>
         </div>
+        <textarea class="form-control" name="notes" rows="2"
+                  placeholder="Any other observations...">{{ today_log.notes|default:'' }}</textarea>
+      </div>
+      <div class="wizard-nav" style="margin-top:20px;">
+        <button type="button" class="btn-back" onclick="goStep(3)">← Back</button>
+        <button type="submit" class="btn-next">Save &amp; Log →</button>
+      </div>
+    </div>
 
-        <!-- Basic AMS Symptoms -->
-        <div class="symptom-card">
-            <h5><i class="fas fa-head-side-virus me-2 text-warning"></i>Altitude Sickness Symptoms</h5>
-            <p class="text-muted">Rate each symptom from None (0) to Severe (3)</p>
-            
-            <div class="symptom-group">
-                <div class="symptom-item">
-                    <label class="form-label fw-bold">Headache</label>
-                    <div class="symptom-scale">
-                        <label class="scale-option scale-0" data-value="0">
-                            <input type="radio" name="headache" value="0" {% if today_log.headache == 0 %}checked{% endif %}>
-                            None
-                        </label>
-                        <label class="scale-option scale-1" data-value="1">
-                            <input type="radio" name="headache" value="1" {% if today_log.headache == 1 %}checked{% endif %}>
-                            Mild
-                        </label>
-                        <label class="scale-option scale-2" data-value="2">
-                            <input type="radio" name="headache" value="2" {% if today_log.headache == 2 %}checked{% endif %}>
-                            Moderate
-                        </label>
-                        <label class="scale-option scale-3" data-value="3">
-                            <input type="radio" name="headache" value="3" {% if today_log.headache == 3 %}checked{% endif %}>
-                            Severe
-                        </label>
-                    </div>
-                </div>
-
-                <div class="symptom-item">
-                    <label class="form-label fw-bold">Nausea/Vomiting</label>
-                    <div class="symptom-scale">
-                        <label class="scale-option scale-0" data-value="0">
-                            <input type="radio" name="nausea" value="0" {% if today_log.nausea == 0 %}checked{% endif %}>
-                            None
-                        </label>
-                        <label class="scale-option scale-1" data-value="1">
-                            <input type="radio" name="nausea" value="1" {% if today_log.nausea == 1 %}checked{% endif %}>
-                            Mild
-                        </label>
-                        <label class="scale-option scale-2" data-value="2">
-                            <input type="radio" name="nausea" value="2" {% if today_log.nausea == 2 %}checked{% endif %}>
-                            Moderate
-                        </label>
-                        <label class="scale-option scale-3" data-value="3">
-                            <input type="radio" name="nausea" value="3" {% if today_log.nausea == 3 %}checked{% endif %}>
-                            Severe
-                        </label>
-                    </div>
-                </div>
-
-                <div class="symptom-item">
-                    <label class="form-label fw-bold">Fatigue/Weakness</label>
-                    <div class="symptom-scale">
-                        <label class="scale-option scale-0" data-value="0">
-                            <input type="radio" name="fatigue" value="0" {% if today_log.fatigue == 0 %}checked{% endif %}>
-                            None
-                        </label>
-                        <label class="scale-option scale-1" data-value="1">
-                            <input type="radio" name="fatigue" value="1" {% if today_log.fatigue == 1 %}checked{% endif %}>
-                            Mild
-                        </label>
-                        <label class="scale-option scale-2" data-value="2">
-                            <input type="radio" name="fatigue" value="2" {% if today_log.fatigue == 2 %}checked{% endif %}>
-                            Moderate
-                        </label>
-                        <label class="scale-option scale-3" data-value="3">
-                            <input type="radio" name="fatigue" value="3" {% if today_log.fatigue == 3 %}checked{% endif %}>
-                            Severe
-                        </label>
-                    </div>
-                </div>
-
-                <div class="symptom-item">
-                    <label class="form-label fw-bold">Dizziness/Lightheadedness</label>
-                    <div class="symptom-scale">
-                        <label class="scale-option scale-0" data-value="0">
-                            <input type="radio" name="dizziness" value="0" {% if today_log.dizziness == 0 %}checked{% endif %}>
-                            None
-                        </label>
-                        <label class="scale-option scale-1" data-value="1">
-                            <input type="radio" name="dizziness" value="1" {% if today_log.dizziness == 1 %}checked{% endif %}>
-                            Mild
-                        </label>
-                        <label class="scale-option scale-2" data-value="2">
-                            <input type="radio" name="dizziness" value="2" {% if today_log.dizziness == 2 %}checked{% endif %}>
-                            Moderate
-                        </label>
-                        <label class="scale-option scale-3" data-value="3">
-                            <input type="radio" name="dizziness" value="3" {% if today_log.dizziness == 3 %}checked{% endif %}>
-                            Severe
-                        </label>
-                    </div>
-                </div>
-
-                <div class="symptom-item">
-                    <label class="form-label fw-bold">Sleep Difficulty</label>
-                    <div class="symptom-scale">
-                        <label class="scale-option scale-0" data-value="0">
-                            <input type="radio" name="sleep_difficulty" value="0" {% if today_log.sleep_difficulty == 0 %}checked{% endif %}>
-                            None
-                        </label>
-                        <label class="scale-option scale-1" data-value="1">
-                            <input type="radio" name="sleep_difficulty" value="1" {% if today_log.sleep_difficulty == 1 %}checked{% endif %}>
-                            Mild
-                        </label>
-                        <label class="scale-option scale-2" data-value="2">
-                            <input type="radio" name="sleep_difficulty" value="2" {% if today_log.sleep_difficulty == 2 %}checked{% endif %}>
-                            Moderate
-                        </label>
-                        <label class="scale-option scale-3" data-value="3">
-                            <input type="radio" name="sleep_difficulty" value="3" {% if today_log.sleep_difficulty == 3 %}checked{% endif %}>
-                            Severe
-                        </label>
-                    </div>
-                </div>
-
-                <div class="symptom-item">
-                    <label class="form-label fw-bold">Loss of Appetite</label>
-                    <div class="symptom-scale">
-                        <label class="scale-option scale-0" data-value="0">
-                            <input type="radio" name="appetite_loss" value="0" {% if today_log.appetite_loss == 0 %}checked{% endif %}>
-                            None
-                        </label>
-                        <label class="scale-option scale-1" data-value="1">
-                            <input type="radio" name="appetite_loss" value="1" {% if today_log.appetite_loss == 1 %}checked{% endif %}>
-                            Mild
-                        </label>
-                        <label class="scale-option scale-2" data-value="2">
-                            <input type="radio" name="appetite_loss" value="2" {% if today_log.appetite_loss == 2 %}checked{% endif %}>
-                            Moderate
-                        </label>
-                        <label class="scale-option scale-3" data-value="3">
-                            <input type="radio" name="appetite_loss" value="3" {% if today_log.appetite_loss == 3 %}checked{% endif %}>
-                            Severe
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Severe Symptoms (HACE/HAPE) -->
-        <div class="symptom-card">
-            <h5><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Severe Symptoms (Emergency Signs)</h5>
-            <p class="text-danger">⚠️ If you have ANY of these symptoms, seek immediate medical attention!</p>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="severe-symptom">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="confusion" 
-                                   {% if today_log.confusion %}checked{% endif %}>
-                            <label class="form-check-label fw-bold">
-                                Confusion or altered mental state
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="severe-symptom">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="difficulty_walking" 
-                                   {% if today_log.difficulty_walking %}checked{% endif %}>
-                            <label class="form-check-label fw-bold">
-                                Difficulty walking or loss of coordination
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="severe-symptom">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="shortness_of_breath_at_rest" 
-                                   {% if today_log.shortness_of_breath_at_rest %}checked{% endif %}>
-                            <label class="form-check-label fw-bold">
-                                Shortness of breath at rest
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="severe-symptom">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="chest_tightness" 
-                                   {% if today_log.chest_tightness %}checked{% endif %}>
-                            <label class="form-check-label fw-bold">
-                                Chest tightness or pain
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="severe-symptom">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="coughing_blood" 
-                           {% if today_log.coughing_blood %}checked{% endif %}>
-                    <label class="form-check-label fw-bold text-danger">
-                        Coughing up blood or pink frothy sputum
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vitals -->
-        <div class="symptom-card">
-            <h5><i class="fas fa-heartbeat me-2 text-info"></i>Vital Signs (Optional)</h5>
-            <div class="vitals-input">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Oxygen Saturation (SpO2 %)</label>
-                        <input type="number" class="form-control" name="oxygen_saturation" 
-                               value="{{ today_log.oxygen_saturation|default:'' }}" min="70" max="100">
-                        <small class="text-muted">Use pulse oximeter if available (Normal: 95-100%)</small>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Heart Rate (BPM)</label>
-                        <input type="number" class="form-control" name="heart_rate" 
-                               value="{{ today_log.heart_rate|default:'' }}" min="40" max="200">
-                        <small class="text-muted">Resting heart rate (Normal: 60-100 BPM)</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Notes -->
-        <div class="symptom-card">
-            <h5><i class="fas fa-sticky-note me-2 text-secondary"></i>Additional Notes</h5>
-            <textarea class="form-control" name="notes" rows="3" 
-                      placeholder="Any additional symptoms, observations, or notes about how you're feeling...">{{ today_log.notes|default:'' }}</textarea>
-        </div>
-
-        <!-- Submit -->
-        <div class="text-center">
-            <button type="submit" class="submit-btn">
-                <i class="fas fa-check me-2"></i>Log Symptoms & Get Recommendation
-            </button>
-        </div>
-    </form>
+  </form>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle radio button styling
-    document.querySelectorAll('.scale-option').forEach(function(option) {
-        option.addEventListener('click', function() {
-            const input = this.querySelector('input[type="radio"]');
-            const name = input.name;
-            
-            // Remove selected class from all options in this group
-            document.querySelectorAll(`input[name="${name}"]`).forEach(function(radio) {
-                radio.closest('.scale-option').classList.remove('selected');
-            });
-            
-            // Add selected class to clicked option
-            this.classList.add('selected');
-            input.checked = true;
-        });
-    });
-    
-    // Set initial selected states
-    document.querySelectorAll('input[type="radio"]:checked').forEach(function(radio) {
-        radio.closest('.scale-option').classList.add('selected');
-    });
-    
-    // Severe symptom warnings
-    document.querySelectorAll('input[name="confusion"], input[name="difficulty_walking"], input[name="shortness_of_breath_at_rest"], input[name="chest_tightness"], input[name="coughing_blood"]').forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                alert('⚠️ WARNING: This is a severe symptom that requires immediate medical attention and descent!');
-            }
-        });
-    });
+const SYMPTOMS = [
+  { key:'headache',         name:'Headache',           emoji:'🤕', desc:'Do you have a headache right now?' },
+  { key:'nausea',           name:'Nausea / Vomiting',  emoji:'🤢', desc:'Feeling nauseous or have you vomited?' },
+  { key:'fatigue',          name:'Fatigue / Weakness', emoji:'😴', desc:'Are you unusually tired or weak?' },
+  { key:'dizziness',        name:'Dizziness',          emoji:'💫', desc:'Feeling dizzy or lightheaded?' },
+  { key:'sleep_difficulty', name:'Sleep Difficulty',   emoji:'🌙', desc:'Did you have trouble sleeping last night?' },
+  { key:'appetite_loss',    name:'Loss of Appetite',   emoji:'🍽️', desc:'Have you lost your appetite?' },
+];
+let currentSym = 0;
+let symValues = {};
+SYMPTOMS.forEach(s => { symValues[s.key] = parseInt(document.getElementById('val-'+s.key).value)||0; });
+
+function setAlt(v){ document.getElementById('altInput').value = v; }
+
+function goStep(n, fromBack){
+  document.querySelectorAll('.wizard-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  for(let i=1;i<=4;i++){
+    const p=document.getElementById('prog-'+i);
+    p.classList.remove('active','done');
+    if(i<n) p.classList.add('done'); else if(i===n) p.classList.add('active');
+  }
+  if(n===2){ currentSym = fromBack ? 5 : 0; renderSymptom(); }
+  if(n===4) updateResult();
+}
+
+function renderSymptom(){
+  const s=SYMPTOMS[currentSym];
+  document.getElementById('sym-counter').textContent='Symptom '+(currentSym+1)+' of '+SYMPTOMS.length;
+  document.getElementById('sym-emoji').textContent=s.emoji;
+  document.getElementById('sym-name').textContent=s.name;
+  document.getElementById('sym-desc').textContent=s.desc;
+  const val=symValues[s.key];
+  document.querySelectorAll('.scale-btn').forEach(btn=>{
+    btn.classList.remove('active');
+    if(parseInt(btn.dataset.val)===val) btn.classList.add('active');
+  });
+  document.getElementById('btn-sym-next').textContent=currentSym<SYMPTOMS.length-1?'Next →':'Continue →';
+  updateScoreBar();
+}
+
+function pickSymptom(val){
+  const s=SYMPTOMS[currentSym];
+  symValues[s.key]=val;
+  document.getElementById('val-'+s.key).value=val;
+  document.querySelectorAll('.scale-btn').forEach(btn=>{
+    btn.classList.remove('active');
+    if(parseInt(btn.dataset.val)===val) btn.classList.add('active');
+  });
+  updateScoreBar();
+  setTimeout(()=>{ if(currentSym<SYMPTOMS.length-1){ currentSym++; renderSymptom(); } }, 400);
+}
+
+function nextSymptom(){
+  if(currentSym<SYMPTOMS.length-1){ currentSym++; renderSymptom(); } else { goStep(3); }
+}
+
+function getAmsScore(){ return Object.values(symValues).reduce((a,b)=>a+b,0); }
+
+function updateScoreBar(){
+  const score=getAmsScore(), pct=(score/18)*100;
+  const fill=document.getElementById('score-fill');
+  fill.style.width=pct+'%';
+  fill.style.background=score<=3?'#28a745':score<=8?'#ffc107':score<=12?'#fd7e14':'#dc3545';
+  document.getElementById('score-num').innerHTML=score+'<span style="font-size:12px;color:#aaa;">/18</span>';
+}
+
+function updateResult(){
+  const score=getAmsScore();
+  const hasSevere=['confusion','diff_walk','sob','chest','cough_blood']
+    .some(id=>{ const el=document.getElementById(id); return el&&el.checked; });
+  const panel=document.getElementById('result-panel');
+  const icon=document.getElementById('result-icon');
+  const action=document.getElementById('result-action');
+  const msg=document.getElementById('result-msg');
+  panel.className='result-panel';
+  if(hasSevere){
+    panel.classList.add('severe'); icon.textContent='🆘';
+    action.textContent='Descend Immediately';
+    msg.textContent='Severe warning signs detected. Descend 300–500m immediately and seek emergency medical help.';
+  } else if(score>=13){
+    panel.classList.add('severe'); icon.textContent='🚨';
+    action.textContent='Descend Now';
+    msg.textContent='Severe AMS (score '+score+'/18). Do not ascend. Descend immediately if symptoms worsen.';
+  } else if(score>=9){
+    panel.classList.add('moderate'); icon.textContent='⚠️';
+    action.textContent='Rest & Monitor';
+    msg.textContent='Moderate AMS (score '+score+'/18). Stop ascending. Rest 24–48 hours. Descend if no improvement.';
+  } else if(score>=4){
+    panel.classList.add('mild'); icon.textContent='🟡';
+    action.textContent='Take It Easy';
+    msg.textContent='Mild AMS (score '+score+'/18). Rest, hydrate, avoid alcohol. Do not ascend until symptoms resolve.';
+  } else {
+    panel.classList.add('safe'); icon.textContent='✅';
+    action.textContent="You're Doing Well";
+    msg.textContent='No significant AMS symptoms (score '+score+'/18). Stay hydrated and keep monitoring daily.';
+  }
+}
+
+function toggleOptional(){
+  const sec=document.getElementById('optional-section');
+  const txt=document.getElementById('opt-toggle-text');
+  const vis=sec.style.display==='block';
+  sec.style.display=vis?'none':'block';
+  txt.textContent=vis?'+ Add vitals & notes (optional)':'− Hide vitals & notes';
+}
+
+document.querySelectorAll('.severe-item input[type=checkbox]').forEach(cb=>{
+  cb.addEventListener('change',function(){
+    this.closest('.severe-item').classList.toggle('checked',this.checked);
+    const any=document.querySelectorAll('.severe-item input:checked').length>0;
+    document.getElementById('severe-alert').style.display=any?'block':'none';
+  });
 });
+
+updateScoreBar();
 </script>
 {% endblock %}
