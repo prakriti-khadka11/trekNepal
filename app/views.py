@@ -175,10 +175,14 @@ def khalti_initiate_trekking(request):
         "Content-Type": "application/json",
     }
 
+    # Khalti test mode cap: max Rs.1000 (100000 paisa)
+    raw_paisa = int(booking_data["total_price"] * 100)
+    amount_paisa = min(raw_paisa, 100000) if settings.DEBUG else raw_paisa
+
     payload = {
         "return_url": request.build_absolute_uri("/khalti/verify/trekking/"),
         "website_url": request.build_absolute_uri("/"),
-        "amount": int(booking_data["total_price"] * 100),  # paisa
+        "amount": amount_paisa,
         "purchase_order_id": f"trek_{trek.id}",
         "purchase_order_name": trek.title,
     }
@@ -223,15 +227,26 @@ def khalti_verify_trekking(request):
         booking_data = request.session.get('pending_trekking_booking')
         if booking_data:
             trek = get_object_or_404(Trekking, slug=booking_data["trek_slug"])
-            
-            # Create a TravelPackage-like booking for trekking
-            # We'll use the existing Booking model but link it differently
-            # Note: You might want to create a separate TrekkingBooking model in the future
-            
-            # For now, we'll create a message for the user
-            messages.success(request, f"Trekking booking for {trek.title} confirmed! Payment successful.")
-            
-            # Clear session
+
+            booking = Booking.objects.create(
+                user=request.user,
+                travel_package=None,
+                trekking=trek,
+                trek_date=booking_data["trek_date"],
+                num_people=booking_data["num_people"],
+                travel_date=booking_data["trek_date"],
+                total_price=booking_data["total_price"],
+                status="PAID",
+                khalti_pidx=pidx,
+            )
+
+            # Send confirmation email (safe for trek bookings)
+            try:
+                send_booking_email(booking)
+            except Exception:
+                pass  # Don't block redirect if email fails
+
+            messages.success(request, f"Trekking booking for {trek.title} confirmed!")
             del request.session['pending_trekking_booking']
 
     return redirect("my_bookings")
@@ -251,10 +266,14 @@ def khalti_initiate_peak(request):
         "Content-Type": "application/json",
     }
 
+    # Khalti test mode cap: max Rs.1000 (100000 paisa)
+    raw_paisa = int(booking_data["total_price"] * 100)
+    amount_paisa = min(raw_paisa, 100000) if settings.DEBUG else raw_paisa
+
     payload = {
         "return_url": request.build_absolute_uri("/khalti/verify/peak/"),
         "website_url": request.build_absolute_uri("/"),
-        "amount": int(booking_data["total_price"] * 100),  # paisa
+        "amount": amount_paisa,
         "purchase_order_id": f"peak_{peak.id}",
         "purchase_order_name": peak.title,
     }
@@ -398,7 +417,7 @@ def booking_receipt(request, booking_id):
         'customer_email': booking.user.email,
         'travel_date': booking.travel_date,
         'num_people': booking.num_people,
-        'package_title': booking.travel_package.title,
+        'package_title': booking.travel_package.title if booking.travel_package else (booking.trekking.title if booking.trekking else f'Booking #{booking.id}'),
         'destination': f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}",
         'hotel': dynamic_details['hotel'],
         'accommodation': dynamic_details['accommodation'],
@@ -1084,10 +1103,14 @@ def khalti_initiate_temp(request):
         "Content-Type": "application/json",
     }
 
+    # Khalti test mode cap: max Rs.1000 (100000 paisa)
+    raw_paisa = int(booking_data["total_price"] * 100)
+    amount_paisa = min(raw_paisa, 100000) if settings.DEBUG else raw_paisa
+
     payload = {
         "return_url": request.build_absolute_uri("/khalti/verify/"),
         "website_url": request.build_absolute_uri("/"),
-        "amount": int(booking_data["total_price"] * 100),  # paisa
+        "amount": amount_paisa,
         "purchase_order_id": "temp",
         "purchase_order_name": travel_package.title,
     }
@@ -1158,3 +1181,335 @@ def khalti_verify(request):
 
     return redirect("my_bookings")
 
+
+# --- Packing List Generator ---
+
+def _infer_trek_meta(pkg):
+    """Infer trek_type, accommodation from package title/location."""
+    title_low = pkg.title.lower()
+    location  = (pkg.destination.location or '').lower() if pkg.destination else ''
+    if any(w in title_low or w in location for w in ['peak','climbing','summit','everest','lhotse','ama dablam']):
+        trek_type = 'peak_climbing'
+    elif any(w in title_low or w in location for w in ['high altitude','ebc','base camp','manaslu','kanchenjunga','dolpo']):
+        trek_type = 'high_altitude'
+    elif any(w in title_low or w in location for w in ['moderate','annapurna','langtang','circuit']):
+        trek_type = 'moderate'
+    else:
+        trek_type = 'easy'
+    accommodation = 'camping' if any(w in title_low for w in ['camping','camp','expedition']) else 'teahouse'
+    return trek_type, accommodation
+
+
+def _infer_season(travel_date):
+    m = travel_date.month
+    if m in [3, 4, 5]:   return 'spring'
+    if m in [6, 7, 8]:   return 'monsoon'
+    if m in [9, 10, 11]: return 'autumn'
+    return 'winter'
+
+
+# Base item catalogue  {category: [(name, priority, per_person, notes), ...]}
+BASE_ITEMS = {
+    'clothing': [
+        ('Moisture-wicking base layer (top)',    'essential',    True,  '1 per person'),
+        ('Trekking pants / convertible pants',   'essential',    True,  '2 pairs recommended'),
+        ('Fleece jacket or mid-layer',           'essential',    True,  ''),
+        ('Waterproof rain jacket',               'essential',    True,  'Hardshell preferred'),
+        ('Trekking socks',                       'essential',    True,  '3–5 pairs per person'),
+        ('Quick-dry underwear',                  'essential',    True,  '3 pairs per person'),
+        ('Sun hat / cap',                        'essential',    True,  ''),
+        ('Buff / neck gaiter',                   'recommended',  True,  ''),
+        ('Light gloves',                         'recommended',  True,  ''),
+    ],
+    'footwear': [
+        ('Trekking boots (broken in)',           'essential',    True,  'Waterproof, ankle support'),
+        ('Camp sandals / flip flops',            'recommended',  True,  ''),
+        ('Gaiters',                              'optional',     True,  'For muddy/snowy trails'),
+    ],
+    'gear': [
+        ('Trekking poles',                       'recommended',  True,  'Collapsible, pair'),
+        ('Headlamp + extra batteries',           'essential',    True,  ''),
+        ('Daypack (20–30L)',                     'essential',    True,  'Per person'),
+        ('Sleeping bag liner',                   'recommended',  False, 'Shared or individual'),
+        ('Dry bags / waterproof stuff sacks',    'recommended',  False, 'For electronics & documents'),
+        ('Trekking map / compass',               'recommended',  False, ''),
+    ],
+    'health': [
+        ('Personal first aid kit',               'essential',    False, 'Bandages, antiseptic, blister pads'),
+        ('Altitude sickness medication (Diamox)','recommended',  True,  'Consult doctor before use'),
+        ('Sunscreen SPF 50+',                    'essential',    True,  'Reapply every 2 hrs'),
+        ('Lip balm with SPF',                    'essential',    True,  ''),
+        ('Insect repellent',                     'recommended',  True,  ''),
+        ('Hand sanitizer',                       'essential',    False, ''),
+        ('Water purification tablets / filter',  'essential',    False, ''),
+        ('Pain relievers (ibuprofen/paracetamol)','essential',   True,  ''),
+        ('Oral rehydration salts',               'recommended',  True,  ''),
+        ('Blister treatment kit',                'essential',    True,  'Moleskin, needle, antiseptic'),
+    ],
+    'documents': [
+        ('Passport (valid 6+ months)',           'essential',    True,  'Original + photocopy'),
+        ('Trekking permits (TIMS, ACAP, etc.)',  'essential',    True,  'Check required permits'),
+        ('Travel insurance documents',           'essential',    True,  'With emergency evacuation cover'),
+        ('Emergency contact card',               'essential',    True,  'Laminated copy'),
+        ('Cash (NPR) — ATMs rare on trail',      'essential',    True,  'Carry sufficient cash'),
+        ('Booking confirmation printout',        'essential',    False, ''),
+    ],
+    'food_water': [
+        ('Water bottles (2L total capacity)',    'essential',    True,  'Hydration bladder or bottles'),
+        ('Energy bars / trail snacks',           'essential',    True,  'For between meals'),
+        ('Electrolyte sachets',                  'recommended',  True,  ''),
+    ],
+    'electronics': [
+        ('Phone + charger',                      'essential',    True,  ''),
+        ('Power bank (10,000+ mAh)',             'essential',    False, 'Shared or per person'),
+        ('Camera',                               'optional',     True,  ''),
+        ('Universal adapter',                    'recommended',  False, ''),
+    ],
+}
+
+COLD_ITEMS = {
+    'clothing': [
+        ('Down jacket / heavy insulation',       'essential',    True,  '-10°C rated minimum'),
+        ('Thermal base layer (bottom)',          'essential',    True,  'Wool or synthetic'),
+        ('Insulated gloves + liner gloves',      'essential',    True,  'Layered system'),
+        ('Wool beanie',                          'essential',    True,  ''),
+        ('Balaclava',                            'essential',    True,  ''),
+        ('Thermal socks (extra pairs)',          'essential',    True,  ''),
+    ],
+    'gear': [
+        ('4-season sleeping bag (-10°C rated)',  'essential',    True,  'Check temperature rating'),
+        ('Hand warmers (10+ pairs)',             'essential',    False, 'Chemical heat packs'),
+        ('Insulated water bottle',               'recommended',  True,  'Prevents freezing'),
+    ],
+}
+
+CAMPING_ITEMS = {
+    'camping': [
+        ('Tent (4-season)',                      'essential',    False, 'Check if provided'),
+        ('Sleeping mat / insulated pad',         'essential',    True,  'R-value 4+ for cold ground'),
+        ('Cooking stove + fuel canisters',       'essential',    False, 'Check fuel availability'),
+        ('Lightweight cookset',                  'essential',    False, 'Pot, pan, lid'),
+        ('Spork / utensils',                     'essential',    True,  ''),
+        ('Biodegradable soap',                   'essential',    False, ''),
+        ('Trowel (for waste)',                   'recommended',  False, 'Leave no trace'),
+    ],
+}
+
+PEAK_ITEMS = {
+    'climbing': [
+        ('Climbing harness',                     'essential',    True,  'Properly fitted'),
+        ('Crampons (12-point)',                  'essential',    True,  'Compatible with boots'),
+        ('Ice axe',                              'essential',    True,  'Correct length for height'),
+        ('Climbing helmet',                      'essential',    True,  'CE/UIAA certified'),
+        ('Carabiners + slings (set)',            'essential',    True,  ''),
+        ('High-altitude double boots',           'essential',    True,  'Insulated, crampon-compatible'),
+        ('Ascender / jumar',                     'recommended',  True,  ''),
+        ('Rappel device (ATC/GriGri)',           'essential',    True,  ''),
+        ('Fixed rope (check if provided)',       'recommended',  False, ''),
+    ],
+}
+
+MONSOON_ITEMS = {
+    'seasonal': [
+        ('Waterproof pack cover',                'essential',    True,  'Fits your pack size'),
+        ('Waterproof dry sacks (set)',           'essential',    False, 'For electronics & clothes'),
+        ('Extra dry socks (sealed bags)',        'essential',    True,  '3+ extra pairs'),
+        ('Leech socks',                          'essential',    True,  'High-top style'),
+        ('Umbrella (lightweight)',               'recommended',  True,  ''),
+        ('Quick-dry towel',                      'recommended',  True,  ''),
+    ],
+}
+
+LONG_TREK_ITEMS = {
+    'gear': [
+        ('Travel laundry soap / sheets',        'recommended',  False, ''),
+        ('Clothesline + pegs',                  'optional',     False, ''),
+        ('Journal / notebook',                  'optional',     True,  ''),
+        ('Extra memory cards',                  'optional',     True,  ''),
+    ],
+    'health': [
+        ('Antifungal powder / cream',           'recommended',  True,  'For long treks'),
+        ('Nail clippers',                       'recommended',  True,  ''),
+        ('Moleskin (extra supply)',             'essential',    True,  ''),
+    ],
+}
+
+
+def _build_item_list(trek_type, season, accommodation, duration):
+    """Return list of (category, name, priority, per_person, notes, source) tuples."""
+    import copy
+    catalogue = copy.deepcopy(BASE_ITEMS)
+
+    def merge(extra):
+        for cat, items in extra.items():
+            catalogue.setdefault(cat, [])
+            catalogue[cat].extend(items)
+
+    if season == 'winter' or trek_type in ('high_altitude', 'peak_climbing'):
+        merge(COLD_ITEMS)
+    if accommodation == 'camping':
+        merge(CAMPING_ITEMS)
+    if trek_type == 'peak_climbing':
+        merge(PEAK_ITEMS)
+    if season == 'monsoon':
+        merge(MONSOON_ITEMS)
+    if duration >= 8:
+        merge(LONG_TREK_ITEMS)
+
+    rows = []
+    for cat, items in catalogue.items():
+        for item in items:
+            rows.append((cat, item[0], item[1], item[2], item[3], 'rule'))
+    return rows
+
+
+def _get_ai_items(dest_name, season, trek_type, travel_date_str, num_people, duration):
+    """Ask Gemini for destination-specific packing items. Returns list of dicts."""
+    try:
+        import urllib.request, json, re
+        api_key = settings.GEMINI_API_KEY
+        url = (
+            "https://generativelanguage.googleapis.com/v1beta/models/"
+            f"gemini-2.0-flash:generateContent?key={api_key}"
+        )
+        prompt = (
+            f"You are a Nepal trekking expert. A group of {num_people} traveler(s) is going to "
+            f"{dest_name}, Nepal. Travel date: {travel_date_str}. Season: {season}. "
+            f"Trek type: {trek_type.replace('_',' ')}. Duration: {duration} days.\n\n"
+            f"Return a JSON object with two keys:\n"
+            f"1. 'summary': a 2-sentence natural trip advisory (mention season conditions, key preparation tip).\n"
+            f"2. 'items': a list of up to 8 destination-specific packing items NOT in a standard list. "
+            f"Each item: {{\"name\": \"...\", \"priority\": \"essential|recommended|optional\", \"notes\": \"brief reason\"}}.\n"
+            f"Respond ONLY with valid JSON. No markdown."
+        )
+        payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode('utf-8')
+        req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read().decode('utf-8'))
+        text = result['candidates'][0]['content']['parts'][0]['text'].strip()
+        text = re.sub(r'^```[a-z]*\n?', '', text)
+        text = re.sub(r'\n?```$', '', text)
+        data = json.loads(text)
+        return data.get('summary', ''), data.get('items', [])
+    except Exception:
+        return '', []
+
+
+def _generate_packing_list(booking):
+    """Create or regenerate PackingList + PackingItems for a booking."""
+    from .models import PackingList, PackingItem
+    pkg = booking.travel_package
+    trek_type, accommodation = _infer_trek_meta(pkg)
+    season = _infer_season(booking.travel_date)
+    duration = pkg.duration or 7
+    dest_name = pkg.destination.name
+    travel_date_str = booking.travel_date.strftime('%B %d, %Y')
+
+    # Delete existing and recreate
+    PackingList.objects.filter(booking=booking).delete()
+    pl = PackingList.objects.create(
+        booking=booking,
+        trek_type=trek_type,
+        season=season,
+        accommodation=accommodation,
+    )
+
+    # Rule-based items
+    rows = _build_item_list(trek_type, season, accommodation, duration)
+    items_to_create = [
+        PackingItem(
+            packing_list=pl,
+            category=cat,
+            name=name,
+            priority=priority,
+            quantity=1,
+            per_person=per_person,
+            notes=notes,
+            source='rule',
+        )
+        for cat, name, priority, per_person, notes, _ in rows
+    ]
+    PackingItem.objects.bulk_create(items_to_create)
+
+    # AI destination-specific items
+    summary, ai_items = _get_ai_items(
+        dest_name, season, trek_type, travel_date_str,
+        booking.num_people, duration
+    )
+    pl.ai_summary = summary
+    pl.save(update_fields=['ai_summary'])
+
+    for ai in ai_items:
+        PackingItem.objects.create(
+            packing_list=pl,
+            category='destination',
+            name=ai.get('name', ''),
+            priority=ai.get('priority', 'recommended'),
+            quantity=1,
+            per_person=False,
+            notes=ai.get('notes', ''),
+            source='ai',
+        )
+
+    return pl
+
+
+@login_required(login_url='login')
+def packing_list(request):
+    from datetime import date
+    from .models import PackingList, PackingItem
+
+    today = date.today()
+
+    # Only upcoming PAID bookings
+    bookings = Booking.objects.filter(
+        user=request.user,
+        status='PAID',
+        travel_date__gte=today,
+    ).select_related('travel_package', 'travel_package__destination').order_by('travel_date')
+
+    booking_data = []
+    for b in bookings:
+        if not b.travel_package or not b.travel_package.destination:
+            continue
+
+        # Regenerate if requested
+        if request.GET.get('regen') == str(b.id):
+            pl = _generate_packing_list(b)
+        else:
+            try:
+                pl = b.packing_list
+            except PackingList.DoesNotExist:
+                pl = _generate_packing_list(b)
+
+        # Group items by category
+        items_qs = pl.items.all()
+        categories = {}
+        for item in items_qs:
+            categories.setdefault(item.category, []).append(item)
+
+        days_until = (b.travel_date - today).days
+
+        booking_data.append({
+            'booking': b,
+            'pl': pl,
+            'dest_name': b.travel_package.destination.name,
+            'pkg_title': b.travel_package.title,
+            'duration': b.travel_package.duration or 7,
+            'trek_type': pl.trek_type,
+            'season': pl.season,
+            'accommodation': pl.accommodation,
+            'days_until': days_until,
+            'categories': categories,
+            'total_items': items_qs.count(),
+            'ai_summary': pl.ai_summary,
+        })
+
+    return render(request, 'packing_list.html', {'booking_data': booking_data})
+
+
+# --- Trek Fitness Matcher ---
+@login_required(login_url='login')
+def trek_matcher(request):
+    treks = Trekking.objects.filter(is_active=True)
+    return render(request, 'trek_matcher.html', {'treks': treks})

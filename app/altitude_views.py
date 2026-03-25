@@ -183,11 +183,27 @@ def symptom_checker(request):
         user=request.user,
         date=timezone.now().date()
     ).first()
-    
+
+    # Active acclimatization plans for dynamic altitude suggestions
+    active_plans = AcclimatizationPlan.objects.filter(
+        user=request.user, is_active=True
+    ).order_by('trek_name')
+
+    # User's upcoming trekking bookings for context
+    from .models import Booking, Trekking
+    from datetime import date as date_cls
+    trek_bookings = Booking.objects.filter(
+        user=request.user,
+        status='PAID',
+        travel_date__gte=date_cls.today(),
+    ).select_related('trekking', 'travel_package__destination').order_by('travel_date')[:5]
+
     context = {
-        'today_log': today_log
+        'today_log': today_log,
+        'active_plans': active_plans,
+        'trek_bookings': trek_bookings,
     }
-    
+
     return render(request, 'altitude/symptom_checker.html', context)
 
 @login_required

@@ -69,7 +69,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0">Price</h6>
-                                        <p class="text-muted mb-0">${{ travel_package.price }} per person</p>
+                                        <p class="text-muted mb-0">Rs. {{ travel_package.price }} per person</p>
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +232,7 @@
                     <div class="card-body">
                         <h3 class="card-title mb-4">Book This Package</h3>
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="text-primary mb-0">${{ travel_package.price }}</h4>
+                            <h4 class="text-primary mb-0">Rs. {{ travel_package.price }}</h4>
                             <span class="text-muted">per person</span>
                         </div>
                         <form method="post" action="{% url 'book_travel' travel_package.id %}">

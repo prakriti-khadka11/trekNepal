@@ -403,6 +403,32 @@
     .message.user .message-content strong {
         color: rgba(255, 255, 255, 0.95);
     }
+
+    .followup-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .followup-chip {
+        background: #f0f0ff;
+        border: 1px solid #c7d2fe;
+        color: #4f46e5;
+        padding: 5px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .followup-chip:hover {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        border-color: #4f46e5;
+        transform: translateY(-1px);
+    }
 </style>
 {% endblock %}
 
@@ -555,8 +581,8 @@ class TrekNepalChatbot {
             this.hideTyping();
             
             if (data.success) {
-                // Add bot response
-                this.addMessage(data.response, 'bot');
+                // Add bot response with follow-up chips
+                this.addMessage(data.response, 'bot', data.followups || []);
             } else {
                 // Show error message
                 this.addErrorMessage(data.error || 'Sorry, something went wrong. Please try again.');
@@ -572,7 +598,7 @@ class TrekNepalChatbot {
         this.messageInput.focus();
     }
     
-    addMessage(text, sender) {
+    addMessage(text, sender, followups = []) {
         this.messageCount++;
         
         const messageDiv = document.createElement('div');
@@ -600,7 +626,21 @@ class TrekNepalChatbot {
         
         content.appendChild(messageText);
         content.appendChild(timestamp);
-        
+
+        // Follow-up chips (bot only)
+        if (sender === 'bot' && followups.length > 0) {
+            const chipsDiv = document.createElement('div');
+            chipsDiv.className = 'followup-chips';
+            followups.forEach(chip => {
+                const btn = document.createElement('button');
+                btn.className = 'followup-chip';
+                btn.textContent = chip;
+                btn.onclick = () => sendSuggestion(chip);
+                chipsDiv.appendChild(btn);
+            });
+            content.appendChild(chipsDiv);
+        }
+
         messageDiv.appendChild(avatar);
         messageDiv.appendChild(content);
         

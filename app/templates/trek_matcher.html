@@ -1,0 +1,597 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Trek Fitness Matcher — TrekNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+:root { --p1:#11998e; --p2:#38ef7d; --purple:#764ba2; --purple2:#667eea; }
+
+.tm-page { background:#f0f4f8; min-height:100vh; padding:36px 0 80px; }
+
+/* Hero */
+.tm-hero {
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  border-radius:20px; padding:40px 48px; color:#fff;
+  margin-bottom:32px; position:relative; overflow:hidden;
+}
+.tm-hero::after {
+  content:'🧭'; font-size:160px; position:absolute;
+  right:20px; top:-10px; opacity:.06; pointer-events:none; line-height:1;
+}
+.tm-hero h1 { font-size:24px; font-weight:800; margin:0 0 6px; }
+.tm-hero p  { opacity:.7; margin:0; font-size:14px; }
+.tm-hero-actions { margin-top:18px; display:flex; gap:10px; align-items:center; }
+.tm-hero-actions a {
+  background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3);
+  padding:7px 16px; border-radius:8px; font-size:13px; font-weight:600;
+  text-decoration:none; transition:background .18s;
+}
+.tm-hero-actions a:hover { background:rgba(255,255,255,.25); color:#fff; }
+
+/* Step indicator */
+.step-bar {
+  display:flex; align-items:center; gap:0; margin-bottom:28px;
+  background:#fff; border-radius:14px; padding:16px 24px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+.step-item {
+  display:flex; align-items:center; gap:8px; flex:1;
+  font-size:12px; font-weight:600; color:#bbb; transition:color .3s;
+}
+.step-item.active { color:var(--p1); }
+.step-item.done   { color:#28a745; }
+.step-dot {
+  width:28px; height:28px; border-radius:50%; border:2px solid #dee2e6;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:800; flex-shrink:0; transition:all .3s;
+  background:#fff; color:#bbb;
+}
+.step-item.active .step-dot { border-color:var(--p1); color:var(--p1); background:#f0fdf9; }
+.step-item.done   .step-dot { border-color:#28a745; background:#28a745; color:#fff; }
+.step-connector { flex:1; height:2px; background:#e9ecef; margin:0 8px; max-width:40px; }
+.step-connector.done { background:#28a745; }
+
+/* Question card */
+.q-card {
+  background:#fff; border-radius:18px; padding:32px 36px;
+  box-shadow:0 4px 20px rgba(0,0,0,.07); display:none;
+  animation:fadeSlide .3s ease;
+}
+.q-card.active { display:block; }
+@keyframes fadeSlide {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.q-number { font-size:11px; font-weight:800; text-transform:uppercase;
+  letter-spacing:1px; color:var(--p1); margin-bottom:8px; }
+.q-title  { font-size:20px; font-weight:800; color:#1a1a2e; margin-bottom:6px; }
+.q-sub    { font-size:13px; color:#888; margin-bottom:24px; }
+
+/* Option grid */
+.opt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+.opt-btn {
+  padding:16px 18px; border-radius:14px; border:2px solid #e9ecef;
+  background:#fff; cursor:pointer; text-align:left; transition:all .18s;
+  display:flex; flex-direction:column; gap:4px;
+}
+.opt-btn:hover { border-color:var(--p1); background:#f0fdf9; transform:translateY(-1px); }
+.opt-btn.selected { border-color:var(--p1); background:linear-gradient(135deg,#f0fdf9,#e8f5e9); }
+.opt-btn.selected .opt-icon { transform:scale(1.1); }
+.opt-icon { font-size:28px; line-height:1; margin-bottom:4px; }
+.opt-label { font-size:14px; font-weight:700; color:#1a1a2e; }
+.opt-sub   { font-size:11px; color:#aaa; font-weight:400; }
+.opt-btn.selected .opt-label { color:var(--p1); }
+
+/* Nav buttons */
+.q-nav { display:flex; justify-content:space-between; align-items:center; margin-top:28px; }
+.nav-btn {
+  padding:11px 28px; border-radius:12px; font-size:14px; font-weight:700;
+  cursor:pointer; border:2px solid #dee2e6; background:#fff; color:#555;
+  transition:all .18s;
+}
+.nav-btn:hover { border-color:var(--p1); color:var(--p1); }
+.nav-btn.primary {
+  background:linear-gradient(135deg,var(--p1),var(--p2));
+  border-color:transparent; color:#fff;
+}
+.nav-btn.primary:hover { opacity:.9; }
+.nav-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+/* Results */
+#result-section { display:none; animation:fadeSlide .4s ease; }
+
+.result-hero {
+  background:linear-gradient(135deg,var(--p1),var(--p2));
+  border-radius:18px; padding:28px 36px; color:#fff;
+  margin-bottom:24px; display:flex; justify-content:space-between;
+  align-items:center; flex-wrap:wrap; gap:16px;
+}
+.result-hero h3 { font-size:20px; font-weight:800; margin:0 0 4px; }
+.result-hero p  { opacity:.85; margin:0; font-size:13px; }
+.result-hero-actions { display:flex; gap:10px; }
+.retry-btn {
+  background:rgba(255,255,255,.2); color:#fff; border:1px solid rgba(255,255,255,.4);
+  padding:9px 20px; border-radius:10px; font-size:13px; font-weight:700;
+  cursor:pointer; transition:background .18s;
+}
+.retry-btn:hover { background:rgba(255,255,255,.3); }
+
+/* Match cards */
+.match-card {
+  background:#fff; border-radius:16px; overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.07); margin-bottom:16px;
+  display:flex; transition:transform .2s, box-shadow .2s;
+  border:2px solid transparent;
+}
+.match-card:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,0,0,.12); }
+.match-card.top-pick { border-color:var(--p1); }
+
+.match-score-col {
+  width:88px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; flex-shrink:0; gap:4px;
+  padding:16px 8px;
+}
+.score-ring {
+  width:52px; height:52px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:800; color:#fff;
+}
+.score-ring.great { background:linear-gradient(135deg,#11998e,#38ef7d); }
+.score-ring.good  { background:linear-gradient(135deg,#f7971e,#ffd200); }
+.score-ring.ok    { background:linear-gradient(135deg,#868f96,#596164); }
+.score-label { font-size:10px; font-weight:700; text-align:center; color:#888; }
+
+.match-body { padding:18px 20px; flex:1; border-left:1px solid #f5f5f5; }
+.match-rank { font-size:10px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.5px; color:var(--p1); margin-bottom:4px; }
+.match-title { font-size:16px; font-weight:800; color:#1a1a2e; margin-bottom:4px; }
+.match-meta  { font-size:12px; color:#888; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:12px; }
+.match-meta span { display:flex; align-items:center; gap:4px; }
+.match-tags  { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.match-tag {
+  font-size:11px; padding:3px 10px; border-radius:20px; font-weight:600;
+}
+.tag-diff-easy     { background:#d4edda; color:#155724; }
+.tag-diff-moderate { background:#fff3cd; color:#856404; }
+.tag-diff-hard     { background:#f8d7da; color:#721c24; }
+.tag-diff-extreme  { background:#d1ecf1; color:#0c5460; }
+.tag-reason        { background:#f0f0ff; color:var(--purple2); }
+.match-actions { display:flex; gap:10px; align-items:center; }
+.view-btn {
+  background:linear-gradient(135deg,var(--p1),var(--p2));
+  color:#fff; padding:8px 18px; border-radius:9px; font-size:13px;
+  font-weight:700; text-decoration:none; transition:opacity .18s;
+}
+.view-btn:hover { opacity:.88; color:#fff; }
+.top-badge {
+  background:linear-gradient(135deg,#f7971e,#ffd200);
+  color:#fff; font-size:10px; font-weight:800; padding:3px 10px;
+  border-radius:20px; text-transform:uppercase; letter-spacing:.5px;
+}
+
+.no-match {
+  text-align:center; padding:60px 20px; background:#fff;
+  border-radius:18px; box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+.no-match .nm-icon { font-size:56px; margin-bottom:12px; }
+
+@media(max-width:768px){
+  .tm-hero { padding:28px 20px; }
+  .q-card  { padding:24px 20px; }
+  .opt-grid { grid-template-columns:1fr 1fr; }
+  .step-bar { padding:12px 16px; }
+  .step-item span { display:none; }
+  .match-card { flex-direction:column; }
+  .match-score-col { width:100%; flex-direction:row; padding:12px 16px; gap:12px; }
+  .match-body { border-left:none; border-top:1px solid #f5f5f5; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tm-page">
+<div class="container" style="max-width:780px;">
+
+  <div class="tm-hero">
+    <h1>🧭 Trek Fitness Matcher</h1>
+    <p>Answer 4 quick questions — we'll score every trek in our database and find your perfect match</p>
+    <div class="tm-hero-actions">
+      <a href="{% url 'trekking_list' %}">Browse All Treks</a>
+    </div>
+  </div>
+
+  <!-- Step bar -->
+  <div class="step-bar" id="step-bar">
+    <div class="step-item active" id="si-0">
+      <div class="step-dot">1</div><span>Fitness</span>
+    </div>
+    <div class="step-connector" id="sc-0"></div>
+    <div class="step-item" id="si-1">
+      <div class="step-dot">2</div><span>Experience</span>
+    </div>
+    <div class="step-connector" id="sc-1"></div>
+    <div class="step-item" id="si-2">
+      <div class="step-dot">3</div><span>Duration</span>
+    </div>
+    <div class="step-connector" id="sc-2"></div>
+    <div class="step-item" id="si-3">
+      <div class="step-dot">4</div><span>Goal</span>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quiz-section">
+
+    <!-- Q1 -->
+    <div class="q-card active" id="q-0">
+      <div class="q-number">Question 1 of 4</div>
+      <div class="q-title">What's your current fitness level?</div>
+      <div class="q-sub">Be honest — this helps us find a trek that's genuinely enjoyable for you</div>
+      <div class="opt-grid">
+        <button class="opt-btn" data-group="fitness" data-val="1" onclick="pick(this,0)">
+          <span class="opt-icon">🛋</span>
+          <span class="opt-label">Beginner</span>
+          <span class="opt-sub">Light walks, not very active</span>
+        </button>
+        <button class="opt-btn" data-group="fitness" data-val="2" onclick="pick(this,0)">
+          <span class="opt-icon">🚶</span>
+          <span class="opt-label">Moderate</span>
+          <span class="opt-sub">Regular walks, occasional hikes</span>
+        </button>
+        <button class="opt-btn" data-group="fitness" data-val="3" onclick="pick(this,0)">
+          <span class="opt-icon">🏃</span>
+          <span class="opt-label">Active</span>
+          <span class="opt-sub">Regular exercise, gym or sports</span>
+        </button>
+        <button class="opt-btn" data-group="fitness" data-val="4" onclick="pick(this,0)">
+          <span class="opt-icon">💪</span>
+          <span class="opt-label">Very Fit</span>
+          <span class="opt-sub">Athlete or serious hiker</span>
+        </button>
+      </div>
+      <div class="q-nav">
+        <span></span>
+        <button class="nav-btn primary" onclick="nextStep(0)" id="next-0" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-card" id="q-1">
+      <div class="q-number">Question 2 of 4</div>
+      <div class="q-title">Any previous trekking experience?</div>
+      <div class="q-sub">This helps us gauge altitude and technical difficulty suitability</div>
+      <div class="opt-grid">
+        <button class="opt-btn" data-group="experience" data-val="1" onclick="pick(this,1)">
+          <span class="opt-icon">🆕</span>
+          <span class="opt-label">None</span>
+          <span class="opt-sub">First time trekking</span>
+        </button>
+        <button class="opt-btn" data-group="experience" data-val="2" onclick="pick(this,1)">
+          <span class="opt-icon">🥾</span>
+          <span class="opt-label">Some</span>
+          <span class="opt-sub">Done 1–2 day hikes</span>
+        </button>
+        <button class="opt-btn" data-group="experience" data-val="3" onclick="pick(this,1)">
+          <span class="opt-icon">🏔</span>
+          <span class="opt-label">Experienced</span>
+          <span class="opt-sub">Multi-day treks completed</span>
+        </button>
+        <button class="opt-btn" data-group="experience" data-val="4" onclick="pick(this,1)">
+          <span class="opt-icon">⛰</span>
+          <span class="opt-label">Expert</span>
+          <span class="opt-sub">High altitude / peak climbs</span>
+        </button>
+      </div>
+      <div class="q-nav">
+        <button class="nav-btn" onclick="prevStep(1)">← Back</button>
+        <button class="nav-btn primary" onclick="nextStep(1)" id="next-1" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-card" id="q-2">
+      <div class="q-number">Question 3 of 4</div>
+      <div class="q-title">How many days can you trek?</div>
+      <div class="q-sub">Including travel days to/from the trailhead</div>
+      <div class="opt-grid">
+        <button class="opt-btn" data-group="days" data-val="1" onclick="pick(this,2)">
+          <span class="opt-icon">⚡</span>
+          <span class="opt-label">1–3 days</span>
+          <span class="opt-sub">Short weekend trip</span>
+        </button>
+        <button class="opt-btn" data-group="days" data-val="2" onclick="pick(this,2)">
+          <span class="opt-icon">📅</span>
+          <span class="opt-label">4–7 days</span>
+          <span class="opt-sub">One week</span>
+        </button>
+        <button class="opt-btn" data-group="days" data-val="3" onclick="pick(this,2)">
+          <span class="opt-icon">🗓</span>
+          <span class="opt-label">8–14 days</span>
+          <span class="opt-sub">Two weeks</span>
+        </button>
+        <button class="opt-btn" data-group="days" data-val="4" onclick="pick(this,2)">
+          <span class="opt-icon">🌍</span>
+          <span class="opt-label">15+ days</span>
+          <span class="opt-sub">Extended expedition</span>
+        </button>
+      </div>
+      <div class="q-nav">
+        <button class="nav-btn" onclick="prevStep(2)">← Back</button>
+        <button class="nav-btn primary" onclick="nextStep(2)" id="next-2" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-card" id="q-3">
+      <div class="q-number">Question 4 of 4</div>
+      <div class="q-title">What's your main goal for this trek?</div>
+      <div class="q-sub">Pick the one that excites you most</div>
+      <div class="opt-grid">
+        <button class="opt-btn" data-group="goal" data-val="scenery" onclick="pick(this,3)">
+          <span class="opt-icon">🌄</span>
+          <span class="opt-label">Scenery & Nature</span>
+          <span class="opt-sub">Stunning views, relaxed pace</span>
+        </button>
+        <button class="opt-btn" data-group="goal" data-val="culture" onclick="pick(this,3)">
+          <span class="opt-icon">🏘</span>
+          <span class="opt-label">Culture & Villages</span>
+          <span class="opt-sub">Local life, temples, people</span>
+        </button>
+        <button class="opt-btn" data-group="goal" data-val="challenge" onclick="pick(this,3)">
+          <span class="opt-icon">🏆</span>
+          <span class="opt-label">Physical Challenge</span>
+          <span class="opt-sub">Push your limits hard</span>
+        </button>
+        <button class="opt-btn" data-group="goal" data-val="summit" onclick="pick(this,3)">
+          <span class="opt-icon">🗻</span>
+          <span class="opt-label">Summit / Peak</span>
+          <span class="opt-sub">Reach a high point</span>
+        </button>
+      </div>
+      <div class="q-nav">
+        <button class="nav-btn" onclick="prevStep(3)">← Back</button>
+        <button class="nav-btn primary" onclick="findMatches()" id="next-3" disabled>Find My Trek 🎯</button>
+      </div>
+    </div>
+
+  </div><!-- /quiz-section -->
+
+  <!-- Results -->
+  <div id="result-section">
+    <div class="result-hero">
+      <div>
+        <h3>🎯 Your Trek Matches</h3>
+        <p id="result-sub"></p>
+      </div>
+      <div class="result-hero-actions">
+        <button class="retry-btn" onclick="resetQuiz()">← Retake Quiz</button>
+      </div>
+    </div>
+    <div id="matches-container"></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const TREKS = [
+  {% for trek in treks %}
+  {
+    id: {{ trek.id }},
+    title: "{{ trek.title|escapejs }}",
+    slug: "{{ trek.slug }}",
+    difficulty: "{{ trek.difficulty|lower|escapejs }}",
+    duration: "{{ trek.duration|escapejs }}",
+    max_altitude: "{{ trek.max_altitude|default:'3000'|escapejs }}",
+    country: "{{ trek.country|escapejs }}",
+    price: "Rs. {{ trek.price }}",
+    url: "{% url 'trekking_detail' trek.slug %}",
+  },
+  {% endfor %}
+];
+
+const selections = {};
+let currentStep = 0;
+
+function pick(btn, step) {
+  const group = btn.dataset.group;
+  document.querySelectorAll('[data-group="' + group + '"]').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selections[group] = btn.dataset.val;
+  document.getElementById('next-' + step).disabled = false;
+}
+
+function nextStep(from) {
+  document.getElementById('q-' + from).classList.remove('active');
+  const to = from + 1;
+  if (to <= 3) {
+    document.getElementById('q-' + to).classList.add('active');
+    currentStep = to;
+  }
+  // Update step bar
+  const si = document.getElementById('si-' + from);
+  si.classList.remove('active');
+  si.classList.add('done');
+  si.querySelector('.step-dot').textContent = '✓';
+  if (document.getElementById('sc-' + from)) document.getElementById('sc-' + from).classList.add('done');
+  if (to <= 3) document.getElementById('si-' + to).classList.add('active');
+}
+
+function prevStep(from) {
+  document.getElementById('q-' + from).classList.remove('active');
+  const to = from - 1;
+  document.getElementById('q-' + to).classList.add('active');
+  currentStep = to;
+  // Revert step bar
+  const si = document.getElementById('si-' + to);
+  si.classList.remove('done');
+  si.classList.add('active');
+  si.querySelector('.step-dot').textContent = (to + 1).toString();
+  if (document.getElementById('sc-' + to)) document.getElementById('sc-' + to).classList.remove('done');
+  document.getElementById('si-' + from).classList.remove('active');
+}
+
+function diffScore(diff) {
+  if (diff.includes('easy'))    return 1;
+  if (diff.includes('moderate')) return 2;
+  if (diff.includes('strenuous') || diff.includes('hard')) return 3;
+  if (diff.includes('extreme') || diff.includes('technical')) return 4;
+  return 2;
+}
+
+function parseDays(dur) {
+  const m = dur.replace(/,/g, '').match(/(\d+)/);
+  return m ? parseInt(m[1]) : 7;
+}
+
+function parseAlt(alt) {
+  const m = alt.replace(/,/g, '').match(/(\d+)/);
+  return m ? parseInt(m[1]) : 3000;
+}
+
+function scoreTrek(trek) {
+  const fitness    = parseInt(selections.fitness    || 2);
+  const experience = parseInt(selections.experience || 2);
+  const days       = parseInt(selections.days       || 2);
+  const goal       = selections.goal || 'scenery';
+
+  const diff = diffScore(trek.difficulty);
+  const dur  = parseDays(trek.duration);
+  const alt  = parseAlt(trek.max_altitude);
+
+  let score = 60;
+  const reasons = [];
+
+  // Fitness vs difficulty
+  const fd = fitness - diff;
+  if (fd === 0)       { score += 25; reasons.push('Difficulty matches your fitness'); }
+  else if (fd === 1)  { score += 15; reasons.push('Slightly below your fitness — comfortable'); }
+  else if (fd === -1) { score += 8;  reasons.push('Slightly challenging — good stretch goal'); }
+  else if (fd >= 2)   { score += 5;  reasons.push('Well within your capability'); }
+  else                { score -= 20; }
+
+  // Experience vs altitude
+  if (alt > 5000 && experience < 3) { score -= 25; }
+  else if (alt > 4000 && experience < 2) { score -= 15; }
+  else if (experience >= 3 && alt > 4000) { score += 15; reasons.push('Suits your high-altitude experience'); }
+  else if (experience <= 2 && alt < 3500) { score += 10; reasons.push('Altitude is beginner-friendly'); }
+
+  // Duration match
+  const dayRanges = { 1:[1,3], 2:[4,7], 3:[8,14], 4:[15,99] };
+  const [dMin, dMax] = dayRanges[days];
+  if (dur >= dMin && dur <= dMax)          { score += 20; reasons.push('Duration fits your schedule'); }
+  else if (Math.abs(dur - dMin) <= 2)      { score += 8; }
+  else                                     { score -= 10; }
+
+  // Goal match
+  if (goal === 'summit'    && alt > 5000)  { score += 20; reasons.push('Reaches a high summit'); }
+  if (goal === 'challenge' && diff >= 3)   { score += 18; reasons.push('Challenging route'); }
+  if (goal === 'scenery'   && alt > 3000)  { score += 12; reasons.push('Spectacular high-altitude scenery'); }
+  if (goal === 'culture'   && diff <= 2)   { score += 12; reasons.push('Passes through cultural villages'); }
+  if (goal === 'summit'    && diff >= 3)   { score += 8; }
+  if (goal === 'challenge' && alt > 4500)  { score += 8; }
+
+  return { score: Math.max(0, Math.min(100, score)), reasons };
+}
+
+function diffTagClass(diff) {
+  if (diff.includes('easy'))     return 'tag-diff-easy';
+  if (diff.includes('moderate')) return 'tag-diff-moderate';
+  if (diff.includes('strenuous') || diff.includes('hard')) return 'tag-diff-hard';
+  return 'tag-diff-extreme';
+}
+
+function findMatches() {
+  // Mark last step done
+  const si3 = document.getElementById('si-3');
+  si3.classList.remove('active'); si3.classList.add('done');
+  si3.querySelector('.step-dot').textContent = '✓';
+  if (document.getElementById('sc-3')) document.getElementById('sc-3').classList.add('done');
+
+  const scored = TREKS.map(t => ({ trek: t, ...scoreTrek(t) }));
+  scored.sort((a, b) => b.score - a.score);
+  const top = scored.slice(0, 5);
+
+  const container = document.getElementById('matches-container');
+  container.innerHTML = '';
+
+  if (top.length === 0) {
+    container.innerHTML = `<div class="no-match">
+      <div class="nm-icon">🗺️</div>
+      <p>No treks found. Check back soon.</p>
+    </div>`;
+  } else {
+    top.forEach((item, i) => {
+      const t = item.trek;
+      const scoreClass = item.score >= 75 ? 'great' : item.score >= 50 ? 'good' : 'ok';
+      const scoreLabel = item.score >= 75 ? 'Great Match' : item.score >= 50 ? 'Good Match' : 'Possible';
+      const isTop = i === 0;
+      const card = document.createElement('div');
+      card.className = 'match-card' + (isTop ? ' top-pick' : '');
+      card.innerHTML = `
+        <div class="match-score-col">
+          <div class="score-ring ${scoreClass}">${item.score}</div>
+          <div class="score-label">${scoreLabel}</div>
+        </div>
+        <div class="match-body">
+          ${isTop ? '<div class="match-rank">⭐ Top Pick</div>' : '<div class="match-rank">#' + (i + 1) + ' Match</div>'}
+          <div class="match-title">${t.title}</div>
+          <div class="match-meta">
+            <span>📍 ${t.country}</span>
+            <span>⏱ ${t.duration}</span>
+            <span>🏔 ${t.max_altitude || 'N/A'}</span>
+            <span>💰 ${t.price}</span>
+          </div>
+          <div class="match-tags">
+            <span class="match-tag ${diffTagClass(t.difficulty)}">${t.difficulty}</span>
+            ${item.reasons.slice(0, 2).map(r => '<span class="match-tag tag-reason">✓ ' + r + '</span>').join('')}
+            ${isTop ? '<span class="top-badge">Best Match</span>' : ''}
+          </div>
+          <div class="match-actions">
+            <a href="${t.url}" class="view-btn">View Trek →</a>
+          </div>
+        </div>`;
+      container.appendChild(card);
+    });
+  }
+
+  const fitLabels = { 1:'Beginner', 2:'Moderate', 3:'Active', 4:'Very Fit' };
+  const dayLabels = { 1:'1–3 days', 2:'4–7 days', 3:'8–14 days', 4:'15+ days' };
+  const goalLabels = { scenery:'Scenery', culture:'Culture', challenge:'Challenge', summit:'Summit' };
+  document.getElementById('result-sub').textContent =
+    fitLabels[selections.fitness] + ' fitness · ' +
+    dayLabels[selections.days] + ' · Goal: ' + goalLabels[selections.goal];
+
+  document.getElementById('quiz-section').style.display = 'none';
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('step-bar').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  // Reset selections
+  Object.keys(selections).forEach(k => delete selections[k]);
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.nav-btn.primary').forEach(b => b.disabled = true);
+
+  // Reset steps
+  for (let i = 0; i <= 3; i++) {
+    const si = document.getElementById('si-' + i);
+    si.classList.remove('done', 'active');
+    si.querySelector('.step-dot').textContent = (i + 1).toString();
+    if (document.getElementById('sc-' + i)) document.getElementById('sc-' + i).classList.remove('done');
+  }
+  document.getElementById('si-0').classList.add('active');
+
+  // Reset cards
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('q-0').classList.add('active');
+  currentStep = 0;
+
+  document.getElementById('quiz-section').style.display = 'block';
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('step-bar').style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+{% endblock %}

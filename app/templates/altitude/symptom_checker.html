@@ -154,16 +154,49 @@
       <div class="alt-input-wrap">
         <input type="number" id="altInput" name="current_altitude"
                value="{{ today_log.current_altitude|default:'' }}"
-               required min="0" max="9000" placeholder="4200">
+               required min="0" max="9000" placeholder="e.g. 4200">
         <span class="alt-unit">m</span>
       </div>
-      <div class="alt-hint">Or pick a common trek point:</div>
+
+      {% if active_plans %}
+      <div class="alt-hint" style="margin-top:18px;font-weight:600;color:#444;">From your acclimatization plans:</div>
+      <div class="alt-zones" style="flex-wrap:wrap;">
+        {% for plan in active_plans %}
+        <div class="alt-zone" onclick="setAlt({{ plan.start_altitude }})">
+          <span class="zone-m">{{ plan.start_altitude }}m</span>{{ plan.trek_name|truncatechars:14 }} start
+        </div>
+        <div class="alt-zone" onclick="setAlt({{ plan.target_altitude }})">
+          <span class="zone-m">{{ plan.target_altitude }}m</span>{{ plan.trek_name|truncatechars:14 }} target
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if trek_bookings %}
+      <div class="alt-hint" style="margin-top:14px;font-weight:600;color:#444;">From your upcoming bookings:</div>
+      <div class="alt-zones" style="flex-wrap:wrap;">
+        {% for b in trek_bookings %}
+          {% if b.trekking and b.trekking.max_altitude %}
+          <div class="alt-zone" onclick="setAlt('{{ b.trekking.max_altitude|escapejs }}')">
+            <span class="zone-m">{{ b.trekking.max_altitude }}</span>{{ b.trekking.title|truncatechars:14 }}
+          </div>
+          {% elif b.travel_package and b.travel_package.destination %}
+          <div class="alt-zone" onclick="setAlt(1400)">
+            <span class="zone-m">—</span>{{ b.travel_package.destination.name|truncatechars:14 }}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="alt-hint" style="margin-top:14px;font-weight:600;color:#444;">Common reference points:</div>
       <div class="alt-zones">
         <div class="alt-zone" onclick="setAlt(1400)"><span class="zone-m">1,400m</span>Kathmandu</div>
         <div class="alt-zone" onclick="setAlt(2860)"><span class="zone-m">2,860m</span>Namche</div>
         <div class="alt-zone" onclick="setAlt(4380)"><span class="zone-m">4,380m</span>Dingboche</div>
         <div class="alt-zone" onclick="setAlt(5364)"><span class="zone-m">5,364m</span>EBC</div>
       </div>
+
       <div class="wizard-nav">
         <button type="button" class="btn-next" onclick="goStep(2)">Next: Rate Symptoms →</button>
       </div>
@@ -288,7 +321,11 @@ let currentSym = 0;
 let symValues = {};
 SYMPTOMS.forEach(s => { symValues[s.key] = parseInt(document.getElementById('val-'+s.key).value)||0; });
 
-function setAlt(v){ document.getElementById('altInput').value = v; }
+function setAlt(v){
+  // v may be a string like "5364m" or a number
+  const n = parseInt(String(v).replace(/[^0-9]/g,''));
+  if(!isNaN(n)) document.getElementById('altInput').value = n;
+}
 
 function goStep(n, fromBack){
   document.querySelectorAll('.wizard-card').forEach(c=>c.classList.remove('active'));

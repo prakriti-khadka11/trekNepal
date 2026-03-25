@@ -11,7 +11,7 @@
                     <div class="card-body text-center">
                         <h5 class="card-title">{{ bus.name }}</h5>
                         <p class="card-text">{{ bus.description }}</p>
-                        <p><strong>Price:</strong> ${{ bus.price }}</p>
+                        <p><strong>Price:</strong> Rs. {{ bus.price }}</p>
                         <p><strong>Departure:</strong> {{ bus.departure_time }}</p>
                         <p><strong>Arrival:</strong> {{ bus.arrival_time }}</p>
                         <a href="{{ bus.get_absolute_url }}" class="btn btn-primary">View Details</a>

@@ -148,6 +148,10 @@ class Booking(models.Model):
     guide = models.ForeignKey('Guide', on_delete=models.SET_NULL, null=True, blank=True)
     guide_rating = models.PositiveSmallIntegerField(null=True, blank=True)
 
+    # Trekking booking support
+    trekking = models.ForeignKey('Trekking', on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
+    trek_date = models.DateField(null=True, blank=True)
+
     def __str__(self):
         if self.travel_package:
             return f"{self.user.username} booked {self.travel_package.title} ({self.status})"
@@ -889,3 +893,69 @@ class GuideMessage(models.Model):
     
     def __str__(self):
         return f"Message from {self.sender.username} for Booking #{self.booking.id}"
+
+
+# ── Packing List Generator ──────────────────────────────────────────────────
+
+class PackingList(models.Model):
+    """One generated packing list per booking (upcoming only)."""
+    booking = models.OneToOneField(
+        Booking, on_delete=models.CASCADE, related_name='packing_list'
+    )
+    generated_at = models.DateTimeField(auto_now=True)
+    trek_type = models.CharField(max_length=30, default='easy')
+    season = models.CharField(max_length=20, default='autumn')
+    accommodation = models.CharField(max_length=20, default='teahouse')
+    ai_summary = models.TextField(blank=True, help_text="AI-generated trip summary/advisory")
+
+    def __str__(self):
+        return f"Packing list for Booking #{self.booking_id}"
+
+    class Meta:
+        ordering = ['booking__travel_date']
+
+
+ITEM_CATEGORIES = [
+    ('clothing',    'Clothing'),
+    ('footwear',    'Footwear'),
+    ('gear',        'Gear & Equipment'),
+    ('health',      'Health & Safety'),
+    ('documents',   'Documents & Money'),
+    ('food_water',  'Food & Water'),
+    ('electronics', 'Electronics'),
+    ('camping',     'Camping Gear'),
+    ('climbing',    'Climbing Gear'),
+    ('seasonal',    'Seasonal Extras'),
+    ('destination', 'Destination Specifics'),
+]
+
+ITEM_PRIORITY = [
+    ('essential', 'Essential'),
+    ('recommended', 'Recommended'),
+    ('optional', 'Optional'),
+]
+
+
+class PackingItem(models.Model):
+    """Individual item in a packing list."""
+    packing_list = models.ForeignKey(
+        PackingList, on_delete=models.CASCADE, related_name='items'
+    )
+    category = models.CharField(max_length=20, choices=ITEM_CATEGORIES)
+    name = models.CharField(max_length=200)
+    priority = models.CharField(max_length=15, choices=ITEM_PRIORITY, default='essential')
+    quantity = models.PositiveSmallIntegerField(default=1)
+    notes = models.CharField(max_length=255, blank=True)
+    is_checked = models.BooleanField(default=False)
+    per_person = models.BooleanField(default=False, help_text="Multiply quantity by num_people")
+    source = models.CharField(
+        max_length=10,
+        choices=[('base', 'Base'), ('ai', 'AI'), ('rule', 'Rule')],
+        default='base'
+    )
+
+    class Meta:
+        ordering = ['category', '-priority', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.category})"

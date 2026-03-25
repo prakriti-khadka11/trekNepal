@@ -3,181 +3,411 @@
 
 {% block title %}Request Custom Package{% endblock %}
 
+{% block extra_css %}
+<style>
+    .cr-hero {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        padding: 60px 0 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    .cr-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("{% static 'img/PeakBack.jpg' %}") center/cover no-repeat;
+        opacity: 0.15;
+    }
+    .cr-hero-content { position: relative; z-index: 1; }
+    .cr-hero h1 { font-size: 2.2rem; font-weight: 800; color: #fff; }
+    .cr-hero p { color: rgba(255,255,255,0.75); font-size: 1.05rem; }
+
+    .cr-wrapper {
+        max-width: 860px;
+        margin: -30px auto 60px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .cr-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        overflow: hidden;
+    }
+
+    .cr-section {
+        padding: 32px 40px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .cr-section:last-of-type { border-bottom: none; }
+
+    .cr-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 22px;
+    }
+    .cr-section-title .icon-wrap {
+        width: 34px; height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 14px; flex-shrink: 0;
+    }
+
+    .cr-form-group { margin-bottom: 18px; }
+    .cr-form-group label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
+    }
+    .cr-form-group input,
+    .cr-form-group select,
+    .cr-form-group textarea {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        color: #1a1a2e;
+        background: #fafafa;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+    }
+    .cr-form-group input:focus,
+    .cr-form-group select:focus,
+    .cr-form-group textarea:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        background: #fff;
+    }
+    .cr-form-group textarea { resize: vertical; min-height: 90px; }
+    .cr-form-group .hint {
+        font-size: 0.78rem;
+        color: #9ca3af;
+        margin-top: 4px;
+    }
+    .cr-form-group .text-danger { font-size: 0.8rem; margin-top: 4px; }
+
+    .cr-check-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: #f8f7ff;
+        border: 1.5px solid #e0e7ff;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .cr-check-row:hover { background: #ede9fe; }
+    .cr-check-row input[type="checkbox"] {
+        width: 18px; height: 18px;
+        accent-color: #4f46e5;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .cr-check-row label {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+
+    .cr-file-box {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        background: #fafafa;
+        transition: border-color 0.2s, background 0.2s;
+        cursor: pointer;
+    }
+    .cr-file-box:hover { border-color: #4f46e5; background: #f5f3ff; }
+    .cr-file-box i { font-size: 2rem; color: #9ca3af; margin-bottom: 8px; }
+    .cr-file-box p { font-size: 0.85rem; color: #6b7280; margin: 0; }
+    .cr-file-box input[type="file"] { display: none; }
+
+    .cr-footer {
+        padding: 28px 40px;
+        background: #f9fafb;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    .btn-submit {
+        flex: 1;
+        padding: 14px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-cancel {
+        padding: 14px 28px;
+        background: #fff;
+        color: #6b7280;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: border-color 0.2s, color 0.2s;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .btn-cancel:hover { border-color: #4f46e5; color: #4f46e5; }
+
+    .how-it-works {
+        max-width: 860px;
+        margin: 0 auto 60px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+    .hiw-step {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px 16px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .hiw-num {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #fff;
+        font-weight: 800;
+        font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 12px;
+    }
+    .hiw-step p { font-size: 0.82rem; color: #6b7280; margin: 0; line-height: 1.5; }
+
+    @media (max-width: 768px) {
+        .cr-section { padding: 24px 20px; }
+        .cr-footer { flex-direction: column; padding: 20px; }
+        .btn-cancel { width: 100%; justify-content: center; }
+        .how-it-works { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0"><i class="fas fa-magic me-2"></i>Request Your Custom Package</h3>
-                    <p class="mb-0 mt-2">Can't find the perfect package? Tell us what you're looking for!</p>
+
+<!-- Hero -->
+<div class="cr-hero">
+    <div class="container cr-hero-content text-center">
+        <h1><i class="fas fa-magic me-2"></i>Build Your Dream Trip</h1>
+        <p>Tell us what you want — we'll craft the perfect Nepal experience just for you.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="cr-wrapper">
+        <div class="cr-card">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Destination -->
+                <div class="cr-section">
+                    <div class="cr-section-title">
+                        <div class="icon-wrap"><i class="fas fa-map-marker-alt"></i></div>
+                        Destination
+                    </div>
+                    <div class="cr-form-group">
+                        {{ form.destination.label_tag }}
+                        {{ form.destination }}
+                        {% if form.destination.errors %}<div class="text-danger">{{ form.destination.errors }}</div>{% endif %}
+                    </div>
+                    <div class="cr-form-group">
+                        {{ form.alternative_destinations.label_tag }}
+                        {{ form.alternative_destinations }}
+                        <div class="hint">Separate multiple destinations with commas</div>
+                        {% if form.alternative_destinations.errors %}<div class="text-danger">{{ form.alternative_destinations.errors }}</div>{% endif %}
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <!-- Destination Section -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2"><i class="fas fa-map-marker-alt me-2"></i>Destination</h5>
-                            <div class="mb-3">
-                                {{ form.destination.label_tag }}
-                                {{ form.destination }}
-                                {% if form.destination.errors %}
-                                    <div class="text-danger">{{ form.destination.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="mb-3">
-                                {{ form.alternative_destinations.label_tag }}
-                                {{ form.alternative_destinations }}
-                                <small class="text-muted">Separate multiple destinations with commas</small>
-                                {% if form.alternative_destinations.errors %}
-                                    <div class="text-danger">{{ form.alternative_destinations.errors }}</div>
-                                {% endif %}
+
+                <!-- Travel Dates -->
+                <div class="cr-section">
+                    <div class="cr-section-title">
+                        <div class="icon-wrap"><i class="fas fa-calendar-alt"></i></div>
+                        Travel Dates
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="cr-form-group">
+                                {{ form.preferred_start_date.label_tag }}
+                                {{ form.preferred_start_date }}
+                                {% if form.preferred_start_date.errors %}<div class="text-danger">{{ form.preferred_start_date.errors }}</div>{% endif %}
                             </div>
                         </div>
-
-                        <!-- Travel Dates Section -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2"><i class="fas fa-calendar me-2"></i>Travel Dates</h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    {{ form.preferred_start_date.label_tag }}
-                                    {{ form.preferred_start_date }}
-                                    {% if form.preferred_start_date.errors %}
-                                        <div class="text-danger">{{ form.preferred_start_date.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    {{ form.preferred_end_date.label_tag }}
-                                    {{ form.preferred_end_date }}
-                                    {% if form.preferred_end_date.errors %}
-                                        <div class="text-danger">{{ form.preferred_end_date.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="form-check mb-3">
-                                {{ form.flexible_dates }}
-                                {{ form.flexible_dates.label_tag }}
+                        <div class="col-md-6">
+                            <div class="cr-form-group">
+                                {{ form.preferred_end_date.label_tag }}
+                                {{ form.preferred_end_date }}
+                                {% if form.preferred_end_date.errors %}<div class="text-danger">{{ form.preferred_end_date.errors }}</div>{% endif %}
                             </div>
                         </div>
+                    </div>
+                    <label class="cr-check-row mt-2">
+                        {{ form.flexible_dates }}
+                        <span>My dates are flexible — I'm open to suggestions</span>
+                    </label>
+                </div>
 
-                        <!-- Group Size & Budget Section -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2"><i class="fas fa-users me-2"></i>Group & Budget</h5>
-                            <div class="mb-3">
-                                {{ form.num_travelers.label_tag }}
-                                {{ form.num_travelers }}
-                                {% if form.num_travelers.errors %}
-                                    <div class="text-danger">{{ form.num_travelers.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    {{ form.budget_min.label_tag }}
-                                    {{ form.budget_min }}
-                                    {% if form.budget_min.errors %}
-                                        <div class="text-danger">{{ form.budget_min.errors }}</div>
-                                    {% endif %}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    {{ form.budget_max.label_tag }}
-                                    {{ form.budget_max }}
-                                    {% if form.budget_max.errors %}
-                                        <div class="text-danger">{{ form.budget_max.errors }}</div>
-                                    {% endif %}
-                                </div>
+                <!-- Group & Budget -->
+                <div class="cr-section">
+                    <div class="cr-section-title">
+                        <div class="icon-wrap"><i class="fas fa-users"></i></div>
+                        Group & Budget
+                    </div>
+                    <div class="cr-form-group">
+                        {{ form.num_travelers.label_tag }}
+                        {{ form.num_travelers }}
+                        {% if form.num_travelers.errors %}<div class="text-danger">{{ form.num_travelers.errors }}</div>{% endif %}
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="cr-form-group">
+                                {{ form.budget_min.label_tag }}
+                                {{ form.budget_min }}
+                                {% if form.budget_min.errors %}<div class="text-danger">{{ form.budget_min.errors }}</div>{% endif %}
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="cr-form-group">
+                                {{ form.budget_max.label_tag }}
+                                {{ form.budget_max }}
+                                {% if form.budget_max.errors %}<div class="text-danger">{{ form.budget_max.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Preferences Section -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2"><i class="fas fa-cog me-2"></i>Preferences</h5>
-                            <div class="mb-3">
+                <!-- Preferences -->
+                <div class="cr-section">
+                    <div class="cr-section-title">
+                        <div class="icon-wrap"><i class="fas fa-sliders-h"></i></div>
+                        Preferences
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="cr-form-group">
                                 {{ form.activity_type.label_tag }}
                                 {{ form.activity_type }}
-                                {% if form.activity_type.errors %}
-                                    <div class="text-danger">{{ form.activity_type.errors }}</div>
-                                {% endif %}
+                                {% if form.activity_type.errors %}<div class="text-danger">{{ form.activity_type.errors }}</div>{% endif %}
                             </div>
-                            <div class="mb-3">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="cr-form-group">
                                 {{ form.accommodation_preference.label_tag }}
                                 {{ form.accommodation_preference }}
-                                {% if form.accommodation_preference.errors %}
-                                    <div class="text-danger">{{ form.accommodation_preference.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="form-check mb-3">
-                                {{ form.guide_required }}
-                                {{ form.guide_required.label_tag }}
+                                {% if form.accommodation_preference.errors %}<div class="text-danger">{{ form.accommodation_preference.errors }}</div>{% endif %}
                             </div>
                         </div>
+                    </div>
+                    <label class="cr-check-row mt-2">
+                        {{ form.guide_required }}
+                        <span>I'd like a professional guide for this trip</span>
+                    </label>
+                </div>
 
-                        <!-- Special Requirements Section -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2"><i class="fas fa-info-circle me-2"></i>Additional Information</h5>
-                            <div class="mb-3">
-                                {{ form.special_requirements.label_tag }}
-                                {{ form.special_requirements }}
-                                {% if form.special_requirements.errors %}
-                                    <div class="text-danger">{{ form.special_requirements.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="mb-3">
-                                {{ form.additional_notes.label_tag }}
-                                {{ form.additional_notes }}
-                                {% if form.additional_notes.errors %}
-                                    <div class="text-danger">{{ form.additional_notes.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+                <!-- Additional Info -->
+                <div class="cr-section">
+                    <div class="cr-section-title">
+                        <div class="icon-wrap"><i class="fas fa-info-circle"></i></div>
+                        Additional Information
+                    </div>
+                    <div class="cr-form-group">
+                        {{ form.special_requirements.label_tag }}
+                        {{ form.special_requirements }}
+                        {% if form.special_requirements.errors %}<div class="text-danger">{{ form.special_requirements.errors }}</div>{% endif %}
+                    </div>
+                    <div class="cr-form-group">
+                        {{ form.additional_notes.label_tag }}
+                        {{ form.additional_notes }}
+                        {% if form.additional_notes.errors %}<div class="text-danger">{{ form.additional_notes.errors }}</div>{% endif %}
+                    </div>
+                </div>
 
-                        <!-- File Uploads Section -->
-                        <div class="mb-4">
-                            <h5 class="border-bottom pb-2"><i class="fas fa-paperclip me-2"></i>Attachments</h5>
-                            <div class="mb-3">
-                                {{ form.inspiration_image.label_tag }}
+                <!-- Attachments -->
+                <div class="cr-section">
+                    <div class="cr-section-title">
+                        <div class="icon-wrap"><i class="fas fa-paperclip"></i></div>
+                        Attachments
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="cr-file-box d-block" for="{{ form.inspiration_image.id_for_label }}">
+                                <i class="fas fa-image d-block"></i>
+                                <p class="mt-2"><strong>Inspiration Image</strong><br>Photos of places you'd like to visit</p>
                                 {{ form.inspiration_image }}
-                                <small class="text-muted d-block">Upload photos of places you'd like to visit</small>
-                                {% if form.inspiration_image.errors %}
-                                    <div class="text-danger">{{ form.inspiration_image.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="mb-3">
-                                {{ form.reference_document.label_tag }}
+                                {% if form.inspiration_image.errors %}<div class="text-danger mt-2">{{ form.inspiration_image.errors }}</div>{% endif %}
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="cr-file-box d-block" for="{{ form.reference_document.id_for_label }}">
+                                <i class="fas fa-file-alt d-block"></i>
+                                <p class="mt-2"><strong>Reference Document</strong><br>Itinerary ideas or reference files</p>
                                 {{ form.reference_document }}
-                                <small class="text-muted d-block">Upload any reference documents or itinerary ideas</small>
-                                {% if form.reference_document.errors %}
-                                    <div class="text-danger">{{ form.reference_document.errors }}</div>
-                                {% endif %}
-                            </div>
+                                {% if form.reference_document.errors %}<div class="text-danger mt-2">{{ form.reference_document.errors }}</div>{% endif %}
+                            </label>
                         </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-paper-plane me-2"></i>Submit Request
-                            </button>
-                            <a href="{% url 'my_custom_requests' %}" class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Help Section -->
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="fas fa-question-circle me-2"></i>How it works</h5>
-                    <ol class="mb-0">
-                        <li>Fill out this form with your travel preferences</li>
-                        <li>Our team will review your request within 24-48 hours</li>
-                        <li>We'll send you a customized quote</li>
-                        <li>Accept the quote and we'll finalize your booking!</li>
-                    </ol>
+                <!-- Submit -->
+                <div class="cr-footer">
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                    <a href="{% url 'my_custom_requests' %}" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
                 </div>
-            </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="how-it-works">
+        <div class="hiw-step">
+            <div class="hiw-num">1</div>
+            <p>Fill out your travel preferences in this form</p>
+        </div>
+        <div class="hiw-step">
+            <div class="hiw-num">2</div>
+            <p>Our team reviews your request within 24–48 hours</p>
+        </div>
+        <div class="hiw-step">
+            <div class="hiw-num">3</div>
+            <p>We send you a customized quote to review</p>
+        </div>
+        <div class="hiw-step">
+            <div class="hiw-num">4</div>
+            <p>Accept the quote and we finalize your booking!</p>
         </div>
     </div>
 </div>
+
 {% endblock %}

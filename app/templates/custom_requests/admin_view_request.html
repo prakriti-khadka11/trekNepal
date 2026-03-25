@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong>Travelers:</strong> {{ custom_request.num_travelers }}</p>
-                            <p><strong>Budget:</strong> ${{ custom_request.budget_min }} - ${{ custom_request.budget_max }} per person</p>
+                            <p><strong>Budget:</strong> Rs. {{ custom_request.budget_min }} - Rs. {{ custom_request.budget_max }} per person</p>
                             <p><strong>Activity:</strong> {{ custom_request.get_activity_type_display }}</p>
                             <p><strong>Guide Required:</strong> {% if custom_request.guide_required %}Yes{% else %}No{% endif %}</p>
                         </div>
@@ -82,7 +82,7 @@
                     {% for quote in quotes %}
                     <div class="border p-3 mb-3">
                         <h6>{{ quote.package_title }}</h6>
-                        <p><strong>Total:</strong> ${{ quote.total_price }}</p>
+                        <p><strong>Total:</strong> Rs. {{ quote.total_price }}</p>
                         <p><strong>Status:</strong> 
                             {% if quote.accepted %}<span class="badge bg-success">Accepted</span>
                             {% elif quote.is_expired %}<span class="badge bg-danger">Expired</span>

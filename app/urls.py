@@ -56,6 +56,10 @@ urlpatterns = [
     path("currency-converter/", views.currency_converter, name="currency_converter"),
     path('trek-map/', views.trek_map_view, name='trek_map'),
 
+    # New features
+    path('packing-list/', views.packing_list, name='packing_list'),
+    path('trek-matcher/', views.trek_matcher, name='trek_matcher'),
+
      path('emergency/', views.trek_map_view, name='trek_map'),
 
 

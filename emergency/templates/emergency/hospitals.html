@@ -545,9 +545,9 @@
         </div>
         
         <div class="text-center mt-4">
-            <a href="{% url 'emergency_menu' %}" class="btn btn-light btn-lg">
+            <a href="{% url 'home' %}" class="btn btn-light btn-lg">
                 <i class="fas fa-arrow-left me-2"></i>
-                Back to Emergency Menu
+                Back
             </a>
         </div>
     </div>
@@ -672,9 +672,17 @@
 
 <script>
 let selectedSymptoms = [];
+let userLat = null, userLng = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeSymptomTracker();
+    // Silently grab user location for Directions button
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; },
+            () => {} // silent fail — Directions still works without origin
+        );
+    }
 });
 
 function openSymptomChecker() {
@@ -863,7 +871,7 @@ function loadHospitals() {
                                 <i class="fas fa-ambulance"></i>
                                 Ambulance
                             </a>
-                            <button class="hospital-btn secondary" onclick="getDirections(${hospital.lat}, ${hospital.lng})">
+                            <button class="hospital-btn secondary" onclick="getDirections(${hospital.lat}, ${hospital.lng}, '${hospital.name.replace(/'/g, "\\'")}')">
                                 <i class="fas fa-directions"></i>
                                 Directions
                             </button>
@@ -894,9 +902,16 @@ function getHospitalSpecializations(hospitalName) {
     return specializations[hospitalName] || ['General Medicine', 'Emergency Care'];
 }
 
-function getDirections(lat, lng) {
-    const url = `https://maps.google.com/maps?daddr=${lat},${lng}`;
-    window.open(url, '_blank');
+function getDirections(lat, lng, name) {
+    // Use hospital name for destination — more accurate than raw coords
+    const dest = encodeURIComponent(name + ', Nepal');
+    if (userLat && userLng) {
+        const url = `https://maps.google.com/maps?saddr=${userLat},${userLng}&daddr=${dest}&travelmode=driving`;
+        window.open(url, '_blank');
+    } else {
+        const url = `https://maps.google.com/maps?daddr=${dest}`;
+        window.open(url, '_blank');
+    }
 }
 
 function shareHospital(name, lat, lng) {

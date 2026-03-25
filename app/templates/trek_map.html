@@ -16,8 +16,11 @@
     <div class="row justify-content-center mt-4 w-100">
         <div class="col-lg-8 col-md-10">
             <div class="d-flex gap-2 flex-wrap shadow-lg rounded p-3 bg-white">
-                <input type="text" class="form-control waypoint" placeholder="Your Location">
+                <input type="text" id="startInput" class="form-control waypoint" placeholder="Your Location">
                 <input type="text" class="form-control waypoint" placeholder="Destination">
+                <button type="button" class="btn btn-outline-secondary" onclick="useMyLocation()" id="locBtn" title="Use my GPS location">
+                  📍 My Location
+                </button>
                 <button type="button" class="btn btn-primary" onclick="addWaypoint()">➕ Add Waypoint</button>
                 <button type="button" class="btn btn-success" onclick="getRoute()">Get Trek Route</button>
             </div>
@@ -107,8 +110,61 @@ function addWaypoint(value="") {
     document.getElementById("waypoints").appendChild(div);
 }
 
+// --- Use My GPS Location ---
+function useMyLocation(){
+    const btn = document.getElementById('locBtn');
+    if(!navigator.geolocation){
+        alert('Geolocation is not supported by your browser.');
+        return;
+    }
+    btn.disabled = true;
+    btn.textContent = '⏳ Locating…';
+    navigator.geolocation.getCurrentPosition(
+        async function(pos){
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            // Reverse geocode to get a place name
+            try {
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+                    { headers: { 'Accept-Language': 'en' } }
+                );
+                const data = await res.json();
+                const name = data.display_name
+                    ? (data.address.city || data.address.town || data.address.village || data.address.county || 'My Location')
+                    : 'My Location';
+                document.getElementById('startInput').value = name;
+                // Also fly the map to current position
+                map.flyTo({ center: [lon, lat], zoom: 12 });
+                new maplibregl.Marker({ color: 'blue' })
+                    .setLngLat([lon, lat])
+                    .setPopup(new maplibregl.Popup().setHTML('<b>You are here</b>'))
+                    .addTo(map);
+            } catch(e) {
+                document.getElementById('startInput').value = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+            }
+            btn.disabled = false;
+            btn.textContent = '📍 My Location';
+        },
+        function(err){
+            btn.disabled = false;
+            btn.textContent = '📍 My Location';
+            const msgs = {
+                1: 'Location access denied. Please allow location permission in your browser.',
+                2: 'Location unavailable. Try again or enter manually.',
+                3: 'Location request timed out. Try again.',
+            };
+            alert(msgs[err.code] || 'Could not get your location.');
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
 // --- Geocoding ---
 async function geocode(place){
+    // If it's already a lat,lon pair, parse directly
+    const latlon = place.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
+    if(latlon) return [parseFloat(latlon[2]), parseFloat(latlon[1])];
     const url=`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}+Nepal`;
     const res = await fetch(url,{headers:{'Accept-Language':'en'}});
     const data = await res.json();

@@ -16,6 +16,17 @@
 <!-- Trekking List -->
 <section class="py-5">
     <div class="container">
+
+        <!-- Feature shortcuts -->
+        <div class="d-flex gap-3 mb-4 flex-wrap">
+          <a href="{% url 'trek_matcher' %}" class="btn btn-outline-primary">
+            🧭 Find My Perfect Trek
+          </a>
+          <a href="{% url 'packing_list' %}" class="btn btn-outline-success">
+            🎒 Packing List Generator
+          </a>
+        </div>
+
         <div class="row">
             <!-- Filters -->
             <div class="col-lg-3" data-aos="fade-up">
@@ -129,7 +140,7 @@
                             <img src="{{ trek.image.url }}" class="card-img-top" alt="{{ trek.title }}" style="height: 200px; object-fit: cover;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="badge bg-primary">${{ trek.price }}</span>
+                                    <span class="badge bg-primary">Rs. {{ trek.price }}</span>
                                     <span class="badge bg-secondary">{{ trek.difficulty }}</span>
                                 </div>
                                 <h4 class="card-title">{{ trek.title }}</h4>

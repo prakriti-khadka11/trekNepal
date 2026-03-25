@@ -109,7 +109,7 @@
                             <td>{{ request.destination }}</td>
                             <td>{{ request.preferred_start_date|date:"M d" }} - {{ request.preferred_end_date|date:"M d, Y" }}</td>
                             <td>{{ request.num_travelers }}</td>
-                            <td>${{ request.budget_min }}-${{ request.budget_max }}</td>
+                            <td>Rs. {{ request.budget_min }}-Rs. {{ request.budget_max }}</td>
                             <td>
                                 {% if request.status == 'PENDING' %}
                                     <span class="badge bg-warning">Pending</span>

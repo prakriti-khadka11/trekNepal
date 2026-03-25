@@ -139,38 +139,58 @@
                 Emergency SOS Alert
             </h2>
             <p class="text-muted">Fill out the details below to send an emergency alert</p>
+
+            {% if pref and pref.emergency_contact_email %}
+            <div class="alert alert-success py-2 mb-3" style="font-size:13px;">
+                <i class="fas fa-envelope me-2"></i>
+                Alert will be emailed to <strong>{{ pref.emergency_contact_name|default:"your emergency contact" }}</strong>
+                ({{ pref.emergency_contact_email }}) and to you.
+            </div>
+            {% else %}
+            <div class="alert alert-warning py-2 mb-3" style="font-size:13px;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                No emergency contact email set.
+                <a href="{% url 'user_preferences' %}" class="alert-link">Add one in your preferences</a>
+                so someone gets notified when you send an SOS.
+            </div>
+            {% endif %}
         </div>
         
         <form method="post" id="sosForm">
-            {% csrf_token %}
+          {% csrf_token %}
+          {% if messages %}
+            {% for msg in messages %}
+            <div class="alert alert-danger mb-3">{{ msg }}</div>
+            {% endfor %}
+          {% endif %}
             
             <!-- Emergency Type Selection -->
             <div class="mb-4">
                 <label class="form-label fw-bold">Emergency Type</label>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="emergency-type-btn" data-type="medical">
+                        <div class="emergency-type-btn" data-type="medical" onclick="pickType(this)">
                             <i class="fas fa-heartbeat fa-2x mb-2 d-block"></i>
                             <strong>Medical Emergency</strong>
                             <small class="d-block text-muted">Health issues, injuries</small>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="emergency-type-btn" data-type="accident">
+                        <div class="emergency-type-btn" data-type="accident" onclick="pickType(this)">
                             <i class="fas fa-car-crash fa-2x mb-2 d-block"></i>
                             <strong>Accident</strong>
                             <small class="d-block text-muted">Vehicle, trekking accidents</small>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="emergency-type-btn" data-type="lost">
+                        <div class="emergency-type-btn" data-type="lost" onclick="pickType(this)">
                             <i class="fas fa-map-marked-alt fa-2x mb-2 d-block"></i>
                             <strong>Lost/Stranded</strong>
                             <small class="d-block text-muted">Lost in mountains, remote areas</small>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="emergency-type-btn" data-type="security">
+                        <div class="emergency-type-btn" data-type="security" onclick="pickType(this)">
                             <i class="fas fa-shield-alt fa-2x mb-2 d-block"></i>
                             <strong>Security Issue</strong>
                             <small class="d-block text-muted">Theft, harassment, danger</small>
@@ -184,13 +204,13 @@
             <div class="mb-4">
                 <label class="form-label fw-bold">Severity Level</label>
                 <div class="text-center">
-                    <button type="button" class="severity-btn low" data-severity="low">
+                    <button type="button" class="severity-btn low" data-severity="low" onclick="pickSeverity(this)">
                         <i class="fas fa-info-circle me-1"></i>Low
                     </button>
-                    <button type="button" class="severity-btn medium" data-severity="medium">
+                    <button type="button" class="severity-btn medium" data-severity="medium" onclick="pickSeverity(this)">
                         <i class="fas fa-exclamation-triangle me-1"></i>Medium
                     </button>
-                    <button type="button" class="severity-btn critical" data-severity="critical">
+                    <button type="button" class="severity-btn critical" data-severity="critical" onclick="pickSeverity(this)">
                         <i class="fas fa-exclamation-circle me-1"></i>Critical
                     </button>
                 </div>
@@ -203,7 +223,7 @@
                 <div class="input-group">
                     <input type="text" class="form-control" name="location" id="location" 
                            placeholder="Enter your current location" required>
-                    <button type="button" class="location-btn" onclick="getCurrentLocation()">
+                    <button type="button" class="location-btn" onclick="getCurrentLocation(this)">
                         <i class="fas fa-crosshairs me-1"></i>Get Location
                     </button>
                 </div>
@@ -223,7 +243,7 @@
                           placeholder="Describe symptoms if this is a medical emergency..."></textarea>
             </div>
             
-            <button type="submit" class="submit-sos">
+            <button type="submit" class="submit-sos" onclick="return validateSOS()">
                 <i class="fas fa-paper-plane me-2"></i>
                 Send Emergency Alert
             </button>
@@ -273,34 +293,77 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function getCurrentLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                
-                // Reverse geocoding to get address
-                fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=YOUR_API_KEY`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.results && data.results.length > 0) {
-                            document.getElementById('location').value = data.results[0].formatted;
-                        } else {
-                            document.getElementById('location').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-                        }
-                    })
-                    .catch(() => {
-                        document.getElementById('location').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-                    });
-            },
-            error => {
-                alert('Unable to get your location. Please enter it manually.');
-            }
-        );
-    } else {
-        alert('Geolocation is not supported by this browser.');
-    }
+function pickSeverity(btn) {
+    document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('severity').value = btn.dataset.severity;
 }
+
+function pickType(btn) {
+    document.querySelectorAll('.emergency-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('emergencyType').value = btn.dataset.type;
+    const symptoms = document.getElementById('symptomsSection');
+    if (symptoms) symptoms.style.display = btn.dataset.type === 'medical' ? 'block' : 'none';
+}
+
+function validateSOS() {
+    const type = document.getElementById('emergencyType').value;
+    const severity = document.getElementById('severity').value;
+    const location = document.getElementById('location').value.trim();
+    if (!type) { alert('Please select an Emergency Type.'); return false; }
+    if (!severity) { alert('Please select a Severity Level.'); return false; }
+    if (!location) { alert('Please enter or get your Current Location.'); return false; }
+    return true;
+}
+
+function getCurrentLocation(btn) {
+    const locInput = document.getElementById('location');
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+    }
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Locating…'; }
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            // Use Nominatim for reverse geocoding — no API key needed
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+                headers: { 'Accept-Language': 'en' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                const addr = data.address || {};
+                const place = addr.village || addr.town || addr.city || addr.county || addr.state || '';
+                const country = addr.country || 'Nepal';
+                locInput.value = place ? `${place}, ${country} (${lat.toFixed(5)}, ${lng.toFixed(5)})` : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+            })
+            .catch(() => {
+                locInput.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+            })
+            .finally(() => {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-crosshairs me-1"></i>Get Location'; }
+            });
+        },
+        function(error) {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-crosshairs me-1"></i>Get Location'; }
+            const msgs = {
+                1: 'Location access denied. Please allow location permission in your browser settings.',
+                2: 'Location unavailable. Enter your location manually.',
+                3: 'Location request timed out. Try again.',
+            };
+            alert(msgs[error.code] || 'Could not get your location.');
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
+// Auto-fetch location on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (navigator.geolocation && !document.getElementById('location').value) {
+        getCurrentLocation(null);
+    }
+});
 </script>
 {% endblock %}

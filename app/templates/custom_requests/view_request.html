@@ -37,7 +37,7 @@
                         </div>
                         <div class="col-md-6">
                             <p><strong>Travelers:</strong> {{ custom_request.num_travelers }}</p>
-                            <p><strong>Budget:</strong> ${{ custom_request.budget_min }} - ${{ custom_request.budget_max }} per person</p>
+                            <p><strong>Budget:</strong> Rs. {{ custom_request.budget_min }} - Rs. {{ custom_request.budget_max }} per person</p>
                             <p><strong>Activity:</strong> {{ custom_request.get_activity_type_display }}</p>
                             <p><strong>Guide Required:</strong> {% if custom_request.guide_required %}Yes{% else %}No{% endif %}</p>
                         </div>
@@ -92,8 +92,8 @@
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Price per Person:</strong> ${{ quote.price_per_person }}</p>
-                                <p><strong>Total Price:</strong> ${{ quote.total_price }}</p>
+                                <p><strong>Price per Person:</strong> Rs. {{ quote.price_per_person }}</p>
+                                <p><strong>Total Price:</strong> Rs. {{ quote.total_price }}</p>
                             </div>
                             <div class="col-md-6">
                                 <p><strong>Valid Until:</strong> {{ quote.expires_at|date:"M d, Y" }}</p>

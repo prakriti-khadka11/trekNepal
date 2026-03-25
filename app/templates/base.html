@@ -22,6 +22,71 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
     
+    <!-- Dark Mode CSS -->
+    <style>
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .navbar,
+        body.dark-mode .navbar-light {
+            background-color: #1e1e1e !important;
+        }
+        body.dark-mode .navbar .nav-link,
+        body.dark-mode .navbar .navbar-brand {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .card {
+            background-color: #1e1e1e !important;
+            border-color: #333 !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .card-body,
+        body.dark-mode .card-title,
+        body.dark-mode .card-text {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode footer {
+            background-color: #0d0d0d !important;
+        }
+        body.dark-mode .bg-white,
+        body.dark-mode .bg-light {
+            background-color: #1e1e1e !important;
+        }
+        body.dark-mode .text-dark,
+        body.dark-mode .text-muted {
+            color: #aaa !important;
+        }
+        body.dark-mode .btn-outline-secondary {
+            color: #ccc;
+            border-color: #555;
+        }
+        body.dark-mode input,
+        body.dark-mode textarea,
+        body.dark-mode select {
+            background-color: #2a2a2a !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+        }
+        body.dark-mode .modal-content {
+            background-color: #1e1e1e !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .table {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .dropdown-menu {
+            background-color: #1e1e1e !important;
+            border-color: #333 !important;
+        }
+        body.dark-mode .dropdown-item {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .dropdown-item:hover {
+            background-color: #333 !important;
+        }
+    </style>
+
     <!-- Emergency Button Styles -->
     <style>
         .emergency-container {
@@ -170,11 +235,6 @@
         }
 
         /* Enhanced hover colors for different emergency types */
-        .emergency-option[data-type="dashboard"]:hover {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            color: #1976d2;
-        }
-
         .emergency-option[data-type="hospital"]:hover {
             background: linear-gradient(135deg, #e8f5e8, #d4edda);
             color: #28a745;
@@ -644,14 +704,20 @@
                             <a class="nav-link" href="{% url 'contact_us' %}">Contact</a>
                         </li>
                         {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-tools me-1"></i>Tools
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="toolsDropdown">
+                                <li><a class="dropdown-item" href="{% url 'packing_list' %}"><i class="fas fa-backpack me-2 text-primary"></i>Packing List Generator</a></li>
+                                <li><a class="dropdown-item" href="{% url 'trek_matcher' %}"><i class="fas fa-route me-2 text-success"></i>Trek Fitness Matcher</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'altitude_dashboard' %}"><i class="fas fa-mountain me-2 text-warning"></i>Altitude Safety</a></li>
+                            </ul>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'all_guides_list' %}">
                                 <i class="fas fa-user-tie me-1"></i>Our Guides
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'altitude_dashboard' %}">
-                                <i class="fas fa-mountain me-1"></i>Altitude Safety
                             </a>
                         </li>
                         <li class="nav-item">
@@ -667,8 +733,8 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My Bookings</a></li>
-                                <li><a class="dropdown-item" href="{% url 'my_custom_requests' %}"><i class="fas fa-magic me-2"></i>My Custom Requests</a></li>
-                                <li><a class="dropdown-item" href="{% url 'personal_dashboard' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_custom_requests' %}">My Custom Requests</a></li>
+                                <li><a class="dropdown-item" href="{% url 'personal_dashboard' %}">My Expenses</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                             </ul>
@@ -728,10 +794,6 @@
     {% if user.is_authenticated %}
     <div class="emergency-container">
         <div class="emergency-menu" id="emergencyMenu">
-            <div class="emergency-option" data-type="dashboard">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </div>
             <div class="emergency-option" data-type="hospital">
                 <i class="fas fa-hospital"></i>
                 <span>Medical Help</span>
@@ -1131,30 +1193,6 @@
             }
         });
 
-         const toggleButton = document.getElementById("theme-toggle");
-    const themeIcon = document.getElementById("theme-icon");
-
-    // Load saved theme
-    if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark-mode");
-        themeIcon.classList.remove("fa-lightbulb");
-        themeIcon.classList.add("fa-moon");
-    }
-
-    toggleButton.addEventListener("click", () => {
-        document.body.classList.toggle("dark-mode");
-
-        if (document.body.classList.contains("dark-mode")) {
-            themeIcon.classList.remove("fa-lightbulb");
-            themeIcon.classList.add("fa-moon");
-            localStorage.setItem("theme", "dark");
-        } else {
-            themeIcon.classList.remove("fa-moon");
-            themeIcon.classList.add("fa-lightbulb");
-            localStorage.setItem("theme", "light");
-        }
-    });
-
   document.addEventListener("DOMContentLoaded", function () {
     let currentFontSize = localStorage.getItem("fontSize") 
         ? parseFloat(localStorage.getItem("fontSize")) 
@@ -1184,82 +1222,91 @@
 
     </script>
     
+    <!-- Dark Mode -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggleButton = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add("dark-mode");
+                themeIcon.classList.replace("fa-lightbulb", "fa-moon");
+            } else {
+                document.body.classList.remove("dark-mode");
+                themeIcon.classList.replace("fa-moon", "fa-lightbulb");
+            }
+        }
+
+        // Apply saved theme on load
+        applyTheme(localStorage.getItem("theme") === "dark");
+
+        toggleButton.addEventListener("click", () => {
+            const isDark = !document.body.classList.contains("dark-mode");
+            applyTheme(isDark);
+            localStorage.setItem("theme", isDark ? "dark" : "light");
+        });
+    });
+    </script>
+
     <!-- Keyboard Shortcuts for Better Usability -->
     <script>
     console.log('Keyboard shortcuts loaded!');
     
     document.addEventListener('keydown', function(e) {
-        // Debug log
-        if (e.altKey) {
-            console.log('Alt/Option key pressed with:', e.key);
-        }
-        
         // Check if user is typing in an input field
         const isInputField = e.target.tagName === 'INPUT' || 
                             e.target.tagName === 'TEXTAREA' || 
                             e.target.isContentEditable;
         
-        // Don't trigger shortcuts when typing in forms
-        if (isInputField && e.key !== 'Escape' && e.key !== '?') {
-            return;
-        }
-        
+        if (isInputField && e.key !== 'Escape') return;
+
         // Alt/Option + H = Home
-        if (e.altKey && (e.key === 'h' || e.key === 'H')) {
+        if (e.altKey && e.code === 'KeyH') {
             e.preventDefault();
-            console.log('Navigating to home...');
             window.location.href = '{% url "home" %}';
             return;
         }
         
         // Alt/Option + P = Packages
-        if (e.altKey && (e.key === 'p' || e.key === 'P')) {
+        if (e.altKey && e.code === 'KeyP') {
             e.preventDefault();
-            console.log('Navigating to packages...');
             window.location.href = '{% url "package_list" %}';
             return;
         }
         
         // Alt/Option + C = Contact
-        if (e.altKey && (e.key === 'c' || e.key === 'C')) {
+        if (e.altKey && e.code === 'KeyC') {
             e.preventDefault();
-            console.log('Navigating to contact...');
             window.location.href = '{% url "contact_us" %}';
             return;
         }
         
         // Alt/Option + F = FAQ
-        if (e.altKey && (e.key === 'f' || e.key === 'F')) {
+        if (e.altKey && e.code === 'KeyF') {
             e.preventDefault();
-            console.log('Navigating to FAQ...');
             window.location.href = '{% url "faq" %}';
             return;
         }
         
-        // Alt/Option + B = My Bookings (if logged in)
         {% if user.is_authenticated %}
-        if (e.altKey && (e.key === 'b' || e.key === 'B')) {
+        // Alt/Option + B = My Bookings
+        if (e.altKey && e.code === 'KeyB') {
             e.preventDefault();
-            console.log('Navigating to bookings...');
             window.location.href = '{% url "my_bookings" %}';
             return;
         }
-        {% endif %}
         
         // Alt/Option + E = Emergency
-        {% if user.is_authenticated %}
-        if (e.altKey && (e.key === 'e' || e.key === 'E')) {
+        if (e.altKey && e.code === 'KeyE') {
             e.preventDefault();
-            console.log('Opening emergency menu...');
             const emergencyBtn = document.querySelector('.emergency-btn');
-            if (emergencyBtn) {
-                emergencyBtn.click();
-            }
+            if (emergencyBtn) emergencyBtn.click();
             return;
         }
         {% endif %}
         
-        // Escape = Close modals/menus
+        // Escape = Close modals
         if (e.key === 'Escape') {
             const modals = document.querySelectorAll('.modal.show');
             modals.forEach(modal => {
@@ -1269,10 +1316,9 @@
             return;
         }
         
-        // Shift + / (?) = Show keyboard shortcuts help
-        if (e.shiftKey && e.key === '?') {
+        // Shift + / = Show keyboard shortcuts help
+        if (e.shiftKey && e.code === 'Slash') {
             e.preventDefault();
-            console.log('Showing keyboard shortcuts...');
             showKeyboardShortcuts();
             return;
         }
@@ -1372,6 +1418,158 @@
     
     {% block extra_js %}{% endblock %}
 
-    <!-- Added todey -->
+    <!-- HCI Improvements: Form spinner, soft-delete undo, inline error clarity -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ─────────────────────────────────────────────
+        // 1. FORM SUBMISSION SPINNER (Nielsen #1 — system status)
+        //    Attaches to every <form method="post"> that has a submit button.
+        //    Shows spinner on button, disables it to prevent double-submit.
+        //    Skips AJAX forms (those with data-no-spinner).
+        // ─────────────────────────────────────────────
+        document.querySelectorAll('form[method="post"]:not([data-no-spinner])').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                const btn = form.querySelector('[type="submit"]');
+                if (!btn) return;
+                // Small delay so browser validation runs first
+                setTimeout(function () {
+                    if (form.checkValidity && !form.checkValidity()) return;
+                    const original = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing…';
+                    // Safety re-enable after 15s in case of network issue
+                    setTimeout(function () {
+                        btn.disabled = false;
+                        btn.innerHTML = original;
+                    }, 15000);
+                }, 0);
+            });
+        });
+
+        // ─────────────────────────────────────────────
+        // 2. SOFT-DELETE UNDO TOAST (Nielsen #3 — error recovery / rule 6 — reversal)
+        //    Any delete/remove link/button with class `soft-delete-btn`
+        //    gets intercepted: item fades out, undo toast appears for 5s.
+        //    If user clicks Undo, item is restored. If toast expires, the
+        //    original href/form submit fires.
+        // ─────────────────────────────────────────────
+        const UNDO_DURATION = 5000;
+
+        // Inject undo toast container once
+        if (!document.getElementById('undo-toast-container')) {
+            const tc = document.createElement('div');
+            tc.id = 'undo-toast-container';
+            tc.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:8px;pointer-events:none;';
+            document.body.appendChild(tc);
+        }
+
+        function showUndoToast(label, onConfirm, onUndo) {
+            const tc = document.getElementById('undo-toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = 'background:#1e1e2e;color:#fff;padding:12px 20px;border-radius:12px;display:flex;align-items:center;gap:16px;box-shadow:0 8px 24px rgba(0,0,0,0.25);pointer-events:all;animation:slideUp 0.3s ease;min-width:280px;';
+            toast.innerHTML = `
+                <i class="fas fa-trash-alt" style="color:#f87171;"></i>
+                <span style="flex:1;font-size:0.9rem;">${label} deleted</span>
+                <button id="undo-btn" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;">Undo</button>
+                <div id="undo-bar" style="position:absolute;bottom:0;left:0;height:3px;background:#4f46e5;border-radius:0 0 12px 12px;width:100%;transition:width linear ${UNDO_DURATION}ms;"></div>
+            `;
+            toast.style.position = 'relative';
+            tc.appendChild(toast);
+
+            let cancelled = false;
+            const timer = setTimeout(function () {
+                if (!cancelled) {
+                    onConfirm();
+                    toast.remove();
+                }
+            }, UNDO_DURATION);
+
+            // Shrink bar
+            requestAnimationFrame(function () {
+                const bar = toast.querySelector('#undo-bar');
+                if (bar) { bar.style.width = '0%'; }
+            });
+
+            toast.querySelector('#undo-btn').addEventListener('click', function () {
+                cancelled = true;
+                clearTimeout(timer);
+                if (onUndo) onUndo();
+                toast.style.animation = 'slideDown 0.3s ease forwards';
+                setTimeout(function () { toast.remove(); }, 300);
+            });
+        }
+
+        // Wire up any .soft-delete-btn elements (link or button)
+        document.querySelectorAll('.soft-delete-btn').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                e.preventDefault();
+                const row = el.closest('tr, .card, .list-group-item, [data-deletable]');
+                const label = el.dataset.label || 'Item';
+                const href = el.getAttribute('href');
+                const form = el.closest('form');
+
+                if (row) {
+                    row.style.transition = 'opacity 0.3s, transform 0.3s';
+                    row.style.opacity = '0.3';
+                    row.style.transform = 'scale(0.98)';
+                }
+
+                // Capture undo restore before async toast
+                const restoreRow = function () {
+                    if (row) { row.style.opacity = '1'; row.style.transform = 'scale(1)'; }
+                };
+
+                showUndoToast(label, function () {
+                    if (href) { window.location.href = href; }
+                    else if (form) { form.submit(); }
+                }, restoreRow);
+            });
+        });
+
+        // ─────────────────────────────────────────────
+        // 3. INLINE ERROR CLARITY (Nielsen #9 — error recovery)
+        //    Wraps Django's .text-danger / .invalid-feedback messages
+        //    with an icon and friendlier phrasing map.
+        // ─────────────────────────────────────────────
+        const friendlyErrors = {
+            'This field is required.': 'This field can\'t be empty.',
+            'Enter a valid email address.': 'Please enter a valid email (e.g. name@example.com).',
+            'Enter a valid date.': 'Please pick a valid date.',
+            'Ensure this value is greater than or equal to 0.': 'Value must be 0 or more.',
+            'Ensure this value is less than or equal to': 'Value is too large.',
+            'This password is too short.': 'Password must be at least 8 characters.',
+            'The two password fields': 'Passwords don\'t match — please re-enter.',
+            'A user with that username already exists.': 'That username is taken. Try a different one.',
+            'Enter a whole number.': 'Please enter a whole number (no decimals).',
+        };
+
+        document.querySelectorAll('.text-danger, .invalid-feedback').forEach(function (el) {
+            let text = el.textContent.trim();
+            if (!text) return;
+            // Apply friendly mapping
+            for (const [key, val] of Object.entries(friendlyErrors)) {
+                if (text.includes(key)) { text = val; break; }
+            }
+            el.innerHTML = `<i class="fas fa-exclamation-circle me-1" style="color:#ef4444;"></i>${text}`;
+            el.style.fontSize = '0.8rem';
+            el.style.marginTop = '4px';
+            el.style.display = 'block';
+        });
+
+    });
+    </script>
+
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(0);    opacity: 1; }
+            to   { transform: translateY(20px); opacity: 0; }
+        }
+    </style>
+
 </body>
 </html>

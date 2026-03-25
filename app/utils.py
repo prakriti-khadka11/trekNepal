@@ -25,6 +25,23 @@ account_activation_token = AppTokenGenerator()
 
 def get_dynamic_booking_details(booking):
     """Generate realistic booking details based on destination and package type"""
+    # Handle trekking bookings (no travel_package)
+    if not booking.travel_package:
+        trek = booking.trekking
+        dest_name = trek.title if trek else 'Nepal'
+        location = trek.country if trek else 'Nepal'
+        ticket_number = f"TNP-TRK-{booking.id}-{booking.booking_date.year}{booking.booking_date.month:02d}"
+        return {
+            'hotel': f'Trekking Lodge, {location}',
+            'accommodation': 'Tea House Lodge (Basic Meals)',
+            'ticket_number': ticket_number,
+            'destination_info': {
+                'name': dest_name,
+                'location': location,
+                'country': 'Nepal',
+            }
+        }
+
     destination = booking.travel_package.destination
     package_title = booking.travel_package.title.lower()
     location = destination.location.lower()
@@ -362,8 +379,9 @@ def generate_booking_pdf(booking):
     elements.append(Spacer(1, 20))
     
     # Use dynamic details for travel table
+    pkg_name = booking.travel_package.title if booking.travel_package else (booking.trekking.title if booking.trekking else f'Booking #{booking.id}')
     travel_table = Table([
-        ["Package", booking.travel_package.title],
+        ["Package", pkg_name],
         ["Destination", f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}"],
         ["Hotel", dynamic_details['hotel']],
         ["Accommodation", dynamic_details['accommodation']],

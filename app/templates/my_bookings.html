@@ -123,6 +123,8 @@
                                 <h5 class="card-title">
                                     {% if booking.travel_package %}
                                     {{ booking.travel_package.title }}
+                                    {% elif booking.trekking %}
+                                    {{ booking.trekking.title }}
                                     {% else %}
                                     Booking #{{ booking.id }}
                                     {% endif %}
@@ -148,9 +150,11 @@
                                 </div>
                                 <ul class="list-unstyled mb-3">
                                     <li><i class="fas fa-users me-2 text-primary"></i> {{ booking.num_people }} People</li>
-                                    <li><i class="fas fa-dollar-sign me-2 text-primary"></i> Total: ${{ booking.total_price }}</li>
+                                    <li><i class="fas fa-rupee-sign me-2 text-primary"></i> Total: Rs. {{ booking.total_price }}</li>
                                     {% if booking.travel_package %}
                                     <li><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ booking.travel_package.destination.name }}</li>
+                                    {% elif booking.trekking %}
+                                    <li><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ booking.trekking.country }}</li>
                                     {% endif %}
                                     {% if booking.guide %}
                                     <li><i class="fas fa-user-tie me-2 text-primary"></i> Guide: {{ booking.guide.user.get_full_name|default:booking.guide.user.username }}</li>
@@ -194,9 +198,9 @@
                                             {% endif %}
                                         {% endif %}
                                     </div>
-                                    <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display:inline;">
+                                    <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display:inline;" data-no-spinner>
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger soft-delete-btn" data-label="Booking" data-form-id="cancel-form-{{ booking.id }}">Cancel</button>
                                     </form>
                                 </div>
                             </div>
@@ -238,9 +242,13 @@
                     {% for booking in bookings %}
                         <tr>
                             <td>{{ booking.id }}</td>
-                            <td>{{ booking.travel_package.title }}</td>
+                            <td>
+                                {% if booking.travel_package %}{{ booking.travel_package.title }}
+                                {% elif booking.trekking %}{{ booking.trekking.title }}
+                                {% else %}Booking #{{ booking.id }}{% endif %}
+                            </td>
                             <td>{{ booking.num_people }}</td>
-                            <td>${{ booking.total_price }}</td>
+                            <td>Rs. {{ booking.total_price }}</td>
                             <td>{{ booking.travel_date|date:"F j, Y" }}</td>
                         </tr>
                     {% endfor %}

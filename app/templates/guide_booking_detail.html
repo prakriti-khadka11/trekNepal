@@ -27,7 +27,7 @@
                                 <li class="mb-2"><strong>Booking Date:</strong> {{ booking.booking_date|date:"F d, Y" }}</li>
                                 <li class="mb-2"><strong>Travel Date:</strong> {{ booking.travel_date|date:"F d, Y" }}</li>
                                 <li class="mb-2"><strong>Number of People:</strong> {{ booking.num_people }}</li>
-                                <li class="mb-2"><strong>Total Price:</strong> ${{ booking.total_price }}</li>
+                                <li class="mb-2"><strong>Total Price:</strong> Rs. {{ booking.total_price }}</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -62,7 +62,7 @@
                                 <ul class="list-unstyled">
                                     <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ booking.travel_package.destination.name }}</li>
                                     <li class="mb-2"><i class="fas fa-calendar me-2 text-primary"></i> {{ booking.travel_package.duration }} Days</li>
-                                    <li class="mb-2"><i class="fas fa-dollar-sign me-2 text-primary"></i> ${{ booking.travel_package.price }} per person</li>
+                                    <li class="mb-2"><i class="fas fa-rupee-sign me-2 text-primary"></i> Rs. {{ booking.travel_package.price }} per person</li>
                                 </ul>
                             </div>
                         </div>

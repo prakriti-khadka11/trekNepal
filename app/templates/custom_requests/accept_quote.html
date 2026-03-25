@@ -16,8 +16,8 @@
                     
                     <div class="alert alert-info">
                         <h6>Quote Summary:</h6>
-                        <p><strong>Total Price:</strong> ${{ quote.total_price }}</p>
-                        <p><strong>Advance Payment ({{ quote.advance_payment_percentage }}%):</strong> ${{ quote.get_advance_amount }}</p>
+                        <p><strong>Total Price:</strong> Rs. {{ quote.total_price }}</p>
+                        <p><strong>Advance Payment ({{ quote.advance_payment_percentage }}%):</strong> Rs. {{ quote.get_advance_amount }}</p>
                         <p><strong>Valid Until:</strong> {{ quote.expires_at|date:"M d, Y" }}</p>
                     </div>
 
