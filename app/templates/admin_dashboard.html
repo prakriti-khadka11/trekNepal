@@ -52,55 +52,6 @@
         </div>
     </div>
 
-    <!-- Content Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card border-left-success">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Packages</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_packages }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-suitcase fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card border-left-info">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Destinations</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_destinations }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-map-marker-alt fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card border-left-warning">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Countries</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_countries }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-globe fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Quick Actions -->
     <div class="row mb-4">
         <div class="col-12">
@@ -293,6 +244,61 @@
         </div>
     </div>
     {% endif %}
+
+    <!-- Custom Package Requests -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0"><i class="fas fa-magic me-2"></i>Custom Package Requests</h6>
+                    <a href="{% url 'admin_custom_requests' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2 flex-wrap mb-3">
+                        <span class="badge bg-secondary fs-6">Total: {{ custom_request_stats.total }}</span>
+                        <span class="badge bg-warning text-dark fs-6">Pending: {{ custom_request_stats.pending }}</span>
+                        <span class="badge bg-info fs-6">Reviewing: {{ custom_request_stats.reviewing }}</span>
+                        <span class="badge bg-primary fs-6">Quoted: {{ custom_request_stats.quoted }}</span>
+                        <span class="badge bg-success fs-6">Accepted: {{ custom_request_stats.accepted }}</span>
+                    </div>
+                    {% if recent_custom_requests %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th><th>User</th><th>Destination</th><th>Travelers</th><th>Dates</th><th>Status</th><th>Submitted</th><th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cr in recent_custom_requests %}
+                                <tr>
+                                    <td><strong>#{{ cr.id }}</strong></td>
+                                    <td>{{ cr.user.get_full_name|default:cr.user.username }}<br><small class="text-muted">{{ cr.user.email }}</small></td>
+                                    <td>{{ cr.destination|truncatechars:25 }}</td>
+                                    <td>{{ cr.num_travelers }}</td>
+                                    <td style="font-size:12px;">{{ cr.preferred_start_date|date:"M d" }} – {{ cr.preferred_end_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if cr.status == 'PENDING' %}<span class="badge bg-warning text-dark">Pending</span>
+                                        {% elif cr.status == 'REVIEWING' %}<span class="badge bg-info">Reviewing</span>
+                                        {% elif cr.status == 'QUOTED' %}<span class="badge bg-primary">Quoted</span>
+                                        {% elif cr.status == 'ACCEPTED' %}<span class="badge bg-success">Accepted</span>
+                                        {% elif cr.status == 'REJECTED' %}<span class="badge bg-danger">Rejected</span>
+                                        {% else %}<span class="badge bg-secondary">{{ cr.status }}</span>{% endif %}
+                                    </td>
+                                    <td style="font-size:12px;">{{ cr.created_at|date:"M d, Y" }}</td>
+                                    <td><a href="{% url 'admin_view_request' cr.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i> View</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No custom requests yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 

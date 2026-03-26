@@ -12,28 +12,34 @@
                 </div>
                 <div class="card-body">
                     <h5>{{ quote.package_title }}</h5>
-                    
+
+                    {% if not can_renegotiate %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Your travel date is in <strong>{{ days_until_travel }} day{{ days_until_travel|pluralize }}</strong>.
+                        Quotes cannot be rejected within 7 days of the travel date. Please accept the quote or contact us.
+                    </div>
+                    <a href="{% url 'view_custom_request' quote.custom_request.id %}" class="btn btn-outline-secondary">← Go Back</a>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        You have <strong>{{ days_until_travel }} days</strong> until your travel date.
+                        Rejecting this quote will allow the admin to send a revised quote. Renegotiation closes 7 days before travel.
+                    </div>
                     <form method="post">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="reason" class="form-label">Reason for Rejection (Optional)</label>
-                            <textarea name="reason" id="reason" class="form-control" rows="4" placeholder="Let us know why this quote doesn't work for you so we can create a better one..."></textarea>
+                            <textarea name="reason" id="reason" class="form-control" rows="4" placeholder="Let us know why this quote doesn't work so we can create a better one..."></textarea>
                         </div>
-                        
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            We'll use your feedback to create a revised quote that better matches your needs.
-                        </div>
-                        
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-times me-2"></i>Reject Quote
+                                <i class="fas fa-times me-2"></i>Reject & Request Revised Quote
                             </button>
-                            <a href="{% url 'view_custom_request' quote.custom_request.id %}" class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
+                            <a href="{% url 'view_custom_request' quote.custom_request.id %}" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>
+                    {% endif %}
                 </div>
             </div>
         </div>

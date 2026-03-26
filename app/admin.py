@@ -254,3 +254,14 @@ class GuideMessageAdmin(admin.ModelAdmin):
     list_filter = ('is_read', 'created_at')
     search_fields = ('sender__username', 'message', 'booking__id')
     readonly_fields = ('created_at',)
+
+# ===== PACKING LIST ADMIN =====
+from .models import PackingTemplate
+
+@admin.register(PackingTemplate)
+class PackingTemplateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'trip_type', 'season', 'category', 'priority', 'quantity', 'per_person')
+    list_filter = ('trip_type', 'season', 'category', 'priority')
+    search_fields = ('name', 'notes')
+    list_editable = ('priority', 'quantity', 'per_person')
+    ordering = ('trip_type', 'season', 'category', 'name')

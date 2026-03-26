@@ -25,12 +25,11 @@
                         {% csrf_token %}
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            By accepting this quote, you agree to proceed with the booking. Our team will contact you shortly to finalize payment and arrangements.
+                            By proceeding, you will be taken to Khalti to complete the full payment of <strong>Rs. {{ quote.total_price }}</strong>. Once paid, this booking is confirmed and cannot be cancelled.
                         </div>
-                        
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success btn-lg">
-                                <i class="fas fa-check me-2"></i>Yes, Accept This Quote
+                                <i class="fas fa-credit-card me-2"></i>Pay Rs. {{ quote.total_price }} via Khalti
                             </button>
                             <a href="{% url 'view_custom_request' quote.custom_request.id %}" class="btn btn-outline-secondary">
                                 Cancel

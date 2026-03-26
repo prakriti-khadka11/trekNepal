@@ -18,7 +18,7 @@
 
     <!-- Status Summary -->
     <div class="row mb-4">
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
                     <h3 class="text-warning">{{ status_counts.pending }}</h3>
@@ -26,27 +26,19 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="text-info">{{ status_counts.reviewing }}</h3>
-                    <p class="mb-0">Under Review</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="text-primary">{{ status_counts.quoted }}</h3>
-                    <p class="mb-0">Quoted</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
                     <h3 class="text-success">{{ status_counts.accepted }}</h3>
-                    <p class="mb-0">Accepted</p>
+                    <p class="mb-0">Accepted & Paid</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-danger">{{ status_counts.rejected }}</h3>
+                    <p class="mb-0">Rejected</p>
                 </div>
             </div>
         </div>
@@ -66,16 +58,12 @@
                             </h5>
                             {% if request.status == 'PENDING' %}
                                 <span class="badge bg-warning">Pending</span>
-                            {% elif request.status == 'REVIEWING' %}
-                                <span class="badge bg-info">Under Review</span>
-                            {% elif request.status == 'QUOTED' %}
-                                <span class="badge bg-primary">Quote Sent</span>
+                            {% elif request.status in 'REVIEWING,QUOTED' or request.status == 'REVIEWING' or request.status == 'QUOTED' %}
+                                <span class="badge bg-info">In Progress</span>
                             {% elif request.status == 'ACCEPTED' %}
-                                <span class="badge bg-success">Accepted</span>
+                                <span class="badge bg-success">Accepted & Paid</span>
                             {% elif request.status == 'REJECTED' %}
                                 <span class="badge bg-danger">Rejected</span>
-                            {% elif request.status == 'CONVERTED' %}
-                                <span class="badge bg-success">Converted</span>
                             {% endif %}
                         </div>
 

@@ -662,14 +662,17 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
+                  {% if not user.is_staff and not user.is_superuser %}
                   <form method="get" action="{% url 'search_view' %}" class="d-flex">
                     <input class="form-control me-2" type="search" name="q" placeholder="Search destinations..." value="{{ request.GET.q }}">
                     <button class="btn btn-outline-light" type="submit" style="background-color: #1e90ff;">Search</button>
                 </form>
+                  {% endif %}
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'home' %}">Home</a>
                         </li>
+                        {% if not user.is_staff and not user.is_superuser %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle scrollable-dropdown" href="#" id="destinationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Destinations
@@ -703,7 +706,8 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'contact_us' %}">Contact</a>
                         </li>
-                        {% if user.is_authenticated %}
+                        {% endif %}
+                        {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-tools me-1"></i>Tools
@@ -732,10 +736,12 @@
                                 <i class="fas fa-user-circle me-1"></i>{{ user.username }}
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                {% if not user.is_staff and not user.is_superuser %}
                                 <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My Bookings</a></li>
                                 <li><a class="dropdown-item" href="{% url 'my_custom_requests' %}">My Custom Requests</a></li>
                                 <li><a class="dropdown-item" href="{% url 'personal_dashboard' %}">My Expenses</a></li>
                                 <li><hr class="dropdown-divider"></li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                             </ul>
                         </li>

@@ -1,105 +1,167 @@
 {% extends 'base.html' %}
-
-{% block title %}Create Quote{% endblock %}
+{% block title %}Create Quote — Request #{{ custom_request.id }}{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <h3>Create Quote for Request #{{ custom_request.id }}</h3>
-    
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            {{ form.package_title.label_tag }}
-                            {{ form.package_title }}
-                        </div>
+<div class="container my-4" style="max-width:1100px;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Create Quote — Request #{{ custom_request.id }} · {{ custom_request.destination }}</h4>
+    <a href="{% url 'admin_view_request' custom_request.id %}" class="btn btn-outline-secondary btn-sm">← Back</a>
+  </div>
 
-                        <div class="mb-3">
-                            {{ form.description.label_tag }}
-                            {{ form.description }}
-                        </div>
+  <div class="row g-4">
 
-                        <div class="mb-3">
-                            {{ form.itinerary.label_tag }}
-                            {{ form.itinerary }}
-                            <small class="text-muted">Day-by-day itinerary</small>
-                        </div>
+    <!-- Quote form -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white"><h6 class="mb-0">Quote Details</h6></div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger"><strong>Fix errors:</strong> {{ form.errors }}</div>
+            {% endif %}
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form.price_per_person.label_tag }}
-                                {{ form.price_per_person }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.total_price.label_tag }}
-                                {{ form.total_price }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.inclusions.label_tag }}
-                            {{ form.inclusions }}
-                            <small class="text-muted">One item per line</small>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.exclusions.label_tag }}
-                            {{ form.exclusions }}
-                            <small class="text-muted">One item per line</small>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form.validity_days.label_tag }}
-                                {{ form.validity_days }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form.advance_payment_percentage.label_tag }}
-                                {{ form.advance_payment_percentage }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.terms_and_conditions.label_tag }}
-                            {{ form.terms_and_conditions }}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.cancellation_policy.label_tag }}
-                            {{ form.cancellation_policy }}
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="fas fa-paper-plane me-2"></i>Send Quote to User
-                            </button>
-                            <a href="{% url 'admin_view_request' custom_request.id %}" class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
-                </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Package Title</label>
+              {{ form.package_title }}
             </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Request Summary</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>User:</strong> {{ custom_request.user.username }}</p>
-                    <p><strong>Destination:</strong> {{ custom_request.destination }}</p>
-                    <p><strong>Travelers:</strong> {{ custom_request.num_travelers }}</p>
-                    <p><strong>Budget Range:</strong> Rs. {{ custom_request.budget_min }} - Rs. {{ custom_request.budget_max }}</p>
-                    <p><strong>Duration:</strong> {{ custom_request.get_duration_days }} days</p>
-                </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Description</label>
+              {{ form.description }}
             </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Day-by-Day Itinerary</label>
+              {{ form.itinerary }}
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Price per Person (Rs.)</label>
+                {{ form.price_per_person }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Total Price (Rs.) <small class="text-muted">auto-calculated</small></label>
+                {{ form.total_price }}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Inclusions <small class="text-muted">(one per line)</small></label>
+              {{ form.inclusions }}
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Exclusions <small class="text-muted">(one per line)</small></label>
+              {{ form.exclusions }}
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Quote Valid For (days)</label>
+                {{ form.validity_days }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Confirmed Travel Date <small class="text-muted">(if dates were negotiated)</small></label>
+                {{ form.confirmed_travel_date }}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Terms & Conditions</label>
+              {{ form.terms_and_conditions }}
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Cancellation Policy</label>
+              {{ form.cancellation_policy }}
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg">
+                <i class="fas fa-paper-plane me-2"></i>Send Quote to User
+              </button>
+              <a href="{% url 'admin_view_request' custom_request.id %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
+
+    <!-- Request summary -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm border-info">
+        <div class="card-header bg-info text-white"><h6 class="mb-0">📋 What the User Requested</h6></div>
+        <div class="card-body" style="font-size:14px;">
+
+          <div class="mb-3 pb-3 border-bottom">
+            <div class="text-muted small text-uppercase fw-bold mb-1">User</div>
+            <strong>{{ custom_request.user.get_full_name|default:custom_request.user.username }}</strong>
+            <div class="text-muted">{{ custom_request.user.email }}</div>
+          </div>
+
+          <div class="mb-3 pb-3 border-bottom">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Destination</div>
+            <strong>{{ custom_request.destination }}</strong>
+          </div>
+
+          <div class="mb-3 pb-3 border-bottom">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Travel Dates</div>
+            {{ custom_request.preferred_start_date|date:"M d, Y" }} → {{ custom_request.preferred_end_date|date:"M d, Y" }}
+            <span class="badge bg-secondary ms-1">{{ custom_request.get_duration_days }} days</span>
+            {% if custom_request.flexible_dates %}
+            <div class="text-success small mt-1"><i class="fas fa-check-circle me-1"></i>Dates are flexible</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3 pb-3 border-bottom">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Group & Budget</div>
+            <div><i class="fas fa-users me-1 text-primary"></i> {{ custom_request.num_travelers }} traveler{{ custom_request.num_travelers|pluralize }}</div>
+            <div><i class="fas fa-rupee-sign me-1 text-warning"></i> Rs. {{ custom_request.budget_min }} – Rs. {{ custom_request.budget_max }} per person</div>
+            <div class="text-muted small">Total budget range: Rs. {{ custom_request.get_total_budget_range.min|floatformat:0 }} – Rs. {{ custom_request.get_total_budget_range.max|floatformat:0 }}</div>
+          </div>
+
+          <div class="mb-3 pb-3 border-bottom">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Activity & Preferences</div>
+            <div><i class="fas fa-hiking me-1 text-success"></i> {{ custom_request.get_activity_type_display }}</div>
+            {% if custom_request.accommodation_preference %}
+            <div><i class="fas fa-bed me-1 text-info"></i> {{ custom_request.accommodation_preference }}</div>
+            {% endif %}
+            <div>
+              <i class="fas fa-user-tie me-1 {% if custom_request.guide_required %}text-success{% else %}text-muted{% endif %}"></i>
+              Guide: {% if custom_request.guide_required %}<span class="text-success fw-bold">Required</span>{% else %}Not required{% endif %}
+            </div>
+          </div>
+
+          {% if custom_request.special_requirements %}
+          <div class="mb-3 pb-3 border-bottom">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Special Requirements</div>
+            {{ custom_request.special_requirements }}
+          </div>
+          {% endif %}
+
+          {% if custom_request.additional_notes %}
+          <div class="mb-2">
+            <div class="text-muted small text-uppercase fw-bold mb-1">Additional Notes</div>
+            {{ custom_request.additional_notes }}
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<script>
+// Auto-calculate total price when price per person changes
+const pppInput = document.querySelector('[name="price_per_person"]');
+const totalInput = document.querySelector('[name="total_price"]');
+const numPeople = {{ custom_request.num_travelers }};
+
+if (pppInput && totalInput) {
+  pppInput.addEventListener('input', function() {
+    const ppp = parseFloat(this.value) || 0;
+    totalInput.value = (ppp * numPeople).toFixed(2);
+  });
+}
+</script>
 {% endblock %}

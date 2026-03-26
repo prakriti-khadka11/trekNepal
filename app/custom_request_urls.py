@@ -11,7 +11,11 @@ urlpatterns = [
     path('request/<int:request_id>/', custom_request_views.view_custom_request, name='view_custom_request'),
     path('quote/<int:quote_id>/accept/', custom_request_views.accept_quote, name='accept_quote'),
     path('quote/<int:quote_id>/reject/', custom_request_views.reject_quote, name='reject_quote'),
-    
+
+    # Khalti payment for custom requests
+    path('khalti/initiate/<int:quote_id>/', custom_request_views.khalti_initiate_custom, name='khalti_initiate_custom'),
+    path('khalti/verify/', custom_request_views.khalti_verify_custom, name='khalti_verify_custom'),
+
     # Admin URLs
     path('admin/dashboard/', custom_request_views.admin_custom_requests, name='admin_custom_requests'),
     path('admin/request/<int:request_id>/', custom_request_views.admin_view_request, name='admin_view_request'),

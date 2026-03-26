@@ -1,194 +1,150 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Packing List — TrekNepal{% endblock %}
+{% block title %}Packing List Generator — TrekNepal{% endblock %}
 
 {% block extra_css %}
 <style>
 :root { --g1:#11998e; --g2:#38ef7d; }
-
 .pl-page { background:#f0f4f8; min-height:100vh; padding:32px 0 80px; }
 
-/* Hero */
 .pl-hero {
-  background:linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);
-  border-radius:18px; padding:36px 44px; color:#fff;
-  margin-bottom:28px; position:relative; overflow:hidden;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  border-radius:16px; padding:28px 36px; color:#fff;
+  margin-bottom:24px; position:relative; overflow:hidden;
 }
-.pl-hero::after {
-  content:'🎒'; font-size:150px; position:absolute;
-  right:24px; top:-8px; opacity:.06; pointer-events:none; line-height:1;
-}
-.pl-hero h1 { font-size:22px; font-weight:800; margin:0 0 6px; }
-.pl-hero p  { opacity:.7; margin:0 0 16px; font-size:14px; }
-.pl-hero-stats { display:flex; gap:12px; flex-wrap:wrap; }
-.pl-stat {
-  background:rgba(255,255,255,.12); border-radius:8px;
-  padding:6px 14px; font-size:12px; font-weight:600;
-}
+.pl-hero::after { content:'🎒'; font-size:120px; position:absolute; right:20px; top:-4px; opacity:.06; pointer-events:none; line-height:1; }
+.pl-hero h1 { font-size:20px; font-weight:800; margin:0 0 4px; }
+.pl-hero p  { opacity:.7; margin:0; font-size:13px; }
 
-/* Layout */
-.pl-layout { display:grid; grid-template-columns:280px 1fr; gap:20px; align-items:start; }
+/* Two-column layout */
+.pl-layout { display:grid; grid-template-columns:320px 1fr; gap:20px; align-items:start; }
 @media(max-width:860px){ .pl-layout { grid-template-columns:1fr; } }
 
-/* Sidebar */
-.pl-sidebar { position:sticky; top:80px; display:flex; flex-direction:column; gap:10px; }
-.bcard {
-  background:#fff; border-radius:12px; padding:14px 16px;
-  box-shadow:0 1px 8px rgba(0,0,0,.07); cursor:pointer;
-  border:2px solid transparent; transition:all .18s;
+/* Selector panel */
+.selector-panel {
+  background:#fff; border-radius:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+  position:sticky; top:80px; overflow:hidden;
 }
-.bcard:hover { border-color:#b2dfdb; box-shadow:0 4px 16px rgba(0,0,0,.1); }
-.bcard.active { border-color:var(--g1); background:#f0fdf9; }
-.bcard-dest { font-size:14px; font-weight:700; color:#1a1a2e; margin-bottom:2px; }
-.bcard-pkg  { font-size:11px; color:#999; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.bcard-pills { display:flex; flex-wrap:wrap; gap:5px; }
-.pill {
-  font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px;
-  background:#f0f4f8; color:#555;
-}
-.pill.spring  { background:#fff8e1; color:#f57f17; }
-.pill.monsoon { background:#e3f2fd; color:#1565c0; }
-.pill.autumn  { background:#fce4ec; color:#880e4f; }
-.pill.winter  { background:#e8eaf6; color:#283593; }
-.bcard-countdown { font-size:11px; font-weight:700; color:var(--g1); margin-top:8px; }
+.selector-panel form { display:flex; flex-direction:column; height:100%; }
 
-/* Detail */
-.pl-detail {}
+.sp-section { padding:14px 16px; border-bottom:1px solid #f0f0f0; }
+.sp-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#aaa; margin-bottom:8px; }
 
-/* Trip summary card */
-.trip-card {
-  background:#fff; border-radius:14px; padding:20px 24px;
-  box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:16px;
-}
-.trip-card-header {
-  display:flex; justify-content:space-between; align-items:flex-start;
-  margin-bottom:16px; flex-wrap:wrap; gap:10px;
-}
-.trip-title { font-size:18px; font-weight:800; color:#1a1a2e; margin:0 0 3px; }
-.trip-subtitle { font-size:13px; color:#888; }
-.regen-btn {
-  font-size:12px; font-weight:600; padding:7px 14px; border-radius:8px;
-  border:2px solid #dee2e6; background:#fff; color:#555; cursor:pointer;
-  transition:all .18s; text-decoration:none; display:inline-flex; align-items:center; gap:5px;
-}
-.regen-btn:hover { border-color:var(--g1); color:var(--g1); }
+/* Trip list — scrollable */
+.trip-list { max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; }
+.trip-list::-webkit-scrollbar { width:4px; }
+.trip-list::-webkit-scrollbar-thumb { background:#e0e0e0; border-radius:4px; }
 
-.trip-meta { display:flex; flex-wrap:wrap; gap:0; border:1px solid #f0f0f0; border-radius:10px; overflow:hidden; }
-.tm-item {
-  flex:1; min-width:100px; padding:12px 16px; border-right:1px solid #f0f0f0;
-  display:flex; flex-direction:column; gap:2px;
+.trip-item {
+  display:flex; align-items:center; gap:10px; padding:8px 10px;
+  border-radius:9px; border:2px solid transparent; cursor:pointer;
+  transition:all .15s; background:#f8f9fa;
 }
-.tm-item:last-child { border-right:none; }
-.tm-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#aaa; }
-.tm-value { font-size:14px; font-weight:700; color:#1a1a2e; }
-.tm-value.highlight { color:var(--g1); }
+.trip-item:hover { border-color:#b2dfdb; background:#f0fdf9; }
+.trip-item.selected { border-color:var(--g1); background:#e8f5e9; }
+.trip-item .ti-icon { font-size:18px; flex-shrink:0; }
+.trip-item .ti-info { flex:1; min-width:0; }
+.trip-item .ti-name { font-size:12px; font-weight:700; color:#1a1a2e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.trip-item .ti-meta { font-size:10px; color:#888; }
+.trip-item.selected .ti-name { color:var(--g1); }
 
-/* AI summary */
-.ai-summary {
-  background:linear-gradient(135deg,#f0fdf9,#e8f5e9);
-  border:1px solid #b2dfdb; border-radius:10px;
-  padding:12px 16px; margin-top:14px;
-  font-size:13px; color:#2e7d32; display:flex; gap:10px; align-items:flex-start;
+.trip-group-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#bbb; padding:4px 2px 2px; }
+
+/* Season buttons */
+.season-row { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.season-btn {
+  padding:7px 8px; border-radius:9px; border:2px solid #e9ecef;
+  background:#fff; cursor:pointer; font-size:11px; font-weight:600;
+  color:#555; transition:all .15s; text-align:center;
 }
-.ai-summary i { flex-shrink:0; margin-top:1px; }
+.season-btn:hover { border-color:var(--g1); color:var(--g1); }
+.season-btn.selected { background:var(--g1); border-color:var(--g1); color:#fff; }
+
+/* People input */
+.people-row { display:flex; align-items:center; gap:10px; }
+.people-row label { font-size:12px; font-weight:600; color:#555; }
+.people-input { width:70px; padding:7px 10px; border:2px solid #e9ecef; border-radius:9px; font-size:14px; font-weight:700; text-align:center; }
+.people-input:focus { border-color:var(--g1); outline:none; }
+
+.generate-btn {
+  margin:14px 16px 16px; background:linear-gradient(135deg,var(--g1),var(--g2));
+  border:none; color:#fff; padding:12px; border-radius:11px;
+  font-size:14px; font-weight:700; cursor:pointer; transition:opacity .18s;
+}
+.generate-btn:hover { opacity:.9; }
+
+/* Result panel */
+.result-panel {}
+
+.result-header {
+  background:#fff; border-radius:14px; padding:16px 20px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:14px;
+  display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+}
+.rh-title { font-size:16px; font-weight:800; color:#1a1a2e; }
+.rh-meta  { display:flex; flex-wrap:wrap; gap:7px; }
+.rh-pill  { background:#f0f4f8; border-radius:20px; padding:3px 10px; font-size:11px; font-weight:600; color:#555; }
+.rh-pill.season-spring  { background:#fff8e1; color:#f57f17; }
+.rh-pill.season-monsoon { background:#e3f2fd; color:#1565c0; }
+.rh-pill.season-autumn  { background:#fce4ec; color:#880e4f; }
+.rh-pill.season-winter  { background:#e8eaf6; color:#283593; }
 
 /* Progress */
 .progress-card {
-  background:#fff; border-radius:14px; padding:18px 22px;
-  box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:16px;
-  display:flex; align-items:center; gap:18px;
+  background:#fff; border-radius:14px; padding:14px 18px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:14px;
+  display:flex; align-items:center; gap:14px;
 }
-.prog-ring { position:relative; width:58px; height:58px; flex-shrink:0; }
+.prog-ring { position:relative; width:52px; height:52px; flex-shrink:0; }
 .prog-ring svg { transform:rotate(-90deg); }
 .prog-ring-bg   { fill:none; stroke:#e9ecef; stroke-width:5; }
-.prog-ring-fill { fill:none; stroke:var(--g1); stroke-width:5;
-  stroke-linecap:round; stroke-dasharray:163; stroke-dashoffset:163;
-  transition:stroke-dashoffset .5s ease; }
-.prog-ring-label {
-  position:absolute; inset:0; display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  font-size:12px; font-weight:800; color:#222;
-}
-.prog-ring-label small { font-size:8px; color:#aaa; font-weight:600; }
+.prog-ring-fill { fill:none; stroke:var(--g1); stroke-width:5; stroke-linecap:round; stroke-dasharray:163; stroke-dashoffset:163; transition:stroke-dashoffset .5s; }
+.prog-ring-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#222; }
+.prog-ring-label small { font-size:8px; color:#aaa; }
 .prog-info { flex:1; }
-.prog-info p { font-size:12px; color:#888; margin:0 0 6px; }
-.prog-bar-outer { height:6px; background:#e9ecef; border-radius:10px; }
-.prog-bar-inner { height:6px; background:linear-gradient(90deg,var(--g1),var(--g2));
-  border-radius:10px; transition:width .5s ease; }
-.prog-actions { display:flex; gap:8px; }
-.prog-btn {
-  padding:7px 13px; border-radius:8px; font-size:12px; font-weight:600;
-  cursor:pointer; border:2px solid #dee2e6; background:#fff; color:#555;
-  transition:all .18s; white-space:nowrap;
-}
+.prog-info p { font-size:12px; color:#888; margin:0 0 5px; }
+.prog-bar-outer { height:5px; background:#e9ecef; border-radius:10px; }
+.prog-bar-inner { height:5px; background:linear-gradient(90deg,var(--g1),var(--g2)); border-radius:10px; transition:width .5s; }
+.prog-actions { display:flex; gap:7px; }
+.prog-btn { padding:6px 12px; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; border:2px solid #dee2e6; background:#fff; color:#555; transition:all .15s; white-space:nowrap; }
 .prog-btn:hover { border-color:var(--g1); color:var(--g1); }
-.prog-btn.primary { background:var(--g1); border-color:var(--g1); color:#fff; }
 
 /* Category tabs */
-.cat-tabs { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:12px; }
-.cat-tab {
-  padding:6px 13px; border-radius:30px; border:2px solid #e9ecef;
-  background:#fff; cursor:pointer; font-size:12px; font-weight:600;
-  color:#555; transition:all .18s;
-}
+.cat-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+.cat-tab { padding:5px 12px; border-radius:30px; border:2px solid #e9ecef; background:#fff; cursor:pointer; font-size:11px; font-weight:600; color:#555; transition:all .15s; }
 .cat-tab:hover { border-color:var(--g1); color:var(--g1); }
 .cat-tab.active { background:var(--g1); border-color:var(--g1); color:#fff; }
-.cat-tab .tc { background:rgba(0,0,0,.1); border-radius:20px; padding:1px 5px; font-size:10px; margin-left:3px; }
+.cat-tab .tc { background:rgba(0,0,0,.1); border-radius:20px; padding:1px 5px; font-size:9px; margin-left:2px; }
 .cat-tab.active .tc { background:rgba(255,255,255,.25); }
 
 /* Items */
-.items-card {
-  background:#fff; border-radius:14px; padding:20px;
-  box-shadow:0 2px 12px rgba(0,0,0,.07);
-}
+.items-card { background:#fff; border-radius:14px; padding:16px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
 .cat-section { display:none; }
 .cat-section.visible { display:block; }
-
-.pack-row {
-  display:flex; align-items:center; gap:12px; padding:10px 8px;
-  border-bottom:1px solid #f5f5f5; cursor:pointer; transition:background .12s;
-  border-radius:8px;
-}
+.pack-row { display:flex; align-items:center; gap:10px; padding:9px 6px; border-bottom:1px solid #f5f5f5; cursor:pointer; transition:background .12s; border-radius:7px; }
 .pack-row:last-child { border-bottom:none; }
 .pack-row:hover { background:#f8fffe; }
 .pack-row.done { opacity:.4; }
 .pack-row.done .item-name { text-decoration:line-through; }
-.pack-row input[type=checkbox] { width:16px; height:16px; accent-color:var(--g1); cursor:pointer; flex-shrink:0; }
+.pack-row input[type=checkbox] { width:15px; height:15px; accent-color:var(--g1); cursor:pointer; flex-shrink:0; }
 .item-info { flex:1; }
-.item-name { font-size:13.5px; font-weight:500; color:#333; }
-.item-note { font-size:11px; color:#aaa; margin-top:1px; }
-.item-qty  { font-size:11px; font-weight:700; color:var(--g1); margin-right:4px; }
-.item-badges { display:flex; gap:5px; align-items:center; flex-shrink:0; }
-.badge-priority {
-  font-size:10px; padding:2px 7px; border-radius:20px; font-weight:700;
-  text-transform:uppercase; letter-spacing:.3px;
-}
+.item-name { font-size:13px; font-weight:500; color:#333; }
+.item-note { font-size:10px; color:#aaa; margin-top:1px; }
+.item-qty  { font-size:10px; font-weight:700; color:var(--g1); margin-right:3px; }
+.badge-priority { font-size:9px; padding:2px 6px; border-radius:20px; font-weight:700; text-transform:uppercase; flex-shrink:0; }
 .bp-essential   { background:#fff3cd; color:#856404; }
 .bp-recommended { background:#d1ecf1; color:#0c5460; }
 .bp-optional    { background:#f8f9fa; color:#6c757d; }
-.badge-ai { background:#e8d5f5; color:#5b2c8d; font-size:10px; padding:2px 6px; border-radius:20px; font-weight:700; }
 
-/* No bookings */
-.no-bookings {
-  text-align:center; padding:80px 20px;
-  background:#fff; border-radius:18px; box-shadow:0 2px 16px rgba(0,0,0,.07);
-}
-.no-bookings .nb-icon { font-size:60px; margin-bottom:16px; }
-.no-bookings h3 { color:#444; margin-bottom:8px; font-size:18px; }
-.no-bookings p  { color:#888; font-size:14px; }
+/* Empty state */
+.empty-state { text-align:center; padding:60px 20px; background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.07); color:#aaa; }
+.empty-state .es-icon { font-size:52px; margin-bottom:12px; }
 
-@media(max-width:768px){
-  .pl-hero { padding:24px 18px; }
-  .trip-meta { flex-direction:column; }
-  .tm-item { border-right:none; border-bottom:1px solid #f0f0f0; }
-  .tm-item:last-child { border-bottom:none; }
-  .progress-card { flex-wrap:wrap; }
-}
 @media print {
-  .pl-sidebar,.pl-hero,.prog-actions,.cat-tabs,.regen-btn { display:none !important; }
+  .selector-panel,.pl-hero,.prog-actions,.cat-tabs { display:none !important; }
   .pl-layout { grid-template-columns:1fr !important; }
   .cat-section { display:block !important; }
-  .pack-row.done { display:none !important; }
 }
 </style>
 {% endblock %}
@@ -198,271 +154,217 @@
 <div class="container">
 
   <div class="pl-hero">
-    <h1>🎒 Packing List</h1>
-    <p>Auto-generated from your upcoming bookings — tailored to destination, travel date, group size & trek type</p>
-    {% if booking_data %}
-    <div class="pl-hero-stats">
-      <span class="pl-stat">📦 {{ booking_data|length }} upcoming trip{{ booking_data|length|pluralize }}</span>
-      <span class="pl-stat">🗓 Based on actual travel dates</span>
-      <span class="pl-stat">✨ AI-enhanced recommendations</span>
-    </div>
-    {% endif %}
+    <h1>🎒 Packing List Generator</h1>
+    <p>Pick a trip, choose your season, and get a complete gear checklist from our database</p>
   </div>
 
-  {% if not booking_data %}
-  <div class="no-bookings">
-    <div class="nb-icon">🗺️</div>
-    <h3>No upcoming trips found</h3>
-    <p>Your packing list appears here automatically once you have an upcoming paid booking.<br>Past trips are not shown — packing lists are for future travel only.</p>
-    <a href="{% url 'package_list' %}" class="btn btn-success mt-3">Browse Packages</a>
-  </div>
-
-  {% else %}
   <div class="pl-layout">
 
-    <!-- Sidebar -->
-    <div class="pl-sidebar">
-      {% for bd in booking_data %}
-      <div class="bcard {% if forloop.first %}active{% endif %}"
-           id="bcard-{{ forloop.counter0 }}"
-           onclick="switchBooking({{ forloop.counter0 }})">
-        <div class="bcard-dest">{{ bd.dest_name }}</div>
-        <div class="bcard-pkg">{{ bd.pkg_title }}</div>
-        <div class="bcard-pills">
-          <span class="pill {{ bd.season }}">{{ bd.season|title }}</span>
-          <span class="pill">{{ bd.trek_type|title|cut:"_" }}</span>
-          <span class="pill">{{ bd.duration }}d</span>
-          <span class="pill">{{ bd.booking.num_people }} pax</span>
+    <!-- Selector -->
+    <div class="selector-panel">
+      <form method="post">
+        {% csrf_token %}
+
+        <!-- Trip list -->
+        <div class="sp-section">
+          <div class="sp-label">Choose a Trip</div>
+          <div class="trip-list">
+            {% if packages %}
+            <div class="trip-group-label">Packages & Tours</div>
+            {% for p in packages %}
+            <div class="trip-item {% if request.POST.trip_type_key == 'package_'|add:p.id|stringformat:'s' %}selected{% endif %}"
+                 data-val="package_{{ p.id }}" onclick="pickTrip(this)">
+              <span class="ti-icon">🏕</span>
+              <div class="ti-info">
+                <div class="ti-name">{{ p.title }}</div>
+                <div class="ti-meta">{{ p.destination.name }} · {{ p.duration }}d</div>
+              </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if treks %}
+            <div class="trip-group-label">Trekking</div>
+            {% for t in treks %}
+            <div class="trip-item {% if request.POST.trip_type_key == 'trek_'|add:t.id|stringformat:'s' %}selected{% endif %}"
+                 data-val="trek_{{ t.id }}" onclick="pickTrip(this)">
+              <span class="ti-icon">🥾</span>
+              <div class="ti-info">
+                <div class="ti-name">{{ t.title }}</div>
+                <div class="ti-meta">{{ t.difficulty }} · {{ t.duration }}</div>
+              </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if peaks %}
+            <div class="trip-group-label">Peak Climbing</div>
+            {% for p in peaks %}
+            <div class="trip-item {% if request.POST.trip_type_key == 'peak_'|add:p.id|stringformat:'s' %}selected{% endif %}"
+                 data-val="peak_{{ p.id }}" onclick="pickTrip(this)">
+              <span class="ti-icon">🗻</span>
+              <div class="ti-info">
+                <div class="ti-name">{{ p.title }}</div>
+                <div class="ti-meta">{{ p.difficulty }} · {{ p.height }}</div>
+              </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+          </div>
+          <input type="hidden" name="trip_type_key" id="trip_type_key" value="{{ request.POST.trip_type_key }}">
         </div>
-        <div class="bcard-countdown">⏳ {{ bd.days_until }} day{{ bd.days_until|pluralize }} to go</div>
-      </div>
-      {% endfor %}
+
+        <!-- Season -->
+        <div class="sp-section">
+          <div class="sp-label">Travel Season</div>
+          <div class="season-row">
+            {% for val, label in seasons %}
+            <button type="button"
+                    class="season-btn {% if request.POST.season == val or not request.POST.season and val == 'autumn' %}selected{% endif %}"
+                    data-val="{{ val }}" onclick="pickSeason(this)">
+              {% if val == 'spring' %}🌸{% elif val == 'monsoon' %}🌧{% elif val == 'autumn' %}🍂{% else %}❄️{% endif %}
+              {{ label|truncatechars:12 }}
+            </button>
+            {% endfor %}
+          </div>
+          <input type="hidden" name="season" id="season_input" value="{{ request.POST.season|default:'autumn' }}">
+        </div>
+
+        <!-- People -->
+        <div class="sp-section">
+          <div class="sp-label">Number of Travelers</div>
+          <div class="people-row">
+            <label>People:</label>
+            <input type="number" name="num_people" class="people-input" min="1" max="50"
+                   value="{{ request.POST.num_people|default:1 }}">
+          </div>
+        </div>
+
+        <button type="submit" class="generate-btn">Generate Packing List →</button>
+      </form>
     </div>
 
-    <!-- Detail panels -->
-    <div class="pl-detail">
-      {% for bd in booking_data %}
-      <div id="bpanel-{{ forloop.counter0 }}" {% if not forloop.first %}style="display:none"{% endif %}>
+    <!-- Result -->
+    <div class="result-panel">
+      {% if result %}
 
-        <!-- Trip summary -->
-        <div class="trip-card">
-          <div class="trip-card-header">
-            <div>
-              <div class="trip-title">{{ bd.dest_name }}</div>
-              <div class="trip-subtitle">{{ bd.pkg_title }}</div>
-            </div>
-            <a href="?regen={{ bd.booking.id }}" class="regen-btn">
-              <i class="fas fa-sync-alt"></i> Regenerate
-            </a>
-          </div>
-
-          <div class="trip-meta">
-            <div class="tm-item">
-              <span class="tm-label">Travel Date</span>
-              <span class="tm-value">{{ bd.booking.travel_date|date:"M d, Y" }}</span>
-            </div>
-            <div class="tm-item">
-              <span class="tm-label">Duration</span>
-              <span class="tm-value">{{ bd.duration }} days</span>
-            </div>
-            <div class="tm-item">
-              <span class="tm-label">Group Size</span>
-              <span class="tm-value highlight">{{ bd.booking.num_people }} person{{ bd.booking.num_people|pluralize }}</span>
-            </div>
-            <div class="tm-item">
-              <span class="tm-label">Season</span>
-              <span class="tm-value">{{ bd.season|title }}</span>
-            </div>
-            <div class="tm-item">
-              <span class="tm-label">Trek Type</span>
-              <span class="tm-value">{{ bd.trek_type|title|cut:"_" }}</span>
-            </div>
-            <div class="tm-item">
-              <span class="tm-label">Stay</span>
-              <span class="tm-value">{{ bd.accommodation|title }}</span>
-            </div>
-            <div class="tm-item">
-              <span class="tm-label">Days Left</span>
-              <span class="tm-value highlight">{{ bd.days_until }}d</span>
-            </div>
-          </div>
-
-          {% if bd.ai_summary %}
-          <div class="ai-summary">
-            <i class="fas fa-robot"></i>
-            <span>{{ bd.ai_summary }}</span>
-          </div>
-          {% endif %}
+      <div class="result-header">
+        <div>
+          <div class="rh-title">{{ result.trip_name }}</div>
+          <div style="font-size:12px;color:#888;margin-top:2px;">{{ result.total_items }} items · {{ result.num_people }} person{{ result.num_people|pluralize }}</div>
         </div>
-
-        <!-- Progress -->
-        <div class="progress-card">
-          <div class="prog-ring">
-            <svg width="58" height="58" viewBox="0 0 64 64">
-              <circle class="prog-ring-bg" cx="32" cy="32" r="26"/>
-              <circle class="prog-ring-fill" id="ring-{{ forloop.counter0 }}" cx="32" cy="32" r="26"/>
-            </svg>
-            <div class="prog-ring-label">
-              <span id="pct-{{ forloop.counter0 }}">0%</span>
-              <small>packed</small>
-            </div>
-          </div>
-          <div class="prog-info">
-            <p id="prog-label-{{ forloop.counter0 }}">0 of {{ bd.total_items }} items packed</p>
-            <div class="prog-bar-outer">
-              <div class="prog-bar-inner" id="pbar-{{ forloop.counter0 }}" style="width:0%"></div>
-            </div>
-          </div>
-          <div class="prog-actions">
-            <button class="prog-btn" onclick="window.print()">🖨 Print</button>
-            <button class="prog-btn primary" onclick="uncheckAll({{ forloop.counter0 }})">↺ Reset</button>
-          </div>
+        <div class="rh-meta">
+          <span class="rh-pill season-{{ result.season }}">{{ result.season|title }}</span>
+          <span class="rh-pill">{{ result.trek_type|title|cut:"_" }}</span>
+          <span class="rh-pill">{{ result.duration }}d</span>
         </div>
-
-        <!-- Category tabs (built by JS) -->
-        <div class="cat-tabs" id="ctabs-{{ forloop.counter0 }}"></div>
-
-        <!-- Items (built by JS from server data) -->
-        <div class="items-card" id="items-{{ forloop.counter0 }}"></div>
-
       </div>
-      {% endfor %}
+
+      <div class="progress-card">
+        <div class="prog-ring">
+          <svg width="52" height="52" viewBox="0 0 64 64">
+            <circle class="prog-ring-bg" cx="32" cy="32" r="26"/>
+            <circle class="prog-ring-fill" id="ring" cx="32" cy="32" r="26"/>
+          </svg>
+          <div class="prog-ring-label"><span id="pct">0%</span><small>packed</small></div>
+        </div>
+        <div class="prog-info">
+          <p id="prog-label">0 of {{ result.total_items }} items packed</p>
+          <div class="prog-bar-outer"><div class="prog-bar-inner" id="pbar" style="width:0%"></div></div>
+        </div>
+        <div class="prog-actions">
+          <button class="prog-btn" onclick="window.print()">🖨 Print</button>
+          <button class="prog-btn" onclick="uncheckAll()">↺ Reset</button>
+        </div>
+      </div>
+
+      <div class="cat-tabs" id="ctabs"></div>
+      <div class="items-card" id="items-container"></div>
+
+      <script>
+      const CATEGORIES = {
+        {% for cat_key, items in result.categories.items %}
+        "{{ cat_key }}": [
+          {% for item in items %}
+          { name:"{{ item.name|escapejs }}", priority:"{{ item.priority }}", qty:{{ item.quantity }}, per_person:{{ item.per_person|yesno:"true,false" }}, notes:"{{ item.notes|escapejs }}" }{% if not forloop.last %},{% endif %}
+          {% endfor %}
+        ]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      };
+      const NUM_PEOPLE = {{ result.num_people }};
+      const TOTAL = {{ result.total_items }};
+      const CAT_LABELS = { clothing:'👕 Clothing', footwear:'👟 Footwear', gear:'🎒 Gear & Equipment', health:'💊 Health & Safety', documents:'📄 Documents & Money', food_water:'🍶 Food & Water', electronics:'📱 Electronics', camping:'⛺ Camping Gear', climbing:'🧗 Climbing Gear', seasonal:'🌦 Seasonal Extras', destination:'📍 Destination Specifics' };
+      let checked = 0;
+
+      function renderAll() {
+        const tabsEl = document.getElementById('ctabs');
+        const contEl = document.getElementById('items-container');
+        tabsEl.innerHTML = ''; contEl.innerHTML = '';
+        Object.keys(CATEGORIES).forEach((cat, i) => {
+          const items = CATEGORIES[cat];
+          const tab = document.createElement('button');
+          tab.className = 'cat-tab' + (i === 0 ? ' active' : '');
+          tab.dataset.cat = cat;
+          tab.innerHTML = (CAT_LABELS[cat] || cat) + '<span class="tc">' + items.length + '</span>';
+          tab.onclick = () => { document.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat)); document.querySelectorAll('.cat-section').forEach(s => s.classList.toggle('visible', s.id === 'sec-' + cat)); };
+          tabsEl.appendChild(tab);
+          const sec = document.createElement('div');
+          sec.className = 'cat-section' + (i === 0 ? ' visible' : '');
+          sec.id = 'sec-' + cat;
+          items.forEach((item, j) => {
+            const id = 'cb-' + cat + j;
+            const qty = item.per_person ? item.qty * NUM_PEOPLE : item.qty;
+            const row = document.createElement('div');
+            row.className = 'pack-row';
+            row.innerHTML = `<input type="checkbox" id="${id}"><div class="item-info"><div class="item-name">${qty > 1 ? '<span class="item-qty">×' + qty + '</span>' : ''}${item.name}</div>${item.notes ? '<div class="item-note">' + item.notes + '</div>' : ''}</div><span class="badge-priority bp-${item.priority}">${item.priority}</span>`;
+            row.querySelector('input').addEventListener('change', function() { row.classList.toggle('done', this.checked); checked += this.checked ? 1 : -1; updateRing(); });
+            sec.appendChild(row);
+          });
+          contEl.appendChild(sec);
+        });
+        updateRing();
+      }
+
+      function updateRing() {
+        const pct = TOTAL > 0 ? Math.round(checked / TOTAL * 100) : 0;
+        document.getElementById('ring').style.strokeDashoffset = 163 - (163 * pct / 100);
+        document.getElementById('pct').textContent = pct + '%';
+        document.getElementById('pbar').style.width = pct + '%';
+        document.getElementById('prog-label').textContent = checked + ' of ' + TOTAL + ' items packed';
+      }
+
+      function uncheckAll() {
+        document.querySelectorAll('.pack-row input').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.pack-row').forEach(r => r.classList.remove('done'));
+        checked = 0; updateRing();
+      }
+
+      document.addEventListener('DOMContentLoaded', renderAll);
+      </script>
+
+      {% else %}
+      <div class="empty-state">
+        <div class="es-icon">🗺️</div>
+        <p style="font-size:15px;color:#555;font-weight:600;">Select a trip and season to generate your packing list</p>
+        <p style="font-size:13px;">Choose from packages, treks, or peak climbs on the left</p>
+      </div>
+      {% endif %}
     </div>
 
   </div>
-  {% endif %}
-
 </div>
 </div>
 
 <script>
-// Server-rendered item data per booking panel
-const PANELS = {
-  {% for bd in booking_data %}
-  {{ forloop.counter0 }}: {
-    total: {{ bd.total_items }},
-    categories: {
-      {% for cat_key, items in bd.categories.items %}
-      "{{ cat_key }}": [
-        {% for item in items %}
-        {
-          id: {{ item.id }},
-          name: "{{ item.name|escapejs }}",
-          priority: "{{ item.priority }}",
-          qty: {{ item.quantity }},
-          per_person: {{ item.per_person|yesno:"true,false" }},
-          notes: "{{ item.notes|escapejs }}",
-          source: "{{ item.source }}",
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-      ]{% if not forloop.last %},{% endif %}
-      {% endfor %}
-    },
-    num_people: {{ bd.booking.num_people }},
-  }{% if not forloop.last %},{% endif %}
-  {% endfor %}
-};
-
-const CAT_LABELS = {
-  clothing:'👕 Clothing', footwear:'👟 Footwear', gear:'🎒 Gear & Equipment',
-  health:'💊 Health & Safety', documents:'📄 Documents & Money',
-  food_water:'🍶 Food & Water', electronics:'📱 Electronics',
-  camping:'⛺ Camping Gear', climbing:'🧗 Climbing Gear',
-  seasonal:'🌦 Seasonal Extras', destination:'📍 Destination Specifics',
-};
-
-const state = {};
-
-function renderPanel(idx) {
-  const panel = PANELS[idx];
-  if (!panel) return;
-  const tabsEl = document.getElementById('ctabs-' + idx);
-  const contEl = document.getElementById('items-' + idx);
-  tabsEl.innerHTML = ''; contEl.innerHTML = '';
-  let total = 0;
-  const cats = Object.keys(panel.categories);
-
-  cats.forEach((cat, i) => {
-    const items = panel.categories[cat];
-    total += items.length;
-
-    // Tab
-    const tab = document.createElement('button');
-    tab.className = 'cat-tab' + (i === 0 ? ' active' : '');
-    tab.dataset.cat = cat;
-    tab.innerHTML = (CAT_LABELS[cat] || cat) + '<span class="tc">' + items.length + '</span>';
-    tab.onclick = () => switchCat(idx, cat);
-    tabsEl.appendChild(tab);
-
-    // Section
-    const sec = document.createElement('div');
-    sec.className = 'cat-section' + (i === 0 ? ' visible' : '');
-    sec.id = 'sec-' + idx + '-' + cat;
-
-    items.forEach((item, j) => {
-      const cbId = 'cb-' + idx + '-' + item.id;
-      const qty = item.per_person ? item.qty * panel.num_people : item.qty;
-      const row = document.createElement('div');
-      row.className = 'pack-row';
-      row.innerHTML = `
-        <input type="checkbox" id="${cbId}" onchange="tick(${idx})">
-        <div class="item-info">
-          <div class="item-name">
-            ${qty > 1 ? '<span class="item-qty">×' + qty + '</span>' : ''}${item.name}
-          </div>
-          ${item.notes ? '<div class="item-note">' + item.notes + '</div>' : ''}
-        </div>
-        <div class="item-badges">
-          <span class="badge-priority bp-${item.priority}">${item.priority}</span>
-          ${item.source === 'ai' ? '<span class="badge-ai">AI</span>' : ''}
-        </div>`;
-      row.querySelector('input').addEventListener('change', () => {
-        row.classList.toggle('done', row.querySelector('input').checked);
-      });
-      sec.appendChild(row);
-    });
-    contEl.appendChild(sec);
-  });
-
-  state[idx] = { total: panel.total, checked: 0 };
-  updateRing(idx);
+function pickTrip(el) {
+  document.querySelectorAll('.trip-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('trip_type_key').value = el.dataset.val;
 }
-
-function switchCat(idx, cat) {
-  document.querySelectorAll('#ctabs-' + idx + ' .cat-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
-  document.querySelectorAll('#items-' + idx + ' .cat-section').forEach(s => s.classList.toggle('visible', s.id === 'sec-' + idx + '-' + cat));
+function pickSeason(btn) {
+  document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('season_input').value = btn.dataset.val;
 }
-
-function tick(idx) {
-  state[idx].checked = document.querySelectorAll('#items-' + idx + ' .pack-row input:checked').length;
-  updateRing(idx);
-}
-
-function updateRing(idx) {
-  const { total, checked } = state[idx];
-  const pct = total > 0 ? Math.round(checked / total * 100) : 0;
-  document.getElementById('ring-' + idx).style.strokeDashoffset = 163 - (163 * pct / 100);
-  document.getElementById('pct-' + idx).textContent = pct + '%';
-  document.getElementById('pbar-' + idx).style.width = pct + '%';
-  document.getElementById('prog-label-' + idx).textContent = checked + ' of ' + total + ' items packed';
-}
-
-function uncheckAll(idx) {
-  document.querySelectorAll('#items-' + idx + ' input[type=checkbox]').forEach(cb => cb.checked = false);
-  document.querySelectorAll('#items-' + idx + ' .pack-row').forEach(r => r.classList.remove('done'));
-  state[idx].checked = 0;
-  updateRing(idx);
-}
-
-function switchBooking(idx) {
-  document.querySelectorAll('[id^="bpanel-"]').forEach(p => {
-    p.style.display = (parseInt(p.id.replace('bpanel-', '')) === idx) ? '' : 'none';
-  });
-  document.querySelectorAll('.bcard').forEach((c, i) => c.classList.toggle('active', i === idx));
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  Object.keys(PANELS).forEach(idx => renderPanel(parseInt(idx)));
-});
 </script>
 {% endblock %}

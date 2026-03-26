@@ -828,8 +828,9 @@ class RequestQuote(models.Model):
     terms_and_conditions = models.TextField(blank=True)
     
     # Payment terms
-    advance_payment_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=30.00, help_text="Advance payment %")
+    advance_payment_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=100, help_text="Advance payment %")
     cancellation_policy = models.TextField(blank=True)
+    confirmed_travel_date = models.DateField(null=True, blank=True, help_text="Confirmed travel date agreed with user")
     
     # Status
     is_active = models.BooleanField(default=True)
@@ -897,24 +898,6 @@ class GuideMessage(models.Model):
 
 # ── Packing List Generator ──────────────────────────────────────────────────
 
-class PackingList(models.Model):
-    """One generated packing list per booking (upcoming only)."""
-    booking = models.OneToOneField(
-        Booking, on_delete=models.CASCADE, related_name='packing_list'
-    )
-    generated_at = models.DateTimeField(auto_now=True)
-    trek_type = models.CharField(max_length=30, default='easy')
-    season = models.CharField(max_length=20, default='autumn')
-    accommodation = models.CharField(max_length=20, default='teahouse')
-    ai_summary = models.TextField(blank=True, help_text="AI-generated trip summary/advisory")
-
-    def __str__(self):
-        return f"Packing list for Booking #{self.booking_id}"
-
-    class Meta:
-        ordering = ['booking__travel_date']
-
-
 ITEM_CATEGORIES = [
     ('clothing',    'Clothing'),
     ('footwear',    'Footwear'),
@@ -930,32 +913,43 @@ ITEM_CATEGORIES = [
 ]
 
 ITEM_PRIORITY = [
-    ('essential', 'Essential'),
-    ('recommended', 'Recommended'),
-    ('optional', 'Optional'),
+    ('essential',    'Essential'),
+    ('recommended',  'Recommended'),
+    ('optional',     'Optional'),
 ]
 
 
-class PackingItem(models.Model):
-    """Individual item in a packing list."""
-    packing_list = models.ForeignKey(
-        PackingList, on_delete=models.CASCADE, related_name='items'
-    )
-    category = models.CharField(max_length=20, choices=ITEM_CATEGORIES)
-    name = models.CharField(max_length=200)
-    priority = models.CharField(max_length=15, choices=ITEM_PRIORITY, default='essential')
-    quantity = models.PositiveSmallIntegerField(default=1)
-    notes = models.CharField(max_length=255, blank=True)
-    is_checked = models.BooleanField(default=False)
-    per_person = models.BooleanField(default=False, help_text="Multiply quantity by num_people")
-    source = models.CharField(
-        max_length=10,
-        choices=[('base', 'Base'), ('ai', 'AI'), ('rule', 'Rule')],
-        default='base'
-    )
+class PackingTemplate(models.Model):
+    """
+    Pre-defined packing item catalogue.
+    One row = one item for a trip_type + season combination.
+    Seeded via: python manage.py seed_packing_templates
+    """
+    TRIP_TYPES = [
+        ('easy',          'Easy Trek / Tour'),
+        ('moderate',      'Moderate Trek'),
+        ('high_altitude', 'High Altitude Trek'),
+        ('peak_climbing', 'Peak Climbing'),
+    ]
+    SEASONS = [
+        ('spring',  'Spring (Mar–May)'),
+        ('monsoon', 'Monsoon (Jun–Aug)'),
+        ('autumn',  'Autumn (Sep–Nov)'),
+        ('winter',  'Winter (Dec–Feb)'),
+        ('all',     'All Seasons'),
+    ]
+
+    trip_type  = models.CharField(max_length=20, choices=TRIP_TYPES)
+    season     = models.CharField(max_length=10, choices=SEASONS)
+    category   = models.CharField(max_length=20, choices=ITEM_CATEGORIES)
+    name       = models.CharField(max_length=200)
+    priority   = models.CharField(max_length=15, choices=ITEM_PRIORITY, default='essential')
+    quantity   = models.PositiveSmallIntegerField(default=1)
+    per_person = models.BooleanField(default=False)
+    notes      = models.CharField(max_length=255, blank=True)
 
     class Meta:
-        ordering = ['category', '-priority', 'name']
+        ordering = ['trip_type', 'season', 'category', '-priority', 'name']
 
     def __str__(self):
-        return f"{self.name} ({self.category})"
+        return f'[{self.trip_type}/{self.season}] {self.name}'

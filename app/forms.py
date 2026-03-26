@@ -173,7 +173,7 @@ class RequestQuoteForm(forms.ModelForm):
             'price_per_person', 'total_price',
             'inclusions', 'exclusions',
             'validity_days', 'terms_and_conditions',
-            'advance_payment_percentage', 'cancellation_policy'
+            'confirmed_travel_date', 'cancellation_policy'
         ]
         widgets = {
             'package_title': forms.TextInput(attrs={'class': 'form-control'}),
@@ -185,7 +185,7 @@ class RequestQuoteForm(forms.ModelForm):
             'exclusions': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'validity_days': forms.NumberInput(attrs={'class': 'form-control'}),
             'terms_and_conditions': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'advance_payment_percentage': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'confirmed_travel_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'cancellation_policy': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
