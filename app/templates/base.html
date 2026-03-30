@@ -652,6 +652,9 @@
     <header class="sticky-top">
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container">
+              <button id="nav-back-btn" onclick="history.back()" title="Go back"
+                      style="display:none;background:none;border:none;padding:0 10px 0 0;cursor:pointer;font-size:18px;color:#aaa;line-height:1;"
+                      onmouseover="this.style.color='#1e90ff'" onmouseout="this.style.color='#aaa'">&#8592;</button>
               <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
                 <img src="/static/img/image.png" alt="" height="55" class="me-2" style="border-radius: 10px;">
                 <span class="fw-bold fs-3" style="font-family: 'Poppins', sans-serif; color: #1e90ff;">
@@ -713,10 +716,15 @@
                                 <i class="fas fa-tools me-1"></i>Tools
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="toolsDropdown">
-                                <li><a class="dropdown-item" href="{% url 'packing_list' %}"><i class="fas fa-backpack me-2 text-primary"></i>Packing List Generator</a></li>
+                                <li><h6 class="dropdown-header">Trip Planning</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'packing_list' %}"><i class="fas fa-backpack me-2 text-primary"></i>Packing List</a></li>
                                 <li><a class="dropdown-item" href="{% url 'trek_matcher' %}"><i class="fas fa-route me-2 text-success"></i>Trek Fitness Matcher</a></li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'altitude_dashboard' %}"><i class="fas fa-mountain me-2 text-warning"></i>Altitude Safety</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Utilities</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'weather_view' %}"><i class="fas fa-cloud-sun me-2 text-info"></i>Weather</a></li>
+                                <li><a class="dropdown-item" href="{% url 'currency_converter' %}"><i class="fas fa-exchange-alt me-2 text-secondary"></i>Currency Converter</a></li>
+                                <li><a class="dropdown-item" href="{% url 'trek_map' %}"><i class="fas fa-map me-2 text-danger"></i>Trek Map</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -739,7 +747,7 @@
                                 {% if not user.is_staff and not user.is_superuser %}
                                 <li><a class="dropdown-item" href="{% url 'my_bookings' %}">My Bookings</a></li>
                                 <li><a class="dropdown-item" href="{% url 'my_custom_requests' %}">My Custom Requests</a></li>
-                                <li><a class="dropdown-item" href="{% url 'personal_dashboard' %}">My Expenses</a></li>
+                                <li><a class="dropdown-item" href="{% url 'personal_dashboard' %}">Management</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
@@ -913,6 +921,11 @@
     <!-- Initialize Bootstrap Tooltips -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Show back arrow only when there's history and not on home page
+        if (window.history.length > 1 && window.location.pathname !== '/') {
+            var btn = document.getElementById('nav-back-btn');
+            if (btn) btn.style.display = 'inline-block';
+        }
         // Initialize all tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

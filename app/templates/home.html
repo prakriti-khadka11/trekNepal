@@ -24,24 +24,6 @@
     
        
         {% if user.is_authenticated %}
-
-
-          <!-- 💱 Currency Converter Button -->
-        <a href="{% url 'currency_converter' %}" 
-       class="btn btn-success  btn-lg">
-        <i class="fas fa-coins me-2"></i> Currency Converter
-    </a>
-        <!-- 🌤 Weather Button inside hero -->
-        <a href="{% url 'weather_view' %}" 
-           class="btn btn-warning btn-lg">
-            <i class="fas fa-cloud-sun"></i> Weather
-        </a>
-
-    <!-- 🗺 Trek Map Button -->
-<a href="{% url 'trek_map' %}"  class="btn btn-success btn-lg">
-    <i class="fas fa-map-marked-alt me-2"></i> Map
-</a>
-
         {% endif %}
     </div>
 </div>

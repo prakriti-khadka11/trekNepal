@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const BASE_URL = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies";
-
   const dropdowns = document.querySelectorAll(".dropdown select");
   const fromCurr = document.querySelector(".from select");
   const toCurr = document.querySelector(".to select");
@@ -14,17 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const option = document.createElement("option");
       option.value = currCode;
       option.innerText = currCode;
-
       if (select.name === "from" && currCode === "USD") option.selected = true;
       if (select.name === "to" && currCode === "NPR") option.selected = true;
-
       select.append(option);
     }
-
     select.addEventListener("change", (e) => updateFlag(e.target));
   }
 
-  // Update flag image
   function updateFlag(selectElement) {
     const currCode = selectElement.value;
     const countryCode = countryList[currCode];
@@ -32,33 +26,34 @@ document.addEventListener("DOMContentLoaded", () => {
     img.src = `https://flagsapi.com/${countryCode}/flat/64.png`;
   }
 
-  // Fetch and display exchange rate
   async function updateExchangeRate() {
     let amtVal = parseFloat(amountInput.value);
     if (isNaN(amtVal) || amtVal < 1) amtVal = 1;
 
     const from = fromCurr.value.toLowerCase();
     const to = toCurr.value.toLowerCase();
-    const URL = `${BASE_URL}/${from}.json`;
 
     try {
-      const res = await fetch(URL);
+      // Call our own DB-backed endpoint
+      const res = await fetch(`/currency-converter/rates/?base=${from}`);
       const data = await res.json();
 
-      const rate = data[from][to];
-      const finalAmount = amtVal * rate;
+      if (data.error) {
+        msg.innerText = "Exchange rate data unavailable. Please try again.";
+        return;
+      }
 
+      const rate = data.rates[to];
+      if (!rate) { msg.innerText = "Rate not available for selected currency."; return; }
+
+      const finalAmount = amtVal * rate;
       msg.innerText = `${amtVal} ${fromCurr.value} = ${finalAmount.toFixed(2)} ${toCurr.value}`;
     } catch (err) {
       msg.innerText = "Error fetching exchange rate. Please try again later.";
-      console.error(err);
     }
   }
 
-  // Button click
   btn.addEventListener("click", updateExchangeRate);
-
-  // Initial load
   updateExchangeRate();
 });
 

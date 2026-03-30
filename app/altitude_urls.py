@@ -21,4 +21,5 @@ urlpatterns = [
     
     # Oxygen tracking
     path('oxygen/', altitude_views.oxygen_tracker, name='oxygen_tracker'),
+    path('demo/', altitude_views.load_demo_data, name='altitude_demo'),
 ]

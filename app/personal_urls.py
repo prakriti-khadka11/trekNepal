@@ -14,6 +14,7 @@ urlpatterns = [
     # Travel Budget
     path('budget/', personal_views.travel_budget, name='travel_budget'),
     path('budget/add/', personal_views.add_budget, name='add_budget'),
+    path('budget/update/<int:budget_id>/', personal_views.update_budget, name='update_budget'),
     
     # Travel Wishlist
     path('wishlist/', personal_views.travel_wishlist, name='travel_wishlist'),

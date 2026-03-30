@@ -52,8 +52,10 @@ urlpatterns = [
     path('search/', views.search_view, name='search_view'),
 
     path("weather/", views.weather_view, name="weather_view"),
+    path("weather/data/", views.weather_data_api, name="weather_data_api"),
 
     path("currency-converter/", views.currency_converter, name="currency_converter"),
+    path("currency-converter/rates/", views.currency_rate_api, name="currency_rate_api"),
     path('trek-map/', views.trek_map_view, name='trek_map'),
 
     # New features

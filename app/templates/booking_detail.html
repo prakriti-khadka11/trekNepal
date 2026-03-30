@@ -102,6 +102,49 @@
                             </div>
                         </div>
 
+                        {% if booking.trekking %}
+                        <div class="border-top pt-4 mt-4">
+                            <h5>🥾 Trek Details</h5>
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    {% if booking.trekking.image %}
+                                    <img src="{{ booking.trekking.image.url }}" alt="{{ booking.trekking.title }}" class="img-fluid rounded">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>{{ booking.trekking.title }}</h4>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-clock me-2 text-primary"></i> {{ booking.trekking.duration }}</li>
+                                        <li class="mb-2"><i class="fas fa-mountain me-2 text-primary"></i> Max altitude: {{ booking.trekking.max_altitude }}</li>
+                                        <li class="mb-2"><i class="fas fa-signal me-2 text-primary"></i> Difficulty: {{ booking.trekking.difficulty }}</li>
+                                    </ul>
+                                    <a href="{% url 'trekking_detail' booking.trekking.slug %}" class="btn btn-outline-primary btn-sm">View Full Trek Info</a>
+                                </div>
+                            </div>
+
+                            {% if booking.trekking.itinerary %}
+                            <div class="mt-4">
+                                <h6 class="fw-bold mb-3">📅 Day-by-Day Itinerary</h6>
+                                <div style="background:#f8f9fa;border-radius:12px;padding:16px 20px;">
+                                    {% for line in booking.trekking.itinerary.splitlines %}
+                                    {% if line.strip %}
+                                    <div style="padding:8px 0;border-bottom:1px solid #e9ecef;font-size:14px;display:flex;gap:10px;align-items:flex-start;">
+                                        {% if line|slice:":3" == "Day" %}
+                                        <span style="background:#11998e;color:#fff;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;">
+                                            {{ line|slice:":6" }}
+                                        </span>
+                                        <span>{{ line|slice:"7:" }}</span>
+                                        {% else %}
+                                        <span style="color:#555;">{{ line }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                         {% if booking.travel_package %}
                         <div class="border-top pt-4 mt-4">
                             <h5>Package Details</h5>
@@ -125,6 +168,28 @@
                                     <a href="{% url 'travel_package_detail' booking.travel_package.id %}" class="btn btn-outline-primary">View Package</a>
                                 </div>
                             </div>
+
+                            {% if booking.travel_package.tour_detail.itinerary %}
+                            <div class="mt-4">
+                                <h6 class="fw-bold mb-3">📅 Day-by-Day Itinerary</h6>
+                                <div style="background:#f8f9fa;border-radius:12px;padding:16px 20px;">
+                                    {% for line in booking.travel_package.tour_detail.itinerary.splitlines %}
+                                    {% if line.strip %}
+                                    <div style="padding:8px 0;border-bottom:1px solid #e9ecef;font-size:14px;display:flex;gap:10px;align-items:flex-start;">
+                                        {% if line|slice:":3" == "Day" %}
+                                        <span style="background:#11998e;color:#fff;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;">
+                                            {{ line|slice:":6" }}
+                                        </span>
+                                        <span>{{ line|slice:"7:" }}</span>
+                                        {% else %}
+                                        <span style="color:#555;">{{ line }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                         {% endif %}
 

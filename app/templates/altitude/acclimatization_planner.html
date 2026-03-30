@@ -116,13 +116,14 @@
     <div class="form-card">
       <h5>🏔️ Which trek are you planning?</h5>
       <label class="form-label fw-semibold">Trek Name</label>
-      <input type="text" class="form-control" name="trek_name" required placeholder="e.g. Everest Base Camp Trek">
-      <div class="trek-chips">
-        <span class="trek-chip" onclick="fillTrek('Everest Base Camp', 2860, 5364, 14)">Everest Base Camp</span>
-        <span class="trek-chip" onclick="fillTrek('Annapurna Circuit', 760, 5416, 16)">Annapurna Circuit</span>
-        <span class="trek-chip" onclick="fillTrek('Langtang Valley', 1460, 4984, 10)">Langtang Valley</span>
-        <span class="trek-chip" onclick="fillTrek('Manaslu Circuit', 700, 5106, 14)">Manaslu Circuit</span>
-        <span class="trek-chip" onclick="fillTrek('Ghorepani Poon Hill', 1070, 3210, 5)">Poon Hill</span>
+      <input type="text" class="form-control" name="trek_name" id="trekNameInput" required placeholder="Select below or type your trek name">
+      <div class="trek-chips" style="margin-top:10px;">
+        {% for t in treks %}
+        <span class="trek-chip" data-name="{{ t.title }}" data-alt="{{ t.max_altitude }}" data-dur="{{ t.duration }}" onclick="fillTrekFromDB(this)">{{ t.title }}</span>
+        {% endfor %}
+        {% for p in peaks %}
+        <span class="trek-chip" data-name="{{ p.title }}" data-alt="{{ p.height }}" data-dur="{{ p.duration }}" onclick="fillTrekFromDB(this)" style="background:#fff0f0;border-color:#f5c6cb;">{{ p.title }}</span>
+        {% endfor %}
       </div>
     </div>
 
@@ -171,8 +172,33 @@
 </div>
 
 <script>
+function fillTrekFromDB(chip) {
+  document.querySelectorAll('.trek-chip').forEach(c => c.style.background = '');
+  chip.style.background = '#667eea';
+  chip.style.color = '#fff';
+  chip.style.borderColor = '#667eea';
+
+  document.getElementById('trekNameInput').value = chip.dataset.name;
+
+  // Parse altitude — e.g. "5,545 m (Kala Patthar)" or "8,848 m"
+  const altStr = chip.dataset.alt || '';
+  const altMatch = altStr.replace(/,/g, '').match(/(\d+)/);
+  if (altMatch) document.getElementById('targetAlt').value = altMatch[1];
+
+  // Parse duration — e.g. "14 Days" or "14–18 Days" → take first number
+  const durStr = chip.dataset.dur || '';
+  const durMatch = durStr.match(/(\d+)/);
+  if (durMatch) document.getElementById('duration').value = durMatch[1];
+
+  // Default start altitude (Kathmandu level)
+  if (!document.getElementById('startAlt').value) {
+    document.getElementById('startAlt').value = 1400;
+  }
+  calcAlt();
+}
+
 function fillTrek(name, start, target, days) {
-  document.querySelector('[name=trek_name]').value = name;
+  document.getElementById('trekNameInput').value = name;
   document.getElementById('startAlt').value = start;
   document.getElementById('targetAlt').value = target;
   document.getElementById('duration').value = days;

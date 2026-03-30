@@ -219,22 +219,34 @@
     {% if budget_alerts or document_alerts %}
     <div class="row mb-4">
         <div class="col-12">
-            <h5><i class="fas fa-bell me-2"></i>Important Alerts</h5>
-            {% for alert in budget_alerts %}
-            <div class="alert alert-{{ alert.type }} alert-dismissible fade show">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>Budget Alert:</strong> {{ alert.message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Important Alerts
+                    {% with total_alerts=budget_alerts|length %}
+                    {% with doc_count=document_alerts|length %}
+                    <span class="badge bg-danger ms-2" style="font-size:12px;">{{ total_alerts|add:doc_count }}</span>
+                    {% endwith %}{% endwith %}
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary"
+                        onclick="document.getElementById('alerts-body').classList.toggle('d-none');this.textContent=document.getElementById('alerts-body').classList.contains('d-none')?'View':'Hide'">
+                    View
+                </button>
             </div>
-            {% endfor %}
-            
-            {% for alert in document_alerts %}
-            <div class="alert alert-{{ alert.type }} alert-dismissible fade show">
-                <i class="fas fa-file-alt me-2"></i>
-                <strong>Document Alert:</strong> {{ alert.message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div id="alerts-body" class="d-none">
+                {% for alert in budget_alerts %}
+                <div class="alert alert-{{ alert.type }} alert-dismissible fade show">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Budget Alert:</strong> {{ alert.message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                {% for alert in document_alerts %}
+                <div class="alert alert-{{ alert.type }} alert-dismissible fade show">
+                    <i class="fas fa-file-alt me-2"></i>
+                    <strong>Document Alert:</strong> {{ alert.message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
     {% endif %}

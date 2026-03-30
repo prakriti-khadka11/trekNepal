@@ -312,10 +312,16 @@
             <div class="details-section">
                 <h3 class="section-title"><i class="fas fa-mountain me-2"></i>Travel & Accommodation</h3>
                 <table class="details-table">
-                    <tr>
-                        <th>Package</th>
-                        <td>{{ details.package_title }}</td>
-                    </tr>
+                    {% if booking.trekking %}
+                    <tr><th>Trek</th><td><strong>{{ booking.trekking.title }}</strong></td></tr>
+                    <tr><th>Country</th><td>{{ booking.trekking.country }}</td></tr>
+                    <tr><th>Duration</th><td>{{ booking.trekking.duration }}</td></tr>
+                    <tr><th>Difficulty</th><td>{{ booking.trekking.difficulty }}</td></tr>
+                    <tr><th>Max Altitude</th><td>{{ booking.trekking.max_altitude|default:"N/A" }}</td></tr>
+                    <tr><th>Accommodation</th><td>{{ details.hotel }}</td></tr>
+                    <tr><th>Meal Plan</th><td>{{ details.accommodation }}</td></tr>
+                    {% else %}
+                    <tr><th>Package</th><td>{{ details.package_title }}</td></tr>
                     <tr>
                         <th>Destination</th>
                         <td>
@@ -325,14 +331,9 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
-                        <th>Hotel</th>
-                        <td>{{ details.hotel }}</td>
-                    </tr>
-                    <tr>
-                        <th>Accommodation</th>
-                        <td>{{ details.accommodation }}</td>
-                    </tr>
+                    <tr><th>Hotel</th><td>{{ details.hotel }}</td></tr>
+                    <tr><th>Accommodation</th><td>{{ details.accommodation }}</td></tr>
+                    {% endif %}
                     <tr>
                         <th>Ticket No.</th>
                         <td>

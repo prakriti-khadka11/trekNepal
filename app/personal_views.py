@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
 from django.utils import timezone
 from datetime import datetime, timedelta
 from .models import (
@@ -78,6 +78,13 @@ def personal_dashboard(request):
 @login_required
 def expense_tracker(request):
     """Enhanced expense tracker with booking integration and professional features"""
+    # Store referrer for back navigation
+    referrer = request.META.get('HTTP_REFERER', '')
+    # Only store if it's a different page (not expense tracker itself)
+    if referrer and 'expenses' not in referrer:
+        request.session['expense_tracker_back'] = referrer
+
+    back_url = request.session.get('expense_tracker_back', '')
     # Auto-create expenses from bookings (without changing booking logic)
     sync_booking_expenses(request.user)
     
@@ -153,6 +160,8 @@ def expense_tracker(request):
         'booking_expenses_count': booking_expenses_count,
         'avg_expense': avg_expense,
         'current_filter': filter_type,
+        'paid_bookings': Booking.objects.filter(user=request.user, status='PAID').select_related('travel_package__destination', 'trekking').order_by('travel_date'),
+        'back_url': back_url,
     }
     
     return render(request, 'personal/expense_tracker.html', context)
@@ -203,7 +212,8 @@ def add_expense(request):
         try:
             category_id = request.POST.get('category')
             category = get_object_or_404(ExpenseCategory, id=category_id)
-            
+            booking_id = request.POST.get('booking_id') or None
+
             expense = TravelExpense.objects.create(
                 user=request.user,
                 category=category,
@@ -212,84 +222,174 @@ def add_expense(request):
                 currency=request.POST.get('currency', 'NPR'),
                 date=request.POST.get('date'),
                 location=request.POST.get('location', ''),
-                notes=request.POST.get('notes', '')
+                notes=request.POST.get('notes', ''),
+                booking_id=int(booking_id) if booking_id else None,
+                is_booking_expense=False,
             )
-            
+
             if request.FILES.get('receipt_image'):
                 expense.receipt_image = request.FILES['receipt_image']
                 expense.save()
-            
+
             messages.success(request, 'Expense added successfully!')
+            # Redirect back to budget page if came from there
+            if booking_id:
+                return redirect('travel_budget')
             return redirect('expense_tracker')
-            
+
         except Exception as e:
             messages.error(request, f'Error adding expense: {str(e)}')
-    
+
     categories = ExpenseCategory.objects.all()
     return render(request, 'personal/add_expense.html', {'categories': categories})
 
 @login_required
 def travel_budget(request):
-    """Travel budget management with booking integration"""
-    budgets = TravelBudget.objects.filter(user=request.user).order_by('-created_at')
-    active_budgets = budgets.filter(is_active=True)
-    
-    # Get user's bookings for budget suggestions
-    user_bookings = Booking.objects.filter(user=request.user, status='PAID')
-    upcoming_bookings = user_bookings.filter(travel_date__gte=timezone.now().date())
-    
-    # Calculate budget statistics
-    total_budgets = budgets.count()
-    total_budget_amount = budgets.aggregate(Sum('total_budget'))['total_budget__sum'] or 0
-    
-    # Budget recommendations based on bookings
-    budget_suggestions = []
-    for booking in upcoming_bookings:
-        # Check if user has budget for this booking
-        existing_budget = budgets.filter(
-            destination__icontains=booking.travel_package.destination.name if booking.travel_package else '',
-            start_date__lte=booking.travel_date,
-            end_date__gte=booking.travel_date
-        ).first()
-        
-        if not existing_budget:
-            budget_suggestions.append({
-                'booking': booking,
-                'suggested_amount': float(booking.total_price) * 1.3,  # 30% buffer
-                'destination': booking.travel_package.destination.name if booking.travel_package else 'Unknown'
-            })
-    
+    """Travel budget — upcoming bookings only, booking price auto-counted."""
+    from datetime import date
+
+    today = date.today()
+
+    # Only UPCOMING paid bookings — deduplicate by destination (keep soonest)
+    all_upcoming = Booking.objects.filter(
+        user=request.user,
+        status='PAID',
+        travel_date__gte=today,
+    ).select_related('travel_package', 'travel_package__destination', 'trekking').order_by('travel_date')
+
+    # Deduplicate: one card per unique destination
+    seen_dests = {}
+    for b in all_upcoming:
+        dest = (
+            b.travel_package.destination.name if b.travel_package
+            else b.trekking.title if b.trekking
+            else f'Booking #{b.id}'
+        )
+        if dest not in seen_dests:
+            seen_dests[dest] = b
+    upcoming_bookings = list(seen_dests.values())
+
+    # For each upcoming booking, find or build budget data
+    booking_budgets = []
+    for b in upcoming_bookings:
+        dest = (
+            b.travel_package.destination.name if b.travel_package
+            else b.trekking.title if b.trekking
+            else ''
+        )
+        pkg_title = (
+            b.travel_package.title if b.travel_package
+            else b.trekking.title if b.trekking
+            else f'Booking #{b.id}'
+        )
+        # Find budget — exact destination match + travel date within range
+        budget = TravelBudget.objects.filter(
+            user=request.user,
+            destination__iexact=dest,
+            start_date__lte=b.travel_date,
+            end_date__gte=b.travel_date,
+        ).order_by('-created_at').first()
+
+        # Expenses for this destination in the travel date range
+        if budget:
+            manual_expenses = TravelExpense.objects.filter(
+                user=request.user,
+                is_booking_expense=False,
+            ).filter(
+                # Match by booking_id OR by location containing destination
+                Q(booking_id=b.id) |
+                Q(location__icontains=dest, date__range=[budget.start_date, budget.end_date])
+            ).distinct()
+            manual_spent = manual_expenses.aggregate(Sum('amount'))['amount__sum'] or 0
+            total_spent = float(b.total_price) + float(manual_spent)
+            remaining = float(budget.total_budget) - total_spent
+            pct = (total_spent / float(budget.total_budget) * 100) if budget.total_budget > 0 else 0
+        else:
+            manual_expenses = []
+            manual_spent = 0
+            total_spent = float(b.total_price)
+            remaining = 0
+            pct = 0
+
+        booking_budgets.append({
+            'booking': b,
+            'dest': dest,
+            'pkg_title': pkg_title,
+            'budget': budget,
+            'booking_cost': float(b.total_price),
+            'manual_spent': float(manual_spent),
+            'total_spent': total_spent,
+            'remaining': remaining,
+            'pct': round(pct, 1),
+            'alert_50': budget and pct >= 50 and pct < 75,
+            'alert_75': budget and pct >= 75 and pct < 100,
+            'alert_over': budget and pct >= 100,
+            'manual_expenses': manual_expenses if budget else [],
+        })
+
     context = {
-        'budgets': budgets,
-        'active_budgets': active_budgets,
-        'total_budgets': total_budgets,
-        'total_budget_amount': total_budget_amount,
-        'budget_suggestions': budget_suggestions,
-        'upcoming_bookings': upcoming_bookings,
+        'booking_budgets': booking_budgets,
+        'categories': ExpenseCategory.objects.all(),
     }
-    
     return render(request, 'personal/travel_budget.html', context)
 
 @login_required
+def update_budget(request, budget_id):
+    """Update total budget amount."""
+    if request.method == 'POST':
+        budget = get_object_or_404(TravelBudget, id=budget_id, user=request.user)
+        try:
+            budget.total_budget = request.POST.get('total_budget')
+            budget.save()
+            messages.success(request, 'Budget updated.')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+    return redirect('travel_budget')
+
+
+@login_required
 def add_budget(request):
-    """Add new travel budget"""
+    """Add new travel budget — linked to a booking."""
     if request.method == 'POST':
         try:
+            booking_id = request.POST.get('booking_id')
+            booking = None
+            dest = request.POST.get('destination', '')
+            start = request.POST.get('start_date')
+            end = request.POST.get('end_date')
+
+            if booking_id:
+                booking = Booking.objects.filter(id=booking_id, user=request.user).first()
+                if booking:
+                    dest = (
+                        booking.travel_package.destination.name if booking.travel_package
+                        else booking.trekking.title if booking.trekking
+                        else dest
+                    )
+                    start = str(booking.travel_date)
+                    from datetime import timedelta, date
+                    import re
+                    dur_str = (booking.travel_package.duration if booking.travel_package
+                               else booking.trekking.duration if booking.trekking else '7')
+                    dur_match = re.search(r'(\d+)', str(dur_str))
+                    dur = int(dur_match.group(1)) if dur_match else 7
+                    end = str(booking.travel_date + timedelta(days=dur))
+
             TravelBudget.objects.create(
                 user=request.user,
                 title=request.POST.get('title'),
                 total_budget=request.POST.get('total_budget'),
-                currency=request.POST.get('currency', 'NPR'),
-                start_date=request.POST.get('start_date'),
-                end_date=request.POST.get('end_date'),
-                destination=request.POST.get('destination')
+                currency='NPR',
+                start_date=start,
+                end_date=end,
+                destination=dest,
             )
             messages.success(request, 'Budget created successfully!')
             return redirect('travel_budget')
         except Exception as e:
             messages.error(request, f'Error creating budget: {str(e)}')
-    
-    return render(request, 'personal/add_budget.html')
+
+    return redirect('travel_budget')
 
 @login_required
 def travel_wishlist(request):

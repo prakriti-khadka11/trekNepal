@@ -953,3 +953,54 @@ class PackingTemplate(models.Model):
 
     def __str__(self):
         return f'[{self.trip_type}/{self.season}] {self.name}'
+
+
+# ── Weather Cache ───────────────────────────────────────────────────────────
+
+class WeatherCache(models.Model):
+    """Caches OpenWeatherMap responses in the DB. Refreshed every 30 minutes."""
+    city        = models.CharField(max_length=100, unique=True)
+    country     = models.CharField(max_length=10, blank=True)
+    temp        = models.FloatField()
+    feels_like  = models.FloatField()
+    humidity    = models.IntegerField()
+    pressure    = models.IntegerField()
+    wind_speed  = models.FloatField()
+    description = models.CharField(max_length=200)
+    icon        = models.CharField(max_length=20)
+    fetched_at  = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Weather Cache'
+
+    def __str__(self):
+        return f"{self.city} — {self.temp}°C ({self.fetched_at:%Y-%m-%d %H:%M})"
+
+    def is_stale(self):
+        from django.utils import timezone
+        from datetime import timedelta
+        return timezone.now() - self.fetched_at > timedelta(minutes=30)
+
+
+# ── Currency Rate Cache ─────────────────────────────────────────────────────
+
+class CurrencyRate(models.Model):
+    """
+    Caches exchange rates from the currency API.
+    base_currency → all rates stored as JSON.
+    Refreshed every 6 hours.
+    """
+    base_currency = models.CharField(max_length=10, unique=True)
+    rates_json    = models.TextField(help_text='JSON dict of currency→rate')
+    fetched_at    = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Currency Rate Cache'
+
+    def __str__(self):
+        return f"{self.base_currency} rates ({self.fetched_at:%Y-%m-%d %H:%M})"
+
+    def is_stale(self):
+        from django.utils import timezone
+        from datetime import timedelta
+        return timezone.now() - self.fetched_at > timedelta(hours=6)

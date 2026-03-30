@@ -31,9 +31,21 @@ def get_dynamic_booking_details(booking):
         dest_name = trek.title if trek else 'Nepal'
         location = trek.country if trek else 'Nepal'
         ticket_number = f"TNP-TRK-{booking.id}-{booking.booking_date.year}{booking.booking_date.month:02d}"
+
+        # Build accommodation summary from itinerary
+        accommodation_summary = 'Teahouse / Lodge accommodation as per itinerary'
+        if trek and trek.itinerary:
+            # Count acclimatization/rest days
+            lines = [l.strip() for l in trek.itinerary.splitlines() if l.strip()]
+            rest_days = [l for l in lines if 'acclimatization' in l.lower() or 'rest' in l.lower() or 'free day' in l.lower()]
+            accommodation_summary = (
+                f'Teahouse / Lodge accommodation throughout ({trek.duration}). '
+                f'{len(rest_days)} rest/acclimatization day{"s" if len(rest_days) != 1 else ""} included.'
+            )
+
         return {
-            'hotel': f'Trekking Lodge, {location}',
-            'accommodation': 'Tea House Lodge (Basic Meals)',
+            'hotel': accommodation_summary,
+            'accommodation': f'Full Board (Breakfast, Lunch & Dinner) — Teahouse style',
             'ticket_number': ticket_number,
             'destination_info': {
                 'name': dest_name,
@@ -380,13 +392,29 @@ def generate_booking_pdf(booking):
     
     # Use dynamic details for travel table
     pkg_name = booking.travel_package.title if booking.travel_package else (booking.trekking.title if booking.trekking else f'Booking #{booking.id}')
-    travel_table = Table([
-        ["Package", pkg_name],
-        ["Destination", f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}"],
-        ["Hotel", dynamic_details['hotel']],
-        ["Accommodation", dynamic_details['accommodation']],
-        ["Ticket No.", dynamic_details['ticket_number']],
-    ], colWidths=[150, 300])
+
+    if booking.trekking:
+        trek = booking.trekking
+        travel_rows = [
+            ["Trek",          trek.title],
+            ["Country",       trek.country],
+            ["Duration",      trek.duration],
+            ["Difficulty",    trek.difficulty],
+            ["Max Altitude",  trek.max_altitude or 'N/A'],
+            ["Accommodation", dynamic_details['hotel']],
+            ["Meal Plan",     dynamic_details['accommodation']],
+            ["Ticket No.",    dynamic_details['ticket_number']],
+        ]
+    else:
+        travel_rows = [
+            ["Package",       pkg_name],
+            ["Destination",   f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}"],
+            ["Hotel",         dynamic_details['hotel']],
+            ["Accommodation", dynamic_details['accommodation']],
+            ["Ticket No.",    dynamic_details['ticket_number']],
+        ]
+
+    travel_table = Table(travel_rows, colWidths=[150, 300])
 
     travel_table.setStyle(TableStyle([
         ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),

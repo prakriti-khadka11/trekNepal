@@ -1,255 +1,287 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block title %}Travel Budget - TrekNepal{% endblock %}
+{% block title %}Travel Budget — TrekNepal{% endblock %}
 
 {% block extra_css %}
 <style>
-    .budget-card {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
-    
-    .budget-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    }
-    
-    .budget-header {
-        background: linear-gradient(135deg, #ffc107, #fd7e14);
-        color: white;
-        border-radius: 15px;
-        padding: 25px;
-        margin-bottom: 30px;
-    }
-    
-    .progress-custom {
-        height: 10px;
-        border-radius: 10px;
-        background: #e9ecef;
-    }
-    
-    .progress-bar-custom {
-        border-radius: 10px;
-        transition: width 0.6s ease;
-    }
-    
-    .budget-status {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        color: white;
-    }
+:root { --g1:#11998e; --g2:#38ef7d; }
+.tb-page { background:#f0f4f8; min-height:100vh; padding:32px 0 80px; }
+.tb-wrap { max-width:860px; margin:0 auto; padding:0 16px; }
+
+.tb-hero {
+  background:linear-gradient(135deg,#f7971e,#ffd200);
+  border-radius:16px; padding:26px 32px; color:#1a1a2e;
+  margin-bottom:24px; position:relative; overflow:hidden;
+}
+.tb-hero::after { content:'💰'; font-size:100px; position:absolute; right:18px; top:-4px; opacity:.1; pointer-events:none; line-height:1; }
+.tb-hero h1 { font-size:20px; font-weight:800; margin:0 0 4px; }
+.tb-hero p  { opacity:.7; margin:0; font-size:13px; }
+
+/* No bookings */
+.no-bookings { background:#fff; border-radius:16px; padding:48px 24px; text-align:center; box-shadow:0 2px 12px rgba(0,0,0,.07); }
+
+/* Booking budget card */
+.bb-card {
+  background:#fff; border-radius:16px; padding:22px 24px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:20px;
+}
+
+/* Trip header */
+.trip-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.trip-title { font-size:16px; font-weight:800; color:#1a1a2e; margin:0 0 4px; }
+.trip-meta  { font-size:12px; color:#888; }
+.trip-badge { background:#d4edda; color:#155724; border-radius:20px; padding:3px 12px; font-size:11px; font-weight:700; }
+
+/* Budget bar */
+.budget-bar-wrap { margin-bottom:16px; }
+.budget-bar-labels { display:flex; justify-content:space-between; font-size:11px; color:#888; margin-bottom:5px; }
+.budget-bar-outer { height:10px; background:#e9ecef; border-radius:10px; overflow:hidden; }
+.budget-bar-inner { height:10px; border-radius:10px; transition:width .5s; }
+.bar-good    { background:linear-gradient(90deg,#28a745,#38ef7d); }
+.bar-warning { background:linear-gradient(90deg,#ffc107,#fd7e14); }
+.bar-danger  { background:linear-gradient(90deg,#dc3545,#c82333); }
+
+/* Budget stats row */
+.budget-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+.bs-item { background:#f8f9fa; border-radius:10px; padding:12px; text-align:center; }
+.bs-val  { font-size:1.1rem; font-weight:800; color:#1a1a2e; }
+.bs-lbl  { font-size:10px; color:#888; margin-top:2px; }
+.bs-val.spent    { color:#dc3545; }
+.bs-val.remaining{ color:#28a745; }
+
+/* Alert banners */
+.budget-alert { border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; }
+.alert-50   { background:#fff3cd; color:#856404; border-left:4px solid #ffc107; }
+.alert-75   { background:#ffe5d0; color:#c0392b; border-left:4px solid #fd7e14; }
+.alert-over { background:#f8d7da; color:#721c24; border-left:4px solid #dc3545; }
+
+/* Breakdown */
+.breakdown { margin-bottom:14px; }
+.breakdown-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid #f5f5f5; font-size:13px; }
+.breakdown-row:last-child { border-bottom:none; }
+.br-label { color:#555; display:flex; align-items:center; gap:6px; }
+.br-amount { font-weight:700; }
+.br-booking { color:#17a2b8; }
+.br-expense { color:#dc3545; }
+
+/* Add expense inline */
+.add-expense-form { background:#f8f9fa; border-radius:12px; padding:16px; margin-top:14px; }
+.add-expense-form h6 { font-size:13px; font-weight:800; color:#1a1a2e; margin:0 0 12px; }
+.ae-row { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:end; }
+@media(max-width:600px){ .ae-row { grid-template-columns:1fr 1fr; } }
+.ae-btn { background:var(--g1); color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.ae-btn:hover { opacity:.9; }
+
+/* Set budget form */
+.set-budget-form { background:#fff8e1; border:1px solid #ffc107; border-radius:12px; padding:16px; margin-top:14px; }
+.set-budget-form h6 { font-size:13px; font-weight:800; color:#856404; margin:0 0 12px; }
+.sb-row { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:end; }
+@media(max-width:500px){ .sb-row { grid-template-columns:1fr; } }
+.sb-btn { background:#ffc107; color:#1a1a2e; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; }
+.sb-btn:hover { background:#e0a800; }
+
+/* Expense list */
+.expense-list { margin-top:12px; }
+.exp-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f5f5f5; font-size:12px; color:#555; }
+.exp-row:last-child { border-bottom:none; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- Header -->
-    <div class="budget-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h2 class="mb-1"><i class="fas fa-wallet me-2"></i>Travel Budget</h2>
-                <p class="mb-0 opacity-90">Plan and track your travel expenses</p>
-            </div>
-            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
-                <i class="fas fa-plus me-2"></i>Create Budget
-            </button>
+<div class="tb-page">
+<div class="tb-wrap">
+
+  <div class="tb-hero">
+    <h1>💰 Travel Budget</h1>
+    <p>Set your budget for upcoming trips — track booking costs and on-the-way expenses</p>
+    {% if request.META.HTTP_REFERER %}
+    <a href="{{ request.META.HTTP_REFERER }}" style="display:inline-block;margin-top:10px;background:rgba(0,0,0,.15);color:#1a1a2e;padding:5px 14px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;">
+      ← Back
+    </a>
+    {% endif %}
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-{% if msg.tags == 'error' %}danger{% else %}{{ msg.tags }}{% endif %} mb-3">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if not booking_budgets %}
+  <div class="no-bookings">
+    <div style="font-size:48px;margin-bottom:12px;">🗺️</div>
+    <h4 style="color:#444;">No upcoming trips found</h4>
+    <p style="color:#888;font-size:13px;">Book a trek or package first — your budget tracker will appear here automatically.</p>
+    <a href="{% url 'trekking_list' %}" class="btn btn-success mt-2 me-2">Browse Treks</a>
+    <a href="{% url 'package_list' %}" class="btn btn-outline-success mt-2">Browse Packages</a>
+  </div>
+
+  {% else %}
+
+  {% for bb in booking_budgets %}
+  <div class="bb-card">
+
+    <!-- Trip header -->
+    <div class="trip-header">
+      <div>
+        <div class="trip-title">
+          {% if bb.booking.trekking %}🥾{% else %}🏕{% endif %}
+          {{ bb.pkg_title }}
         </div>
+        <div class="trip-meta">
+          {{ bb.booking.travel_date|date:"M d, Y" }} ·
+          Rs. {{ bb.booking.total_price }} booking paid ·
+          {{ bb.booking.num_people }} pax
+        </div>
+      </div>
     </div>
 
-    <!-- Budget Suggestions from Bookings -->
-    {% if budget_suggestions %}
-    <div class="alert alert-info">
-        <h6><i class="fas fa-lightbulb me-2"></i>Budget Suggestions Based on Your Bookings</h6>
-        <p class="mb-2">We noticed you have upcoming bookings without budgets. Here are some suggestions:</p>
-        {% for suggestion in budget_suggestions %}
-        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-            <div>
-                <strong>{{ suggestion.destination }}</strong>
-                <small class="text-muted d-block">Based on your booking: NPR {{ suggestion.booking.total_price }}</small>
-            </div>
-            <div>
-                <span class="badge bg-warning">Suggested: NPR {{ suggestion.suggested_amount|floatformat:0 }}</span>
-                <button class="btn btn-sm btn-outline-primary ms-2" onclick="createBudgetFromSuggestion('{{ suggestion.destination }}', {{ suggestion.suggested_amount }}, '{{ suggestion.booking.travel_date }}')">
-                    Create Budget
-                </button>
-            </div>
+    {% if bb.budget %}
+    <!-- Has budget — show full tracker -->
+
+    <!-- Alert banners -->
+    {% if bb.alert_over %}
+    <div class="budget-alert alert-over">🚨 Over budget! You've spent Rs. {{ bb.total_spent|floatformat:0 }} of Rs. {{ bb.budget.total_budget }} budget.</div>
+    {% elif bb.alert_75 %}
+    <div class="budget-alert alert-75">⚠️ 75% of budget used — Rs. {{ bb.remaining|floatformat:0 }} remaining. Spend carefully.</div>
+    {% elif bb.alert_50 %}
+    <div class="budget-alert alert-50">📊 50% of budget used — Rs. {{ bb.remaining|floatformat:0 }} remaining.</div>
+    {% endif %}
+
+    <!-- Progress bar -->
+    <div class="budget-bar-wrap">
+      <div class="budget-bar-labels">
+        <span>Rs. {{ bb.total_spent|floatformat:0 }} spent</span>
+        <span>{{ bb.pct }}% of Rs. {{ bb.budget.total_budget|floatformat:0 }}</span>
+      </div>
+      <div class="budget-bar-outer">
+        <div class="budget-bar-inner {% if bb.pct >= 100 %}bar-danger{% elif bb.pct >= 75 %}bar-warning{% else %}bar-good{% endif %}"
+             style="width:{% if bb.pct > 100 %}100{% else %}{{ bb.pct }}{% endif %}%"></div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="budget-stats">
+      <div class="bs-item">
+        <div class="bs-val" style="display:flex;align-items:center;justify-content:center;gap:6px;">
+          Rs. {{ bb.budget.total_budget|floatformat:0 }}
+          <button type="button" style="background:none;border:none;padding:0;cursor:pointer;font-size:12px;color:#aaa;"
+                  onclick="document.getElementById('edit-budget-{{ bb.budget.id }}').classList.toggle('d-none')"
+                  title="Edit budget">✏️</button>
         </div>
-        {% endfor %}
+        <div class="bs-lbl">Total Budget</div>
+        <div id="edit-budget-{{ bb.budget.id }}" class="d-none mt-2">
+          <form method="post" action="{% url 'update_budget' bb.budget.id %}" style="display:flex;gap:4px;">
+            {% csrf_token %}
+            <input type="number" name="total_budget" class="form-control form-control-sm"
+                   value="{{ bb.budget.total_budget }}" step="0.01" min="0" style="width:90px;">
+            <button type="submit" class="btn btn-sm btn-success">Save</button>
+          </form>
+        </div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-val spent">Rs. {{ bb.total_spent|floatformat:0 }}</div>
+        <div class="bs-lbl">Total Spent</div>
+      </div>
+      <div class="bs-item">
+        <div class="bs-val remaining">Rs. {{ bb.remaining|floatformat:0 }}</div>
+        <div class="bs-lbl">Remaining</div>
+      </div>
+    </div>
+
+    <!-- Breakdown — collapsible -->
+    <div class="mb-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary w-100"
+              onclick="this.nextElementSibling.classList.toggle('d-none');this.textContent=this.nextElementSibling.classList.contains('d-none')?'📋 View Spending Details':'▲ Hide Details'">
+        📋 View Spending Details
+      </button>
+      <div class="d-none mt-2">
+        <div class="breakdown">
+          <div class="breakdown-row">
+            <span class="br-label"><i class="fas fa-ticket-alt" style="color:#17a2b8;"></i> Booking payment</span>
+            <span class="br-amount br-booking">− Rs. {{ bb.booking_cost|floatformat:0 }}</span>
+          </div>
+          {% for exp in bb.manual_expenses %}
+          <div class="breakdown-row">
+            <span class="br-label"><i class="fas fa-receipt" style="color:#dc3545;"></i> {{ exp.title }} <span style="color:#aaa;font-size:10px;">{{ exp.date|date:"M d" }}</span></span>
+            <span class="br-amount br-expense">− Rs. {{ exp.amount|floatformat:0 }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Add expense inline -->
+    <div class="add-expense-form">
+      <h6>➕ Add On-the-Way Expense</h6>
+      <form method="post" action="{% url 'add_expense' %}">
+        {% csrf_token %}
+        <input type="hidden" name="location" value="{{ bb.dest }}">
+        <input type="hidden" name="booking_id" value="{{ bb.booking.id }}">
+        <input type="hidden" name="is_booking_expense" value="false">
+        <div class="ae-row">
+          <div>
+            <label style="font-size:11px;color:#666;font-weight:600;">Description</label>
+            <input type="text" name="title" class="form-control form-control-sm" placeholder="e.g. Lunch at Namche" required>
+          </div>
+          <div>
+            <label style="font-size:11px;color:#666;font-weight:600;">Amount (Rs.)</label>
+            <input type="number" name="amount" class="form-control form-control-sm" placeholder="500" step="0.01" required>
+          </div>
+          <div>
+            <label style="font-size:11px;color:#666;font-weight:600;">Category</label>
+            <select name="category" class="form-select form-select-sm" required>
+              <option value="">— Select —</option>
+              {% for cat in categories %}
+              {% if cat.name != 'Travel Package' and cat.name != 'Accommodation' and cat.name != 'Permits & Fees' %}
+              <option value="{{ cat.id }}">{{ cat.name }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <input type="hidden" name="date" value="{% now 'Y-m-d' %}">
+            <input type="hidden" name="currency" value="NPR">
+            <button type="submit" class="ae-btn">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {% else %}
+    <!-- No budget yet — show set budget form -->
+    <div class="set-budget-form">
+      <h6>💡 Set your total available budget for this trip</h6>
+      <p style="font-size:12px;color:#856404;margin:0 0 12px;">
+        Your booking cost of <strong>Rs. {{ bb.booking_cost|floatformat:0 }}</strong> will be automatically counted.
+        Enter your total available budget (should be ≥ booking cost).
+      </p>
+      <form method="post" action="{% url 'add_budget' %}">
+        {% csrf_token %}
+        <input type="hidden" name="booking_id" value="{{ bb.booking.id }}">
+        <input type="hidden" name="title" value="{{ bb.pkg_title }} Budget">
+        <div class="sb-row">
+          <div>
+            <label style="font-size:11px;color:#856404;font-weight:600;">My Total Budget (Rs.)</label>
+            <input type="number" name="total_budget" class="form-control form-control-sm"
+                   placeholder="e.g. 50000" min="{{ bb.booking_cost|floatformat:0 }}" step="0.01" required>
+          </div>
+          <div style="font-size:12px;color:#888;padding-top:20px;">
+            Booking already paid: <strong>Rs. {{ bb.booking_cost|floatformat:0 }}</strong>
+          </div>
+          <div>
+            <button type="submit" class="sb-btn">Set Budget →</button>
+          </div>
+        </div>
+      </form>
     </div>
     {% endif %}
 
-    <!-- Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="text-center p-3 bg-light rounded">
-                <h3 class="text-primary">{{ total_budgets }}</h3>
-                <p class="mb-0">Total Budgets</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="text-center p-3 bg-light rounded">
-                <h3 class="text-success">{{ active_budgets.count }}</h3>
-                <p class="mb-0">Active Budgets</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="text-center p-3 bg-light rounded">
-                <h3 class="text-warning">{{ total_budget_amount|floatformat:0 }}</h3>
-                <p class="mb-0">Total Budget Amount</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="text-center p-3 bg-light rounded">
-                <h3 class="text-info">{{ upcoming_bookings.count }}</h3>
-                <p class="mb-0">Upcoming Bookings</p>
-            </div>
-        </div>
-    </div>
+  </div>
+  {% endfor %}
 
-    <!-- Budgets List -->
-    <div class="row">
-        {% for budget in budgets %}
-        <div class="col-md-6 mb-3">
-            <div class="budget-card">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h5 class="mb-0">{{ budget.title }}</h5>
-                    <span class="budget-status" style="background-color: {% if budget.is_active %}#28a745{% else %}#6c757d{% endif %};">
-                        {% if budget.is_active %}Active{% else %}Inactive{% endif %}
-                    </span>
-                </div>
-                
-                <p class="text-muted mb-2">
-                    <i class="fas fa-map-marker-alt me-1"></i>{{ budget.destination }}
-                </p>
-                
-                <p class="text-muted mb-3">
-                    <i class="fas fa-calendar me-1"></i>{{ budget.start_date }} to {{ budget.end_date }}
-                </p>
-                
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span>Budget Progress</span>
-                        <span>{{ budget.budget_percentage|floatformat:1 }}%</span>
-                    </div>
-                    <div class="progress-custom">
-                        <div class="progress-bar-custom" 
-                             style="width: {{ budget.budget_percentage }}%; 
-                                    background-color: {% if budget.budget_percentage > 90 %}#dc3545{% elif budget.budget_percentage > 70 %}#ffc107{% else %}#28a745{% endif %};">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row text-center">
-                    <div class="col-4">
-                        <small class="text-muted">Budget</small>
-                        <div class="fw-bold">{{ budget.currency }} {{ budget.total_budget }}</div>
-                    </div>
-                    <div class="col-4">
-                        <small class="text-muted">Spent</small>
-                        <div class="fw-bold text-danger">{{ budget.currency }} {{ budget.spent_amount }}</div>
-                    </div>
-                    <div class="col-4">
-                        <small class="text-muted">Remaining</small>
-                        <div class="fw-bold text-success">{{ budget.currency }} {{ budget.remaining_budget }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="text-center py-5">
-                <i class="fas fa-wallet fa-4x text-muted mb-3"></i>
-                <h4 class="text-muted">No Budgets Created Yet</h4>
-                <p class="text-muted">Start planning your travel expenses by creating your first budget!</p>
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
-                    <i class="fas fa-plus me-2"></i>Create Your First Budget
-                </button>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+  {% endif %}
+
 </div>
-
-<!-- Add Budget Modal -->
-<div class="modal fade" id="addBudgetModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, #ffc107, #fd7e14); color: white;">
-                <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Create Travel Budget</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post" action="{% url 'add_budget' %}">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Budget Title</label>
-                        <input type="text" class="form-control" name="title" id="budgetTitle" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Total Budget</label>
-                            <input type="number" step="0.01" class="form-control" name="total_budget" id="budgetAmount" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Currency</label>
-                            <select class="form-select" name="currency">
-                                <option value="NPR">NPR</option>
-                                <option value="USD">USD</option>
-                                <option value="EUR">EUR</option>
-                                <option value="INR">INR</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Destination</label>
-                        <input type="text" class="form-control" name="destination" id="budgetDestination" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Start Date</label>
-                            <input type="date" class="form-control" name="start_date" id="budgetStartDate" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">End Date</label>
-                            <input type="date" class="form-control" name="end_date" id="budgetEndDate" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-warning">Create Budget</button>
-                </div>
-            </form>
-        </div>
-    </div>
 </div>
-
-<script>
-function createBudgetFromSuggestion(destination, amount, travelDate) {
-    // Fill the modal with suggested values
-    document.getElementById('budgetTitle').value = destination + ' Trip Budget';
-    document.getElementById('budgetAmount').value = amount;
-    document.getElementById('budgetDestination').value = destination;
-    
-    // Set dates (start date as today, end date as travel date + 7 days)
-    const today = new Date().toISOString().split('T')[0];
-    const endDate = new Date(travelDate);
-    endDate.setDate(endDate.getDate() + 7);
-    
-    document.getElementById('budgetStartDate').value = today;
-    document.getElementById('budgetEndDate').value = endDate.toISOString().split('T')[0];
-    
-    // Show the modal
-    const modal = new bootstrap.Modal(document.getElementById('addBudgetModal'));
-    modal.show();
-}
-</script>
 {% endblock %}

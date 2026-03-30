@@ -418,7 +418,11 @@ def booking_receipt(request, booking_id):
         'travel_date': booking.travel_date,
         'num_people': booking.num_people,
         'package_title': booking.travel_package.title if booking.travel_package else (booking.trekking.title if booking.trekking else f'Booking #{booking.id}'),
-        'destination': f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}",
+        'destination': (
+            f"{dynamic_details['destination_info']['name']}, {dynamic_details['destination_info']['location']}"
+            if booking.travel_package else
+            f"{booking.trekking.title}, {booking.trekking.country}" if booking.trekking else 'N/A'
+        ),
         'hotel': dynamic_details['hotel'],
         'accommodation': dynamic_details['accommodation'],
         'ticket_no': dynamic_details['ticket_number'],
@@ -641,9 +645,133 @@ def user_bookings(request):
 def weather_view(request):
     return render(request, "weather.html")
 
+
+def weather_data_api(request):
+    """
+    Serve weather data from DB cache.
+    Fetches from OpenWeatherMap only if cache is missing or older than 30 min.
+    """
+    import urllib.request, urllib.parse, json
+    from django.http import JsonResponse
+    from .models import WeatherCache
+
+    city = request.GET.get('city', 'Kathmandu').strip()
+    if not city:
+        return JsonResponse({'error': 'City required'}, status=400)
+
+    # Check DB cache
+    try:
+        cached = WeatherCache.objects.get(city__iexact=city)
+        if not cached.is_stale():
+            return JsonResponse({
+                'source': 'cache',
+                'city': cached.city,
+                'country': cached.country,
+                'temp': cached.temp,
+                'feels_like': cached.feels_like,
+                'humidity': cached.humidity,
+                'pressure': cached.pressure,
+                'wind_speed': cached.wind_speed,
+                'description': cached.description,
+                'icon': cached.icon,
+                'fetched_at': cached.fetched_at.strftime('%H:%M'),
+            })
+    except WeatherCache.DoesNotExist:
+        cached = None
+
+    # Fetch from OpenWeatherMap
+    try:
+        api_key = '00d575c13cc87e97c398a87b83d54930'
+        url = f'https://api.openweathermap.org/data/2.5/weather?q={urllib.parse.quote(city)}&appid={api_key}&units=metric'
+        with urllib.request.urlopen(url, timeout=8) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+
+        if data.get('cod') != 200:
+            return JsonResponse({'error': data.get('message', 'City not found')}, status=404)
+
+        w = {
+            'city':        data['name'],
+            'country':     data['sys'].get('country', ''),
+            'temp':        data['main']['temp'],
+            'feels_like':  data['main']['feels_like'],
+            'humidity':    data['main']['humidity'],
+            'pressure':    data['main']['pressure'],
+            'wind_speed':  data['wind']['speed'],
+            'description': data['weather'][0]['description'],
+            'icon':        data['weather'][0]['icon'],
+        }
+
+        # Save/update DB cache
+        WeatherCache.objects.update_or_create(
+            city__iexact=w['city'],
+            defaults={**w, 'city': w['city']},
+        )
+
+        w['source'] = 'api'
+        return JsonResponse(w)
+
+    except Exception as e:
+        # If API fails but we have stale cache, return it anyway
+        if cached:
+            return JsonResponse({
+                'source': 'stale_cache',
+                'city': cached.city,
+                'country': cached.country,
+                'temp': cached.temp,
+                'feels_like': cached.feels_like,
+                'humidity': cached.humidity,
+                'pressure': cached.pressure,
+                'wind_speed': cached.wind_speed,
+                'description': cached.description,
+                'icon': cached.icon,
+                'fetched_at': cached.fetched_at.strftime('%H:%M'),
+            })
+        return JsonResponse({'error': 'Weather data unavailable'}, status=503)
+
 @login_required(login_url='login')
 def currency_converter(request):
     return render(request, "currency_converter.html")
+
+
+def currency_rate_api(request):
+    """
+    Serve exchange rates from DB cache (refreshed every 6 hours).
+    Falls back to live API if cache is missing or stale.
+    """
+    import urllib.request, json
+    from django.http import JsonResponse
+    from .models import CurrencyRate
+
+    base = request.GET.get('base', 'usd').lower().strip()
+
+    # Check DB cache
+    try:
+        cached = CurrencyRate.objects.get(base_currency=base)
+        if not cached.is_stale():
+            return JsonResponse({'source': 'cache', 'base': base, 'rates': json.loads(cached.rates_json)})
+    except CurrencyRate.DoesNotExist:
+        cached = None
+
+    # Fetch from free currency API
+    try:
+        url = f'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{base}.json'
+        with urllib.request.urlopen(url, timeout=8) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+
+        rates = data.get(base, {})
+        rates_str = json.dumps(rates)
+
+        CurrencyRate.objects.update_or_create(
+            base_currency=base,
+            defaults={'rates_json': rates_str},
+        )
+
+        return JsonResponse({'source': 'api', 'base': base, 'rates': rates})
+
+    except Exception:
+        if cached:
+            return JsonResponse({'source': 'stale_cache', 'base': base, 'rates': json.loads(cached.rates_json)})
+        return JsonResponse({'error': 'Exchange rate data unavailable'}, status=503)
 
 
 def trek_map_view(request):

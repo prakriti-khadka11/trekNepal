@@ -16,22 +16,52 @@ def altitude_dashboard(request):
         altitude_profile = AltitudeProfile.objects.get(user=request.user)
     except AltitudeProfile.DoesNotExist:
         altitude_profile = None
-    
-    # Get user's active plans and recent logs
+
     active_plans = AcclimatizationPlan.objects.filter(user=request.user, is_active=True)
-    recent_logs = SymptomLog.objects.filter(user=request.user).order_by('-date')[:5]
-    
-    # Get latest symptom log for current status
+    recent_logs = SymptomLog.objects.filter(user=request.user).order_by('-date')[:7]
     latest_log = recent_logs.first() if recent_logs else None
-    
+    prev_log = list(recent_logs)[1] if len(list(recent_logs)) > 1 else None
+
+    # Day-over-day AMS change
+    ams_change = None
+    if latest_log and prev_log:
+        ams_change = latest_log.get_ams_score() - prev_log.get_ams_score()
+
+    # Altitude gain warning
+    alt_gain = None
+    if latest_log and prev_log:
+        alt_gain = latest_log.current_altitude - prev_log.current_altitude
+
+    # Chart data for inline trend (last 7 logs, chronological)
+    import json
+    chart_logs = list(reversed(list(recent_logs)))
+    chart_data = json.dumps([{
+        'date': str(l.date),
+        'ams': l.get_ams_score(),
+        'alt': l.current_altitude,
+        'spo2': l.oxygen_saturation or None,
+    } for l in chart_logs])
+
     context = {
         'altitude_profile': altitude_profile,
         'active_plans': active_plans,
         'recent_logs': recent_logs,
         'latest_log': latest_log,
-        'has_profile': altitude_profile is not None
+        'prev_log': prev_log,
+        'ams_change': ams_change,
+        'alt_gain': alt_gain,
+        'chart_data': chart_data,
+        'has_profile': altitude_profile is not None,
+        'symptom_fields': [
+            ('headache',         'Headache'),
+            ('nausea',           'Nausea'),
+            ('fatigue',          'Fatigue'),
+            ('dizziness',        'Dizziness'),
+            ('sleep_difficulty', 'Sleep Difficulty'),
+            ('appetite_loss',    'Appetite Loss'),
+        ],
+        'sym_choices': [(0,'None'),(1,'Mild'),(2,'Mod'),(3,'Severe')],
     }
-    
     return render(request, 'altitude/dashboard.html', context)
 
 @login_required
@@ -111,11 +141,18 @@ def acclimatization_planner(request):
         altitude_profile = AltitudeProfile.objects.get(user=request.user)
     except AltitudeProfile.DoesNotExist:
         altitude_profile = None
-    
+
+    # Fetch actual treks from DB for the selector
+    from .models import Trekking, PeakClimbing
+    treks = Trekking.objects.filter(is_active=True).values('id', 'title', 'max_altitude', 'duration')
+    peaks = PeakClimbing.objects.filter(is_active=True).values('id', 'title', 'height', 'duration')
+
     context = {
-        'altitude_profile': altitude_profile
+        'altitude_profile': altitude_profile,
+        'treks': list(treks),
+        'peaks': list(peaks),
     }
-    
+
     return render(request, 'altitude/acclimatization_planner.html', context)
 
 @login_required
@@ -136,11 +173,39 @@ def symptom_checker(request):
     """Daily symptom checker and logger"""
     if request.method == 'POST':
         try:
-            # Get active plan if exists
-            active_plan = AcclimatizationPlan.objects.filter(
-                user=request.user, 
-                is_active=True
-            ).first()
+            # Get active plan — prefer one matching trek_name if provided
+            trek_name = request.POST.get('trek_name', '')
+            if trek_name:
+                active_plan = AcclimatizationPlan.objects.filter(
+                    user=request.user,
+                    trek_name=trek_name,
+                    is_active=True,
+                ).first()
+                # Auto-create plan if booking exists but no plan yet
+                if not active_plan:
+                    from .models import Trekking
+                    import re
+                    trek = Trekking.objects.filter(title=trek_name).first()
+                    if trek:
+                        def parse_alt(s):
+                            m = re.search(r'(\d[\d,]+)', s or '')
+                            return int(m.group(1).replace(',','')) if m else 5000
+                        def parse_dur(s):
+                            m = re.search(r'(\d+)', s or '')
+                            return int(m.group(1)) if m else 14
+                        active_plan = AcclimatizationPlan.objects.create(
+                            user=request.user,
+                            trek_name=trek_name,
+                            start_altitude=1400,
+                            target_altitude=parse_alt(trek.max_altitude),
+                            trek_duration=parse_dur(trek.duration),
+                            risk_level='medium',
+                            is_active=True,
+                        )
+            else:
+                active_plan = AcclimatizationPlan.objects.filter(
+                    user=request.user, is_active=True
+                ).first()
             
             symptom_log = SymptomLog.objects.create(
                 user=request.user,
@@ -304,3 +369,87 @@ def oxygen_tracker(request):
     }
     
     return render(request, 'altitude/oxygen_tracker.html', context)
+
+
+@login_required
+def load_demo_data(request):
+    """Seed realistic demo data for the logged-in user to showcase the altitude safety feature."""
+    from django.utils import timezone
+    from datetime import date, timedelta
+
+    # 1. Create/update altitude profile
+    AltitudeProfile.objects.update_or_create(
+        user=request.user,
+        defaults={
+            'age': 28,
+            'fitness_level': 'intermediate',
+            'previous_altitude_experience': True,
+            'max_altitude_reached': 3440,
+            'has_altitude_sickness_history': False,
+            'medical_conditions': '',
+            'medications': '',
+        }
+    )
+
+    # 2. Create an acclimatization plan — use actual trek from DB if available
+    from .models import Trekking
+    ebc = Trekking.objects.filter(title__icontains='Everest').first() \
+          or Trekking.objects.filter(is_active=True).first()
+
+    trek_name = ebc.title if ebc else 'High Altitude Trek'
+    # Parse max altitude from trek (e.g. "5,545 m (Kala Patthar)" → 5545)
+    import re
+    target_alt = 5364
+    if ebc and ebc.max_altitude:
+        m = re.search(r'(\d[\d,]+)', ebc.max_altitude)
+        if m:
+            target_alt = int(m.group(1).replace(',', ''))
+
+    plan, _ = AcclimatizationPlan.objects.get_or_create(
+        user=request.user,
+        trek_name=trek_name,
+        defaults={
+            'start_altitude': 2860,
+            'target_altitude': target_alt,
+            'trek_duration': 14,
+            'risk_level': 'medium',
+            'is_active': True,
+        }
+    )
+
+    # 3. Seed 5 days of symptom logs (realistic progression)
+    demo_logs = [
+        # Day 1 — Lukla arrival, mild headache
+        {'days_ago': 4, 'altitude': 2860, 'headache': 1, 'nausea': 0, 'fatigue': 1, 'dizziness': 0, 'sleep_difficulty': 1, 'appetite_loss': 0, 'oxygen_saturation': 94, 'heart_rate': 88, 'notes': 'Arrived Lukla. Mild headache, resting.'},
+        # Day 2 — Namche, feeling better
+        {'days_ago': 3, 'altitude': 3440, 'headache': 1, 'nausea': 0, 'fatigue': 1, 'dizziness': 0, 'sleep_difficulty': 0, 'appetite_loss': 0, 'oxygen_saturation': 91, 'heart_rate': 92, 'notes': 'Namche Bazaar. Acclimatization rest day.'},
+        # Day 3 — Tengboche, moderate symptoms
+        {'days_ago': 2, 'altitude': 3860, 'headache': 2, 'nausea': 1, 'fatigue': 2, 'dizziness': 1, 'sleep_difficulty': 1, 'appetite_loss': 1, 'oxygen_saturation': 88, 'heart_rate': 98, 'notes': 'Tengboche. Headache worsened after ascent.'},
+        # Day 4 — Dingboche, improving
+        {'days_ago': 1, 'altitude': 4410, 'headache': 1, 'nausea': 0, 'fatigue': 1, 'dizziness': 0, 'sleep_difficulty': 1, 'appetite_loss': 0, 'oxygen_saturation': 86, 'heart_rate': 102, 'notes': 'Dingboche. Feeling better after rest day.'},
+        # Day 5 — today, current status
+        {'days_ago': 0, 'altitude': 4940, 'headache': 2, 'nausea': 1, 'fatigue': 2, 'dizziness': 1, 'sleep_difficulty': 2, 'appetite_loss': 1, 'oxygen_saturation': 82, 'heart_rate': 108, 'notes': 'Lobuche. Significant fatigue and headache. Monitoring closely.'},
+    ]
+
+    for entry in demo_logs:
+        log_date = date.today() - timedelta(days=entry['days_ago'])
+        SymptomLog.objects.update_or_create(
+            user=request.user,
+            date=log_date,
+            defaults={
+                'acclimatization_plan': plan,
+                'current_altitude': entry['altitude'],
+                'headache': entry['headache'],
+                'nausea': entry['nausea'],
+                'fatigue': entry['fatigue'],
+                'dizziness': entry['dizziness'],
+                'sleep_difficulty': entry['sleep_difficulty'],
+                'appetite_loss': entry['appetite_loss'],
+                'oxygen_saturation': entry['oxygen_saturation'],
+                'heart_rate': entry['heart_rate'],
+                'notes': entry['notes'],
+            }
+        )
+
+    messages.success(request, 'Demo data loaded — showing a simulated EBC trek progression over 5 days.')
+    return redirect('altitude_dashboard')

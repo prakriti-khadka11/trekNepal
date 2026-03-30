@@ -265,3 +265,21 @@ class PackingTemplateAdmin(admin.ModelAdmin):
     search_fields = ('name', 'notes')
     list_editable = ('priority', 'quantity', 'per_person')
     ordering = ('trip_type', 'season', 'category', 'name')
+
+# Weather Cache Admin
+from .models import WeatherCache
+
+@admin.register(WeatherCache)
+class WeatherCacheAdmin(admin.ModelAdmin):
+    list_display = ('city', 'country', 'temp', 'description', 'humidity', 'wind_speed', 'fetched_at')
+    search_fields = ('city',)
+    readonly_fields = ('fetched_at',)
+
+# Currency Rate Cache Admin
+from .models import CurrencyRate
+
+@admin.register(CurrencyRate)
+class CurrencyRateAdmin(admin.ModelAdmin):
+    list_display = ('base_currency', 'fetched_at')
+    search_fields = ('base_currency',)
+    readonly_fields = ('fetched_at',)
