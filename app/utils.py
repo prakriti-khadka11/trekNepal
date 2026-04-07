@@ -351,7 +351,7 @@ def generate_booking_pdf(booking):
     ("TOPPADDING", (0, 0), (0, 0), 0),
     ("BOTTOMPADDING", (0, 0), (0, 0), 0),
 
-    # TITLE CELL  🔑 THIS MOVES TEXT UP
+    # TITLE CELL  THIS MOVES TEXT UP
     ("TOPPADDING", (1, 0), (1, 0), -6),
     ("BOTTOMPADDING", (1, 0), (1, 0), 0),
 

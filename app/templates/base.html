@@ -1441,12 +1441,12 @@
     <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        // ─────────────────────────────────────────────
+
         // 1. FORM SUBMISSION SPINNER (Nielsen #1 — system status)
         //    Attaches to every <form method="post"> that has a submit button.
         //    Shows spinner on button, disables it to prevent double-submit.
         //    Skips AJAX forms (those with data-no-spinner).
-        // ─────────────────────────────────────────────
+ 
         document.querySelectorAll('form[method="post"]:not([data-no-spinner])').forEach(function (form) {
             form.addEventListener('submit', function () {
                 const btn = form.querySelector('[type="submit"]');
@@ -1466,13 +1466,13 @@
             });
         });
 
-        // ─────────────────────────────────────────────
+
         // 2. SOFT-DELETE UNDO TOAST (Nielsen #3 — error recovery / rule 6 — reversal)
         //    Any delete/remove link/button with class `soft-delete-btn`
         //    gets intercepted: item fades out, undo toast appears for 5s.
         //    If user clicks Undo, item is restored. If toast expires, the
         //    original href/form submit fires.
-        // ─────────────────────────────────────────────
+
         const UNDO_DURATION = 5000;
 
         // Inject undo toast container once
@@ -1546,11 +1546,11 @@
             });
         });
 
-        // ─────────────────────────────────────────────
+      
         // 3. INLINE ERROR CLARITY (Nielsen #9 — error recovery)
         //    Wraps Django's .text-danger / .invalid-feedback messages
         //    with an icon and friendlier phrasing map.
-        // ─────────────────────────────────────────────
+        
         const friendlyErrors = {
             'This field is required.': 'This field can\'t be empty.',
             'Enter a valid email address.': 'Please enter a valid email (e.g. name@example.com).',

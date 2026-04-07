@@ -104,7 +104,7 @@ class PopularPlace(models.Model):
 #     travel_date = models.DateField()
 #     booking_date = models.DateTimeField(auto_now_add=True)
 
-#     # ✅ ADD THESE
+#  
 #     status = models.CharField(
 #         max_length=20,
 #         choices=[
@@ -144,7 +144,7 @@ class Booking(models.Model):
     )
     khalti_pidx = models.CharField(max_length=100, blank=True, null=True)
 
-    # ✅ Add these
+    # Add these
     guide = models.ForeignKey('Guide', on_delete=models.SET_NULL, null=True, blank=True)
     guide_rating = models.PositiveSmallIntegerField(null=True, blank=True)
 
@@ -896,7 +896,7 @@ class GuideMessage(models.Model):
         return f"Message from {self.sender.username} for Booking #{self.booking.id}"
 
 
-# ── Packing List Generator ──────────────────────────────────────────────────
+#  Packing List Generator 
 
 ITEM_CATEGORIES = [
     ('clothing',    'Clothing'),
@@ -955,7 +955,7 @@ class PackingTemplate(models.Model):
         return f'[{self.trip_type}/{self.season}] {self.name}'
 
 
-# ── Weather Cache ───────────────────────────────────────────────────────────
+# Weather Cache 
 
 class WeatherCache(models.Model):
     """Caches OpenWeatherMap responses in the DB. Refreshed every 30 minutes."""
@@ -982,7 +982,7 @@ class WeatherCache(models.Model):
         return timezone.now() - self.fetched_at > timedelta(minutes=30)
 
 
-# ── Currency Rate Cache ─────────────────────────────────────────────────────
+#  Currency Rate Cache
 
 class CurrencyRate(models.Model):
     """

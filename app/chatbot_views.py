@@ -12,9 +12,7 @@ from .models import (
     TravelExpense, TravelBudget, TravelWishlist, Guide
 )
 
-# ══════════════════════════════════════════════════════════
 #  SYNONYM MAP  — expands user words to canonical keywords
-# ══════════════════════════════════════════════════════════
 SYNONYMS = {
     "trek": ["hike", "hiking", "trekking", "walk", "trail", "route"],
     "package": ["tour", "trip", "deal", "offer", "plan", "holiday", "vacation"],
@@ -34,9 +32,7 @@ SYNONYMS = {
     "long": ["extended", "many days", "weeks", "lengthy"],
 }
 
-# ══════════════════════════════════════════════════════════
 #  INTENT DEFINITIONS
-# ══════════════════════════════════════════════════════════
 INTENTS = [
     {
         "tag": "greeting",
@@ -205,9 +201,7 @@ INTENTS = [
     },
 ]
 
-# ══════════════════════════════════════════════════════════
 #  FOLLOW-UP SUGGESTIONS per intent
-# ══════════════════════════════════════════════════════════
 FOLLOWUPS = {
     "ask_treks":          ["What's the easiest trek?", "Show me short treks", "Trek costs?", "Do I need a guide?"],
     "ask_packages":       ["Show me treks too", "What's included in packages?", "My bookings"],
@@ -232,9 +226,8 @@ FOLLOWUPS = {
 }
 
 
-# ══════════════════════════════════════════════════════════
+
 #  STATIC KNOWLEDGE RESPONSES
-# ══════════════════════════════════════════════════════════
 STATIC_RESPONSES = {
     "ask_ebc": (
         "🏔️ **Everest Base Camp Trek**\n\n"
@@ -432,9 +425,8 @@ STATIC_RESPONSES = {
 }
 
 
-# ══════════════════════════════════════════════════════════
 #  NLP HELPERS
-# ══════════════════════════════════════════════════════════
+
 def expand_synonyms(text):
     """Replace synonym words with canonical keywords for better matching."""
     words = text.lower().split()
@@ -526,9 +518,8 @@ def build_followups(tag):
     return chips[:4]  # max 4 chips
 
 
-# ══════════════════════════════════════════════════════════
+
 #  DB-BACKED RESPONSE BUILDERS
-# ══════════════════════════════════════════════════════════
 def build_trek_response(user, entities=None):
     treks = Trekking.objects.filter(is_active=True)[:8]
     if not treks.exists():
@@ -683,9 +674,9 @@ def build_recommend_response(user, entities=None):
     return "\n".join(lines)
 
 
-# ══════════════════════════════════════════════════════════
+
 #  MAIN RESPONSE DISPATCHER
-# ══════════════════════════════════════════════════════════
+
 def get_response(tag, user, entities=None, last_tag=None):
     # DB-backed intents
     db_handlers = {
@@ -726,9 +717,9 @@ def get_response(tag, user, entities=None, last_tag=None):
     )
 
 
-# ══════════════════════════════════════════════════════════
+
 #  VIEWS
-# ══════════════════════════════════════════════════════════
+
 @login_required
 def chatbot_interface(request):
     return render(request, 'chatbot/interface.html')

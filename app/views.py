@@ -19,13 +19,60 @@ from django.urls import reverse
 from .utils import account_activation_token
 import logging
 from django.conf import settings
+from django.shortcuts import render
+from .models import TravelPackage
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .models import ContactUs
+from django.conf import settings
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from .tokens import generate_token
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.models import User
+from .models import Profile
+from django.utils.encoding import force_bytes, force_str
+from .utils import send_booking_email
+import requests
+from django.shortcuts import redirect, get_object_or_404
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from .models import Booking
+from django.conf import settings
+from django.shortcuts import redirect, get_object_or_404
+from .models import TravelPackage, Booking
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.shortcuts import redirect, get_object_or_404
+from .models import TravelPackage, Booking
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Profile
+import random
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from .models import Guide
+from .forms import GuideRegisterForm, GuideLoginForm
+
+from django.contrib import messages
 
 settings.KHALTI_SECRET_KEY
 settings.KHALTI_PUBLIC_KEY
 
 # Helper function to check if user is an admin
 def home(request):
-    # If user is logged in, check user type and redirect accordingly
+    """Render the home page. Redirects admin to admin dashboard and verified guides to guide dashboard."""
     if request.user.is_authenticated:
         # Check if user is admin (superuser or staff)
         if request.user.is_superuser or request.user.is_staff:
@@ -55,15 +102,9 @@ def home(request):
     
     return render(request, 'home.html', context)
 
-
-@login_required(login_url='login')
-def destination_detail(request, id):
-    destination = get_object_or_404(Destination, id=id)
-    return render(request, 'destination_detail.html', {'destination': destination})
-
-
 # Login View
 def login_view(request):
+    """Authenticate user credentials. Redirects guides to guide login, regular users to home."""
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -85,22 +126,91 @@ def login_view(request):
     
     return render(request, "login.html")
 
-    
+def signup(request):
+    """Register a new user, create an inactive account, and send a 6-digit email verification code."""
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+        password1 = request.POST["password1"]
+        password2 = request.POST["password2"]
+
+        # Validation
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists!")
+            return redirect('signup')
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered!")
+            return redirect('signup')
+        if len(username) > 20:
+            messages.error(request, "Username must be under 20 characters!")
+            return redirect('signup')
+        if password1 != password2:
+            messages.error(request, "Passwords do not match!")
+            return redirect('signup')
+        if not username.isalnum():
+            messages.error(request, "Username must be alphanumeric!")
+            return redirect('signup')
+
+        # Create inactive user
+        myuser = User.objects.create_user(username=username, email=email, password=password1)
+        myuser.is_active = False
+        myuser.save()
+
+        # Generate verification code
+        code = generate_verification_code()
+
+        # Save code in Profile
+        profile = Profile.objects.create(user=myuser, email_verification_code=code)
+
+        # Send verification code email
+        subject = "Your TrekNepal Verification Code"
+        message = f"Hello {myuser.first_name},\n\nYour verification code is: {code}\n\nEnter this code on the verification page to activate your account."
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [myuser.email], fail_silently=False)
+
+        # Store user id in session for verification
+        request.session['user_id'] = myuser.id
+
+        messages.success(request, "Account created! Please check your email for the verification code.")
+        return redirect('verify_code')
+
+    return render(request, "signup.html")
+
+def verify_code(request):
+    """Verify the 6-digit email verification code and activate the user account."""
+    if request.method == "POST":
+        code = request.POST.get('code')
+        user_id = request.session.get('user_id')
+        if not user_id:
+            messages.error(request, "Session expired. Please login again.")
+            return redirect('signup')
+        user = User.objects.get(id=user_id)
+        profile = user.profile
+        if profile.email_verification_code == code:
+            user.is_active = True
+            user.save()
+            profile.is_verified = True
+            profile.save()
+            messages.success(request, "Your account is verified! You can now sign in.")
+            return redirect('login')
+        else:
+            messages.error(request, "Invalid verification code. Try again.")
+    return render(request, 'verify_code.html')
+
+# Function to generate code
+def generate_verification_code():
+    """Generate a random 6-digit numeric verification code for email confirmation."""
+    return str(random.randint(100000, 999999)) 
 
 # Logout View
 def logout_view(request):
+    """Destroy the user session and redirect to home."""
     logout(request)
     messages.success(request, "Logged out successfully!")
     return redirect("home")
 
-
-
-# Travel Package List
-from django.shortcuts import render
-from .models import TravelPackage
-
 @login_required(login_url='login')
 def package_list(request):
+    """List all available travel packages with filtering and search."""
     packages = TravelPackage.objects.all()
 
     # Unique destinations
@@ -138,8 +248,14 @@ def package_list(request):
         'destinations': destinations,
     })
 
+@login_required(login_url='login')
+def destination_detail(request, id):
+    """Display details of a specific destination including gallery images."""
+    destination = get_object_or_404(Destination, id=id)
+    return render(request, 'destination_detail.html', {'destination': destination})
 
 def booking_detail(request, id):
+    """Display full details of a specific booking including itinerary."""
     booking = get_object_or_404(Booking, id=id)
     
     # Check if user is a guide
@@ -153,6 +269,7 @@ from django.contrib import messages
 
 @login_required
 def cancel_booking(request, booking_id):
+    """Cancel (delete) a booking owned by the current user."""
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     if request.method == "POST":
         booking.delete()  # or booking.status = "cancelled"; booking.save()
@@ -164,6 +281,7 @@ def cancel_booking(request, booking_id):
 # Khalti Payment for Trekking
 @login_required
 def khalti_initiate_trekking(request):
+    """Initiate Khalti payment for a trekking booking stored in session."""
     booking_data = request.session.get('pending_trekking_booking')
     if not booking_data:
         return redirect('trekking_list')
@@ -200,9 +318,9 @@ def khalti_initiate_trekking(request):
     else:
         return redirect("trekking_list")
 
-
 @login_required
 def khalti_verify_trekking(request):
+    """Verify Khalti payment for trekking, create Booking record, and send confirmation email."""
     pidx = request.GET.get("pidx")
     if not pidx:
         return redirect("trekking_list")
@@ -255,6 +373,7 @@ def khalti_verify_trekking(request):
 # Khalti Payment for Peak Climbing
 @login_required
 def khalti_initiate_peak(request):
+    """Initiate Khalti payment for a peak climbing booking stored in session."""
     booking_data = request.session.get('pending_peak_booking')
     if not booking_data:
         return redirect('peak_climbing_list')
@@ -294,6 +413,7 @@ def khalti_initiate_peak(request):
 
 @login_required
 def khalti_verify_peak(request):
+    """Verify Khalti payment for peak climbing and create PeakClimbingBooking record."""
     pidx = request.GET.get("pidx")
     if not pidx:
         return redirect("peak_climbing_list")
@@ -336,8 +456,96 @@ def khalti_verify_peak(request):
     return redirect("my_bookings")
 
 
-# Edit profile
+@login_required
+def khalti_initiate_temp(request):
+    """Initiate Khalti payment for a travel package booking stored in session."""
+    booking_data = request.session.get('pending_booking')
+    if not booking_data:
+        # If session expired or user visits directly
+        return redirect('package_list')
 
+    travel_package = get_object_or_404(TravelPackage, id=booking_data["travel_id"])
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    # Khalti test mode cap: max Rs.1000 (100000 paisa)
+    raw_paisa = int(booking_data["total_price"] * 100)
+    amount_paisa = min(raw_paisa, 100000) if settings.DEBUG else raw_paisa
+
+    payload = {
+        "return_url": request.build_absolute_uri("/khalti/verify/"),
+        "website_url": request.build_absolute_uri("/"),
+        "amount": amount_paisa,
+        "purchase_order_id": "temp",
+        "purchase_order_name": travel_package.title,
+    }
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/initiate/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+
+    if "payment_url" in result:
+        return redirect(result["payment_url"])
+    else:
+        # If initiation failed
+        return redirect("package_list")
+
+@login_required
+def khalti_verify(request):
+    """Verify Khalti payment for a travel package, create Booking record, and send PDF email."""
+    pidx = request.GET.get("pidx")
+    if not pidx:
+        return redirect("package_list")
+
+    headers = {
+        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {"pidx": pidx}
+
+    response = requests.post(
+        "https://a.khalti.com/api/v2/epayment/lookup/",
+        json=payload,
+        headers=headers
+    )
+
+    result = response.json()
+    print("Khalti verify result:", result)
+
+    if result.get("status") == "Completed":
+        booking_data = request.session.get('pending_booking')
+        if booking_data:
+            travel_package = get_object_or_404(
+                TravelPackage, id=booking_data["travel_id"]
+            )
+
+            booking = Booking.objects.create(
+                user=request.user,
+                travel_package=travel_package,
+                num_people=booking_data["num_people"],
+                travel_date=booking_data["travel_date"],
+                total_price=booking_data["total_price"],
+                status="PAID",
+                khalti_pidx=pidx
+            )
+
+            # SEND PDF EMAIL
+            send_booking_email(booking)
+
+            del request.session['pending_booking']
+
+    return redirect("my_bookings")
+
+
+# Edit profile
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
@@ -345,6 +553,7 @@ class ProfileForm(forms.ModelForm):
 
 @login_required
 def edit_profile(request):
+    """Allow logged-in user to update their first name, last name, and email."""
     if request.method == "POST":
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -357,6 +566,7 @@ def edit_profile(request):
 
 @login_required
 def book_travel(request, travel_id):
+    """Store travel package booking data in session and redirect to Khalti payment."""
     travel_package = get_object_or_404(TravelPackage, id=travel_id)
 
     if request.method == "POST":
@@ -369,7 +579,7 @@ def book_travel(request, travel_id):
             "travel_id": travel_package.id,
             "num_people": num_people,
             "travel_date": travel_date,
-            "total_price": float(total_price),  # ✅ float for JSON
+            "total_price": float(total_price),  
         }
 
         # Redirect to Khalti payment
@@ -380,6 +590,7 @@ def book_travel(request, travel_id):
 
 @login_required
 def my_bookings(request):
+    """Display all bookings for the logged-in user with unread guide message counts."""
     from .models import GuideMessage
     
     bookings = Booking.objects.filter(user=request.user)
@@ -401,7 +612,7 @@ def my_bookings(request):
 
 @login_required
 def booking_receipt(request, booking_id):
-    """Display booking confirmation details (same as PDF email) in the system"""
+    """Display the HTML booking receipt with dynamic details from the database."""
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     
     # Import the dynamic details function
@@ -439,12 +650,14 @@ def booking_receipt(request, booking_id):
 
 
 def user_data(request):
+    """Return all users — used for admin data inspection."""
     users = User.objects.all()
     return render(request, "user_data.html", {"users": users})
 
 
 @login_required
 def travel_package_detail(request, travel_id):
+    """Display full details of a travel package including reviews and booking form."""
     travel_package = get_object_or_404(TravelPackage, id=travel_id)
     tour_detail = travel_package.tour_detail
     images = travel_package.images.all()
@@ -468,13 +681,8 @@ def travel_package_detail(request, travel_id):
     })
 
 
-from django.core.mail import send_mail
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .models import ContactUs
-from django.conf import settings
-
 def contact_us(request):
+    """Handle contact form submission and save message to database."""
     if request.method == "POST":
         name = request.POST.get('name')
         email = request.POST.get('email')
@@ -512,6 +720,7 @@ def contact_us(request):
     return render(request, 'contact_us.html')
 
 def explore_countries(request):
+    """List all countries/districts available for exploration."""
     countries = Country.objects.all()
     return render(request, 'explore_countries.html', {'countries': countries})
 
@@ -520,11 +729,13 @@ from .models import Country
 
 # @login_required(login_url='login')
 def explore_country_detail(request, id):
+    """Display details and destinations for a specific country/district."""
     country = get_object_or_404(Country, id=id)
     return render(request, 'explore_country_detail.html', {'country': country})
 
 
 def search_view(request):
+    """Search across packages, trekking, peak climbing, and destinations by keyword."""
     query = request.GET.get('q', '')
     print("SEARCH QUERY:", query)  # Debug print
 
@@ -543,21 +754,25 @@ def search_view(request):
 
 
 def tour_list(request):
+    """List all available tour packages."""
     tours = TourDetail.objects.all()
     return render(request, 'tour_list.html', {'tours': tours})
 
 
 @login_required(login_url='login')
 def tour_detail(request, pk):
+    """Display details of a specific tour package."""
     tour = get_object_or_404(TourDetail, pk=pk)
     return render(request, 'tour_detail.html', {'tour': tour})
 
 def trekking_list(request):
+    """List all active trekking routes."""
     treks = Trekking.objects.filter(is_active=True)
     return render(request, 'trekking_list.html', {'treks': treks})
 
 @login_required(login_url='login')
 def trekking_detail(request, slug):
+    """Display trekking route details and handle booking form submission."""
     trek = get_object_or_404(Trekking, slug=slug)
     images = trek.gallery_images.all()
     
@@ -583,17 +798,20 @@ def trekking_detail(request, slug):
     })
 
 def peak_climbing_list(request):
+    """List all active peak climbing expeditions."""
     peaks = PeakClimbing.objects.filter(is_active=True)
     return render(request, 'peak_climbing_list.html', {'peaks': peaks})
 
 # Detail view for each Peak Climbing
 @login_required(login_url='login')
 def peak_climbing_detail(request, slug):
+    """Display peak climbing expedition details."""
     peak = get_object_or_404(PeakClimbing, slug=slug)
     return render(request, 'peak_climbing_detail.html', {'peak': peak})
 
 @login_required
 def book_peak_climbing(request, slug):
+    """Handle peak climbing booking form and store data in session for Khalti payment."""
     peak = get_object_or_404(PeakClimbing, slug=slug)
 
     if request.method == 'POST':
@@ -621,7 +839,7 @@ def package_booking(request, package_id):
         form = BookingForm(request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
-            booking.user = request.user  # ✅ Sets the user
+            booking.user = request.user  
             booking.travel_package = package
             booking.total_price = package.price * booking.num_people
             booking.save()
@@ -643,13 +861,15 @@ def user_bookings(request):
 
 @login_required(login_url='login')  # redirect to login page if not logged in
 def weather_view(request):
+    """Render the weather forecast page."""
     return render(request, "weather.html")
 
 
 def weather_data_api(request):
     """
-    Serve weather data from DB cache.
-    Fetches from OpenWeatherMap only if cache is missing or older than 30 min.
+    Serve weather data from DB cache (30-min refresh).
+    Fetches from OpenWeatherMap only if cache is missing or stale.
+    Returns JSON with temp, humidity, wind, description, icon.
     """
     import urllib.request, urllib.parse, json
     from django.http import JsonResponse
@@ -730,13 +950,15 @@ def weather_data_api(request):
 
 @login_required(login_url='login')
 def currency_converter(request):
+    """Render the currency converter page."""
     return render(request, "currency_converter.html")
 
 
 def currency_rate_api(request):
     """
-    Serve exchange rates from DB cache (refreshed every 6 hours).
-    Falls back to live API if cache is missing or stale.
+    Serve exchange rates from DB cache (6-hour refresh).
+    Falls back to live currency API if cache is missing or stale.
+    Returns JSON with base currency and all exchange rates.
     """
     import urllib.request, json
     from django.http import JsonResponse
@@ -768,25 +990,21 @@ def currency_rate_api(request):
 
         return JsonResponse({'source': 'api', 'base': base, 'rates': rates})
 
-    except Exception:
+    except Exception as e:
+        import traceback
+        print("Currency API error:", traceback.format_exc())
         if cached:
             return JsonResponse({'source': 'stale_cache', 'base': base, 'rates': json.loads(cached.rates_json)})
         return JsonResponse({'error': 'Exchange rate data unavailable'}, status=503)
 
 
 def trek_map_view(request):
+    """Render the interactive trek map with route planning and live GPS tracking."""
     return render(request, 'trek_map.html')
 
  # Guide
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from .models import Guide
-from .forms import GuideRegisterForm, GuideLoginForm
-
-from django.contrib import messages
-
 def guide_register(request):
+    """Handle guide registration — creates both User and Guide records simultaneously."""
     if request.method == "POST":
         form = GuideRegisterForm(request.POST, request.FILES)
         if form.is_valid():
@@ -799,6 +1017,7 @@ def guide_register(request):
 
 
 def guide_login(request):
+    """Authenticate guide credentials. Only allows verified guides to access the dashboard."""
     if request.method == "POST":
         form = GuideLoginForm(request, data=request.POST)
         if form.is_valid():
@@ -821,6 +1040,7 @@ from .models import Guide
 
 @login_required
 def guide_dashboard(request):
+    """Display guide dashboard with assigned bookings, ratings, and messaging."""
     from .models import GuideMessage
     
     guide = Guide.objects.filter(user=request.user).first()
@@ -894,6 +1114,7 @@ def guide_dashboard(request):
 
 @login_required
 def admin_dashboard(request):
+    """Display admin dashboard with statistics, recent bookings, guide approvals, and custom requests."""
     # Check if user is admin
     if not (request.user.is_superuser or request.user.is_staff):
         return redirect('home')
@@ -1042,11 +1263,13 @@ def admin_dashboard(request):
 
 @login_required
 def guide_profile(request):
+    """Display the profile page for the logged-in guide."""
     guide = Guide.objects.filter(user=request.user).first()
     return render(request, "guide_profile.html", {"guide": guide})
 
 
 def request_password_reset(request):
+    """Send a password reset link to the user's email using a secure token."""
     """
     Handles password reset request.
     Sends an email with password reset link if user email is found.
@@ -1080,6 +1303,7 @@ def request_password_reset(request):
     return render(request, "reset-password.html")
 
 def reset_password_confirm(request, uidb64, token):
+    """Validate the password reset token and allow the user to set a new password."""
     """
     Confirms password reset using UID and token.
     Allows user to enter new password if token is valid.
@@ -1108,25 +1332,9 @@ def reset_password_confirm(request, uidb64, token):
     except (TypeError, ValueError, OverflowError, User.DoesNotExist, DjangoUnicodeDecodeError):
         messages.error(request, "The password reset link is invalid.")
         return redirect('login')
-    
 
-# Added
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.core.mail import EmailMessage
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from .tokens import generate_token
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth.models import User
-from .models import Profile
-from django.utils.encoding import force_bytes, force_str
-
-def activate(request,uidb64,token):
+def activate(request, uidb64, token):
+    """Activate user account via email link (legacy activation method)."""
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         myuser = User.objects.get(pk=uid)
@@ -1142,207 +1350,12 @@ def activate(request,uidb64,token):
         return redirect('login')
     else:
         return render(request,'activation_failed.html')
-    
-def verify_code(request):
-    if request.method == "POST":
-        code = request.POST.get('code')
-        user_id = request.session.get('user_id')
-        if not user_id:
-            messages.error(request, "Session expired. Please login again.")
-            return redirect('signup')
-        user = User.objects.get(id=user_id)
-        profile = user.profile
-        if profile.email_verification_code == code:
-            user.is_active = True
-            user.save()
-            profile.is_verified = True
-            profile.save()
-            messages.success(request, "Your account is verified! You can now sign in.")
-            return redirect('login')
-        else:
-            messages.error(request, "Invalid verification code. Try again.")
-    return render(request, 'verify_code.html')
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import Profile
-import random
-
-# Function to generate code
-def generate_verification_code():
-    return str(random.randint(100000, 999999)) 
-
-
-def signup(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password1 = request.POST["password1"]
-        password2 = request.POST["password2"]
-
-        # Validation
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists!")
-            return redirect('signup')
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already registered!")
-            return redirect('signup')
-        if len(username) > 20:
-            messages.error(request, "Username must be under 20 characters!")
-            return redirect('signup')
-        if password1 != password2:
-            messages.error(request, "Passwords do not match!")
-            return redirect('signup')
-        if not username.isalnum():
-            messages.error(request, "Username must be alphanumeric!")
-            return redirect('signup')
-
-        # Create inactive user
-        myuser = User.objects.create_user(username=username, email=email, password=password1)
-        myuser.is_active = False
-        myuser.save()
-
-        # Generate verification code
-        code = generate_verification_code()
-
-        # Save code in Profile
-        profile = Profile.objects.create(user=myuser, email_verification_code=code)
-
-        # Send verification code email
-        subject = "Your TrekNepal Verification Code"
-        message = f"Hello {myuser.first_name},\n\nYour verification code is: {code}\n\nEnter this code on the verification page to activate your account."
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [myuser.email], fail_silently=False)
-
-        # Store user id in session for verification
-        request.session['user_id'] = myuser.id
-
-        messages.success(request, "Account created! Please check your email for the verification code.")
-        return redirect('verify_code')
-
-    return render(request, "signup.html")
-
-
-# Added
-
-# app/views.py
-import requests
-from django.shortcuts import redirect, get_object_or_404
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from .models import Booking
-
-
-import requests
-from django.conf import settings
-from django.shortcuts import redirect, get_object_or_404
-from .models import TravelPackage, Booking
-from django.contrib.auth.decorators import login_required
-
-import requests
-from django.conf import settings
-from django.shortcuts import redirect, get_object_or_404
-from .models import TravelPackage, Booking
-
-@login_required
-def khalti_initiate_temp(request):
-    booking_data = request.session.get('pending_booking')
-    if not booking_data:
-        # If session expired or user visits directly
-        return redirect('package_list')
-
-    travel_package = get_object_or_404(TravelPackage, id=booking_data["travel_id"])
-
-    headers = {
-        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    # Khalti test mode cap: max Rs.1000 (100000 paisa)
-    raw_paisa = int(booking_data["total_price"] * 100)
-    amount_paisa = min(raw_paisa, 100000) if settings.DEBUG else raw_paisa
-
-    payload = {
-        "return_url": request.build_absolute_uri("/khalti/verify/"),
-        "website_url": request.build_absolute_uri("/"),
-        "amount": amount_paisa,
-        "purchase_order_id": "temp",
-        "purchase_order_name": travel_package.title,
-    }
-
-    response = requests.post(
-        "https://a.khalti.com/api/v2/epayment/initiate/",
-        json=payload,
-        headers=headers
-    )
-
-    result = response.json()
-
-    if "payment_url" in result:
-        return redirect(result["payment_url"])
-    else:
-        # If initiation failed
-        return redirect("package_list")
-
-
-# Added today 
-
-
-from .utils import send_booking_email
-
-@login_required
-def khalti_verify(request):
-    pidx = request.GET.get("pidx")
-    if not pidx:
-        return redirect("package_list")
-
-    headers = {
-        "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    payload = {"pidx": pidx}
-
-    response = requests.post(
-        "https://a.khalti.com/api/v2/epayment/lookup/",
-        json=payload,
-        headers=headers
-    )
-
-    result = response.json()
-    print("Khalti verify result:", result)
-
-    if result.get("status") == "Completed":
-        booking_data = request.session.get('pending_booking')
-        if booking_data:
-            travel_package = get_object_or_404(
-                TravelPackage, id=booking_data["travel_id"]
-            )
-
-            booking = Booking.objects.create(
-                user=request.user,
-                travel_package=travel_package,
-                num_people=booking_data["num_people"],
-                travel_date=booking_data["travel_date"],
-                total_price=booking_data["total_price"],
-                status="PAID",
-                khalti_pidx=pidx
-            )
-
-            # SEND PDF EMAIL
-            send_booking_email(booking)
-
-            del request.session['pending_booking']
-
-    return redirect("my_bookings")
-
-
-# --- Packing List Generator ---
+#  Packing List Generator 
 
 def _infer_trek_meta(pkg):
+    """Infer trek_type (easy/moderate/high_altitude/peak_climbing) and accommodation from package title and destination."""
     title_low = pkg.title.lower()
     location  = (pkg.destination.location or '').lower() if pkg.destination else ''
     dest_name = (pkg.destination.name or '').lower() if pkg.destination else ''
@@ -1362,6 +1375,7 @@ def _infer_trek_meta(pkg):
 
 
 def _infer_season(travel_date):
+    """Determine trekking season (spring/monsoon/autumn/winter) from the travel date month."""
     m = travel_date.month
     if m in [3, 4, 5]:   return 'spring'
     if m in [6, 7, 8]:   return 'monsoon'
@@ -1371,6 +1385,10 @@ def _infer_season(travel_date):
 
 @login_required(login_url='login')
 def packing_list(request):
+    """
+    Packing List Generator — user selects a trip and season,
+    items are fetched from PackingTemplate DB table and displayed by category.
+    """
     from .models import PackingTemplate, TravelPackage, Trekking, PeakClimbing
 
     # All available trips for the selector
@@ -1461,5 +1479,7 @@ def packing_list(request):
 # --- Trek Fitness Matcher ---
 @login_required(login_url='login')
 def trek_matcher(request):
+    """Render the Trek Fitness Matcher page with all active treks passed for JS scoring."""
     treks = Trekking.objects.filter(is_active=True)
     return render(request, 'trek_matcher.html', {'treks': treks})
+

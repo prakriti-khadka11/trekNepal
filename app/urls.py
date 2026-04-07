@@ -1,6 +1,5 @@
 from django.urls import path, include
 from django.shortcuts import render
-
 from . import views
 from django.contrib.auth.views import LogoutView
 
@@ -54,11 +53,13 @@ urlpatterns = [
     path("weather/", views.weather_view, name="weather_view"),
     path("weather/data/", views.weather_data_api, name="weather_data_api"),
 
+    # Utilities
+
     path("currency-converter/", views.currency_converter, name="currency_converter"),
     path("currency-converter/rates/", views.currency_rate_api, name="currency_rate_api"),
     path('trek-map/', views.trek_map_view, name='trek_map'),
 
-    # New features
+    # Packing List and trek Matcher
     path('packing-list/', views.packing_list, name='packing_list'),
     path('trek-matcher/', views.trek_matcher, name='trek_matcher'),
 
@@ -79,14 +80,19 @@ urlpatterns = [
     path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
 
 
+# Password reset
     path('reset-password/', views.request_password_reset, name='reset-password'),
     path('reset-password/<uidb64>/<token>/', views.reset_password_confirm, name='reset_password_confirm'),
 
 
 
     path('activate/<uidb64>/<token>', views.activate, name='activate'),
+
+    # Verify code
     path('verify_code/', views.verify_code, name='verify_code'),
 
+
+ # Khalti for Package
     path('book/<int:travel_id>/', views.book_travel, name='book_travel'),
     path('khalti/initiate/', views.khalti_initiate_temp, name='khalti_initiate_temp'),
     path('khalti/verify/', views.khalti_verify, name='khalti_verify'),
