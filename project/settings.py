@@ -30,7 +30,7 @@ DEBUG = True
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 # ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ['treknepal-8.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['treknepal-10.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
