@@ -28,7 +28,9 @@ GEMINI_API_KEY = "AIzaSyCJpJi58FB7qWS0mtpt6j7B41-jituJATo"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['treknepal-8.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
