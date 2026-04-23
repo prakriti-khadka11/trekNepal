@@ -52,3 +52,4 @@ wheel==0.43.0
 wrapt==1.14.1
 zopfli==0.2.3
 gunicorn
+whitenoise
