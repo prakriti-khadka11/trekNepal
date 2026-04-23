@@ -1,0 +1,431 @@
+/* ---------------------------------------
+   GENERAL STYLES
+---------------------------------------- */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+}
+
+.hero-content {
+    width: 100%;
+    padding: 0 15px;
+    z-index: 2;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+/* Detail Header */
+.detail-header {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 50vh;
+    display: flex;
+    align-items: flex-end;
+}
+
+.detail-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    z-index: 1;
+}
+
+.detail-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    padding-bottom: 2rem;
+}
+
+/* Cards */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.destination-card img, 
+.adventure-card img {
+    transition: transform 0.5s ease;
+}
+
+.destination-card:hover img, 
+.adventure-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Contact Icons */
+.contact-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: var(--bs-primary);
+}
+
+/* Gallery */
+.gallery-img {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.gallery-img:hover {
+    transform: scale(1.05);
+}
+
+/* Instagram */
+.instagram-item {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    overflow: hidden;
+    display: block;
+    border-radius: 8px;
+}
+
+.instagram-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.instagram-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Owl Carousel */
+.owl-nav button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #333 !important;
+    width: 40px;
+    height: 40px;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.owl-nav button.owl-prev { left: -20px; }
+.owl-nav button.owl-next { right: -20px; }
+
+.owl-dots { margin-top: 20px; }
+
+.owl-nav button span { display: none; }
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    .owl-nav button { display: none !important; }
+}
+
+/* ---------------------------------------
+   DARK MODE
+---------------------------------------- */
+body.dark-mode {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    transition: all 0.4s ease-in-out;
+}
+
+/* Navbar */
+body.dark-mode .navbar {
+    background-color: #1c1c1c !important;
+}
+body.dark-mode .navbar .nav-link {
+    color: #ffffff !important;
+}
+body.dark-mode .navbar .nav-link:hover {
+    color: #1e90ff !important;
+}
+
+/* Footer */
+body.dark-mode footer {
+    background-color: #1c1c1c !important;
+    color: #ffffff !important;
+}
+body.dark-mode footer a {
+    color: #cccccc !important;
+}
+body.dark-mode footer a:hover {
+    color: #ffffff !important;
+}
+
+/* Dropdowns */
+body.dark-mode .dropdown-menu {
+    background-color: #2a2a2a !important;
+}
+body.dark-mode .dropdown-item {
+    color: #ffffff !important;
+}
+body.dark-mode .dropdown-item:hover {
+    background-color: #444 !important;
+}
+
+/* Form Inputs */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border: 1px solid #444 !important;
+}
+body.dark-mode input::placeholder {
+    color: #bbbbbb !important;
+}
+
+/* Buttons */
+body.dark-mode .btn {
+    background-color: #333 !important;
+    color: #fff !important;
+    border-color: #555 !important;
+}
+body.dark-mode .btn:hover {
+    background-color: #555 !important;
+}
+
+/* Cards */
+body.dark-mode .card {
+    background-color: #1f1f1f !important;
+    color: #ffffff !important;
+    border: 1px solid #333 !important;
+}
+body.dark-mode .card .card-footer {
+    background-color: #2a2a2a !important;
+}
+
+/* Images */
+body.dark-mode .carousel-item img,
+body.dark-mode #instagram img,
+body.dark-mode section.bg-light img {
+    filter: brightness(70%) !important;
+}
+body.dark-mode #instagram img:hover {
+    filter: brightness(85%) !important;
+}
+
+/* ---------------------------------------
+   CONTACT PAGE — VIDEO SECTION (GLASS FORM)
+---------------------------------------- */
+
+.contact-video-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    overflow: hidden;
+}
+
+.contact-video-section .bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.contact-video-section .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(2px);
+    z-index: 2;
+}
+
+.contact-video-section .container {
+    position: relative;
+    z-index: 3;
+}
+
+.bg-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* ❗IMPORTANT: Glass inputs ONLY inside video section */
+.contact-video-section .form-control,
+.contact-video-section .form-floating label {
+    color: #fff !important;
+}
+
+.contact-video-section .form-control::placeholder {
+    color: #ddd !important;
+}
+
+.contact-video-section .form-control {
+    background-color: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    backdrop-filter: blur(10px);
+}
+
+.contact-video-section .form-control:focus {
+    background-color: rgba(255,255,255,0.25) !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+/* ---------------------------------------
+   CONTACT PAGE — CLEAN FORM (MAIN CONTACT PAGE)
+---------------------------------------- */
+
+#contact-section .card {
+    background-color: #fff !important;
+    color: #333 !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+#contact-section .form-control {
+    background-color: #ffffff !important;
+    border: 1px solid #ced4da !important;
+    color: #333 !important;
+    backdrop-filter: none !important;
+}
+
+#contact-section .form-floating label {
+    color: #666 !important;
+}
+
+#contact-section .form-control:focus {
+    background-color: #fff !important;
+    border-color: #0d6efd !important;
+    color: #333 !important;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+}
+
+#contact-section .form-control::placeholder {
+    color: #aaa !important;
+}
+
+#contact-section textarea.form-control {
+    resize: vertical;
+}
+
+#contact-section .btn-primary {
+    padding: 12px 28px;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+/* ---------------------------------------
+   GLOBAL FIX — STOP FORM OVERRIDES
+---------------------------------------- */
+
+/* Prevent glass styles from affecting Register/Login/Search */
+body:not(.contact-video-section) .form-control {
+    background-color: initial !important;
+    border-color: initial !important;
+    color: initial !important;
+    backdrop-filter: none !important;
+}
+
+
+/* Added today */
+
+/* Small emergency image like icon */
+.emergency-icon-img {
+    width: 40px;       /* adjust size */
+    height: 40px;
+    cursor: pointer;
+    display: block;
+}
+
+/* Emergency menu hidden by default */
+#emergency-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50px;            /* below the icon */
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+/* Menu options styling */
+/* Hover menu hidden by default */
+#emergency-menu {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateX(20px); /* start slightly right */
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* Show menu when hovering the wrapper */
+#emergency-wrapper:hover #emergency-menu {
+    opacity: 1;
+    transform: translateX(-10px); /* slide slightly left */
+    pointer-events: auto;
+}
+
+.emergency-option {
+    background-color: #dc3545; /* red */
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.emergency-option:hover {
+    background-color: #b02a37; /* darker red on hover */
+    transform: translateX(-5px);
+}

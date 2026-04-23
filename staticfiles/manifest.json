@@ -1,0 +1,36 @@
+{
+  "name": "TrekNepal",
+  "short_name": "TrekNepal",
+  "description": "Your complete Nepal trekking and travel platform",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0f2027",
+  "theme_color": "#11998e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/static/img/image.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/img/Nepal.webp",
+      "sizes": "1100x619",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "TrekNepal Home"
+    },
+    {
+      "src": "/static/img/Nepal.webp",
+      "sizes": "1100x619",
+      "type": "image/webp",
+      "label": "TrekNepal Mobile"
+    }
+  ],
+  "categories": ["travel", "lifestyle"],
+  "lang": "en"
+}
