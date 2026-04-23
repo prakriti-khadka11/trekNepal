@@ -50,4 +50,5 @@ webencodings==0.5.1
 Werkzeug==3.0.2
 wheel==0.43.0
 wrapt==1.14.1
-zopfli==0.2.3gunicorn
+zopfli==0.2.3
+gunicorn
